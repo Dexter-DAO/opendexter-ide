@@ -5,8 +5,8 @@
 <h1 align="center">x402 Payments</h1>
 
 <p align="center">
-  <strong>The first payment protocol plugin for the Cursor Marketplace.</strong><br>
-  Search 5,000+ paid APIs. Pay with USDC. Build x402 into any project.
+  <strong>The x402 payment protocol plugin for the Cursor Marketplace.</strong><br>
+  Search and discover paid APIs. Pay with USDC. Build x402 into any project.
 </p>
 
 <p align="center">
