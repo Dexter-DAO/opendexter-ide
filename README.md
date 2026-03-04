@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/Dexter-DAO/dexter-x402-sdk/main/assets/dexter-wordmark.svg" alt="Dexter" width="360">
 </p>
 
-<h1 align="center">x402 Payments</h1>
+<h1 align="center">x402 on Cursor</h1>
 
 <p align="center">
   <strong>The x402 payment protocol plugin for the Cursor Marketplace.</strong><br>
