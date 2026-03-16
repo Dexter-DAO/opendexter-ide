@@ -134,7 +134,7 @@ Uses EIP-3009 `transferWithAuthorization` for gasless ERC-20 transfers. Payer si
 | Arbitrum | `eip155:42161` |
 | Optimism | `eip155:10` |
 | Avalanche C-Chain | `eip155:43114` |
-| SKALE Europa | `eip155:2046399126` |
+| SKALE Base | `eip155:1187947933` |
 | Sui mainnet | `sui:1` |
 | Base Sepolia (testnet) | `eip155:84532` |
 | Solana devnet | `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` |

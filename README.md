@@ -167,7 +167,7 @@ app.get('/api/data',
 | Arbitrum | `eip155:42161` | ETH |
 | Optimism | `eip155:10` | ETH |
 | Avalanche | `eip155:43114` | AVAX |
-| SKALE Europa | `eip155:2046399126` | sFUEL (free) |
+| SKALE Base | `eip155:1187947933` | sFUEL (free) |
 
 The MCP and SDK auto-detect which chain a 402 response requires and sign with the appropriate method.
 
