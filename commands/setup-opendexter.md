@@ -15,7 +15,7 @@ Set up the x402 gateway so your AI agent can search, price-check, and pay for an
 npx @dexterai/opendexter install
 ```
 
-Supports: Cursor, Claude Code, Codex, VS Code, Windsurf, Gemini CLI.
+Supports: Cursor, Claude Code, Codex, VS Code, Windsurf, Gemini CLI. Claude Code gets full plugin support (MCP server + 7 skills) in a single install.
 
 2. The installer creates a local Solana wallet at `~/.dexterai-mcp/wallet.json`. Note the address it prints.
 

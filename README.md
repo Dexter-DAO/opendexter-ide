@@ -29,6 +29,8 @@
 
 Most Cursor plugins are rules and skills — static knowledge. This one ships with a **real MCP server** that gives your agent four live tools for searching, paying for, and calling paid APIs. On top of that, it has deep SDK knowledge so the agent can help you **build** x402 payments into your own projects.
 
+> **Claude Code users:** All skills and MCP tools are bundled in the `@dexterai/opendexter` npm package. Run `npx @dexterai/opendexter install --client claude-code` for a one-command install that registers the MCP server and all 7 skills as a native Claude Code plugin.
+
 Install the plugin and your Cursor agent can immediately:
 
 - **Search** the Dexter Marketplace for any paid API (image generation, DeFi, analytics, AI, games — 5,000+ endpoints)
@@ -177,7 +179,7 @@ The MCP and SDK auto-detect which chain a 402 response requires and sign with th
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Cursor Plugin (this repo)                 │
+│           Cursor Plugin (this repo) / Claude Code Plugin     │
 │                                                             │
 │  ┌─────────┐  ┌──────────┐  ┌────────┐  ┌──────────┐      │
 │  │  Rules  │  │  Skills  │  │ Agent  │  │ Commands │      │
