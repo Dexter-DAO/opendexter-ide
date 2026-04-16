@@ -3,6 +3,10 @@
   "name": "opendexter",
   "displayName": "OpenDexter",
   "description": "x402 payments for AI agents — search, pay, and build with paid APIs across Solana and EVM chains.",
+  "owner": {
+    "name": "Dexter",
+    "email": "dev@dexter.cash"
+  },
   "plugins": [
     {
       "name": "opendexter",
