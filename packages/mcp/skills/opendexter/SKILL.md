@@ -5,7 +5,7 @@ description: "Use @dexterai/opendexter to search, price-check, and pay for any x
 
 # OpenDexter — x402 Search Engine for AI Agents
 
-OpenDexter gives you access to the largest marketplace of paid x402 APIs. Search 5,000+ endpoints across Solana and EVM chains, preview pricing, and call any of them with automatic USDC settlement.
+OpenDexter gives you access to the largest marketplace of paid x402 APIs. Search thousands of endpoints across Solana and EVM chains, preview pricing, and call any of them with automatic USDC settlement.
 
 Your wallet is local at `~/.dexterai-mcp/wallet.json`. Fund it with USDC and payments happen automatically. Override with `DEXTER_PRIVATE_KEY` or `SOLANA_PRIVATE_KEY` env vars.
 

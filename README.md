@@ -80,7 +80,7 @@ This plugin ships with a **real MCP server** that gives your agent live tools fo
 
 After installing, your agent can immediately:
 
-- **Search** the Dexter Marketplace for any paid API (image generation, DeFi, analytics, AI, games — 5,000+ endpoints)
+- **Search** the Dexter Marketplace for any paid API (image generation, DeFi, analytics, AI, games — thousands of endpoints)
 - **Check** what an API costs before paying
 - **Pay and call** any x402 API with automatic USDC settlement
 - **Help you build** x402 clients, servers, React apps, Stripe integrations, and access passes
@@ -91,7 +91,7 @@ After installing, your agent can immediately:
 
 [x402](https://x402.org) is an open protocol for machine-to-machine payments over HTTP. When an API returns `402 Payment Required`, it includes payment instructions. The client pays (USDC on Solana, Base, or other chains), and the API delivers the response. No API keys, no subscriptions, no invoices.
 
-Dexter operates the most-used x402 facilitator at `https://x402.dexter.cash`, processing millions of settlements across 5,000+ indexed endpoints from every major x402 facilitator — Dexter, Coinbase, PayAI, and more.
+Dexter operates the most-used x402 facilitator at `https://x402.dexter.cash`, processing millions of settlements across thousands of indexed endpoints from every major x402 facilitator — Dexter, Coinbase, PayAI, and more.
 
 ---
 
@@ -103,7 +103,7 @@ Seven tools cover everything:
 
 | Tool | Description |
 |------|-------------|
-| **`x402_search`** | Semantic capability search over 5,000+ paid APIs. Returns tiered results (strong + related matches) ranked by quality, usage, and reputation. |
+| **`x402_search`** | Semantic capability search over thousands of paid APIs. Returns tiered results (strong + related matches) ranked by quality, usage, and reputation. |
 | **`x402_check`** | Preview pricing per chain without spending anything. See exactly what an API costs before committing. |
 | **`x402_fetch`** | Call any x402 API with automatic USDC payment. Signs, pays, retries — returns the response directly with an on-chain settlement receipt. |
 | **`x402_pay`** | Alias for `x402_fetch`. |
@@ -172,7 +172,7 @@ Injected into every conversation so the agent always knows the fundamentals:
 
 ## Links
 
-- [Dexter Marketplace](https://dexter.cash/opendexter) — Browse 5,000+ paid APIs
+- [Dexter Marketplace](https://dexter.cash/opendexter) — Browse thousands of paid APIs
 - [Dexter Facilitator](https://x402.dexter.cash) — Payment infrastructure
 - [@dexterai/x402 SDK](https://www.npmjs.com/package/@dexterai/x402) — Build x402 clients and servers
 - [@dexterai/opendexter](https://www.npmjs.com/package/@dexterai/opendexter) — MCP gateway for AI agents
