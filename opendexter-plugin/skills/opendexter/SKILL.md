@@ -139,8 +139,19 @@ Then add to your MCP client config:
 - Search is semantic — describe what you want in plain English. The ranker handles synonyms and alternate phrasings internally.
 - Most endpoints cost $0.01-$0.10 per call. Creative/compute-heavy ones cost more.
 - The marketplace spans Solana and EVM chains (Base, Polygon, Arbitrum, Optimism, Avalanche, SKALE).
+- Categories: AI, DeFi, Data, Tools, Games, Creative.
 - Use `x402_check` before your first paid call to inspect pricing and schema.
 - Use `x402_access` when an endpoint requires wallet authentication rather than payment.
 - Use `x402_settings` to keep your default spend policy under control.
 - The wallet needs both USDC (for payments) and a tiny amount of SOL (for transaction fees).
 - Works with any x402 seller, not just Dexter endpoints.
+- The marketplace catalog powers dynamic tool discovery — MCP servers can fetch it at runtime and auto-register tools for each resource, no code changes needed when new APIs are added.
+
+## For API Sellers
+
+List your x402 API on the marketplace:
+
+1. Visit https://dexter.cash/onboard
+2. Add `x402Middleware` from `@dexterai/x402/server` to your endpoints
+3. Register your resource URL with the facilitator
+4. Dexter's quality bot will automatically verify and score your endpoint
