@@ -2,11 +2,11 @@
   <img src="https://raw.githubusercontent.com/Dexter-DAO/dexter-x402-sdk/main/assets/dexter-wordmark.svg" alt="Dexter" width="360">
 </p>
 
-<h1 align="center">x402 on Cursor</h1>
+<h1 align="center">OpenDexter</h1>
 
 <p align="center">
-  <strong>The x402 payment protocol plugin for the Cursor Marketplace.</strong><br>
-  Search and discover paid APIs. Pay with USDC. Build x402 into any project.
+  <strong>x402 payments for AI agents — search, pay, and build with paid APIs.</strong><br>
+  Skills, rules, tools, and an MCP server for Claude Code, Cursor, and any MCP client.
 </p>
 
 <p align="center">
@@ -18,20 +18,67 @@
 </p>
 
 <p align="center">
-  <a href="https://dexter.cash/opendexter"><strong>Browse Marketplace →</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="https://x402.org"><strong>x402 Protocol →</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="https://www.npmjs.com/package/@dexterai/x402"><strong>SDK Docs →</strong></a>
+  <a href="https://dexter.cash/opendexter"><strong>Browse Marketplace</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="https://x402.org"><strong>x402 Protocol</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
+  <a href="https://www.npmjs.com/package/@dexterai/x402"><strong>SDK Docs</strong></a>
 </p>
+
+---
+
+## Install
+
+### Claude Code
+
+```bash
+claude plugins marketplace add Dexter-DAO/opendexter
+claude plugins install opendexter
+```
+
+### Cursor
+
+```bash
+npx @dexterai/opendexter install --client cursor
+```
+
+Or add manually to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "opendexter": {
+      "command": "npx",
+      "args": ["-y", "@dexterai/opendexter"]
+    }
+  }
+}
+```
+
+### Any MCP Client
+
+```bash
+npx @dexterai/opendexter
+```
+
+Add this to your client's MCP config:
+
+```json
+{
+  "mcpServers": {
+    "opendexter": {
+      "command": "npx",
+      "args": ["-y", "@dexterai/opendexter"]
+    }
+  }
+}
+```
 
 ---
 
 ## What This Plugin Does
 
-Most Cursor plugins are rules and skills — static knowledge. This one ships with a **real MCP server** that gives your agent four live tools for searching, paying for, and calling paid APIs. On top of that, it has deep SDK knowledge so the agent can help you **build** x402 payments into your own projects.
+This plugin ships with a **real MCP server** that gives your agent live tools for searching, paying for, and calling paid APIs. On top of that, it has deep SDK knowledge so the agent can help you **build** x402 payments into your own projects.
 
-> **Claude Code users:** All skills and MCP tools are bundled in the `@dexterai/opendexter` npm package. Run `npx @dexterai/opendexter install --client claude-code` for a one-command install that registers the MCP server and all 7 skills as a native Claude Code plugin.
-
-Install the plugin and your Cursor agent can immediately:
+After installing, your agent can immediately:
 
 - **Search** the Dexter Marketplace for any paid API (image generation, DeFi, analytics, AI, games — 5,000+ endpoints)
 - **Check** what an API costs before paying
@@ -52,17 +99,17 @@ Dexter operates the most-used x402 facilitator at `https://x402.dexter.cash`, pr
 
 ### MCP Server — `@dexterai/opendexter`
 
-The plugin auto-configures the [OpenDexter](https://www.npmjs.com/package/@dexterai/opendexter) MCP server. Five tools cover everything:
+Seven tools cover everything:
 
 | Tool | Description |
 |------|-------------|
-| **`x402_search`** | Search 5,000+ paid APIs by keyword, category, chain, or price. Returns quality scores, verification status, and seller reputation. |
+| **`x402_search`** | Semantic capability search over 5,000+ paid APIs. Returns tiered results (strong + related matches) ranked by quality, usage, and reputation. |
 | **`x402_check`** | Preview pricing per chain without spending anything. See exactly what an API costs before committing. |
 | **`x402_fetch`** | Call any x402 API with automatic USDC payment. Signs, pays, retries — returns the response directly with an on-chain settlement receipt. |
-| **`x402_pay`** | Lower-level payment flow for agents that manage their own wallet signing. |
+| **`x402_pay`** | Alias for `x402_fetch`. |
+| **`x402_access`** | Access identity-gated endpoints with wallet proof (Sign-In-With-X). |
 | **`x402_wallet`** | Show wallet address, USDC/SOL balances, and deposit instructions. |
-
-Everything else — Jupiter DEX quotes, image generation, on-chain analytics, social sentiment, games — is a marketplace resource you discover through `x402_search` and call through `x402_fetch`. Five tools, infinite capabilities.
+| **`x402_settings`** | Read or update your per-call spending limit. |
 
 A local Solana wallet is auto-created at `~/.dexterai-mcp/wallet.json` on first run. Fund it with USDC and your agent can start paying for APIs immediately.
 
@@ -74,13 +121,13 @@ Deep knowledge the agent invokes when relevant:
 
 | Skill | What it teaches |
 |-------|-----------------|
-| **opendexter** | How to use the x402 tools effectively: search → check → fetch → wallet workflow patterns, quality scores, funding flows, error recovery |
-| **x402-client** | Build x402 clients with `wrapFetch()`, `createX402Client()`, Solana/EVM keypair wallets, access passes, dual-chain support |
-| **x402-server** | Add x402 paywalls with `x402Middleware()`, `createX402Server()`, Stripe PayTo, dynamic pricing, token pricing, browser paywalls, model registry |
-| **x402-react** | React hooks: `useX402Payment()`, `useAccessPass()`, wallet adapter and wagmi integration, full component examples |
-| **x402-protocol** | v2 spec reference: core types, payment flow, HTTP/MCP/A2A transports, EVM and Solana scheme mechanics, all CAIP-2 networks, all error codes |
-| **x402-marketplace** | Marketplace discovery: search API, quality scoring, categories, sort options, seller reputation, becoming a seller, dynamic tool discovery |
-| **x402-debugging** | Diagnose payment failures: facilitator health checks, error code reference, common issues and fixes, fee payer isolation rules |
+| **opendexter** | How to use the x402 tools effectively: search workflow, quality scores, funding flows, error recovery |
+| **x402-client** | Build x402 clients with `wrapFetch()`, `createX402Client()`, Solana/EVM keypair wallets, access passes |
+| **x402-server** | Add x402 paywalls with `x402Middleware()`, `createX402Server()`, Stripe PayTo, dynamic pricing |
+| **x402-react** | React hooks: `useX402Payment()`, `useAccessPass()`, wallet adapter and wagmi integration |
+| **x402-protocol** | v2 spec reference: core types, payment flow, HTTP/MCP/A2A transports, scheme mechanics, error codes |
+| **x402-marketplace** | Marketplace discovery: search API, quality scoring, categories, seller reputation, becoming a seller |
+| **x402-debugging** | Diagnose payment failures: facilitator health, error codes, common issues and fixes |
 
 ---
 
@@ -88,74 +135,24 @@ Deep knowledge the agent invokes when relevant:
 
 Injected into every conversation so the agent always knows the fundamentals:
 
-- **x402-protocol** — CAIP-2 network identifiers, header conventions (`PAYMENT-REQUIRED`, `PAYMENT-SIGNATURE`, `PAYMENT-RESPONSE`), atomic units, facilitator URL, supported chains, SDK package structure
-- **x402-coding** — Import from subpaths (`@dexterai/x402/client`), prefer `wrapFetch()` for agents, `x402Middleware()` for servers, `X402Error` handling, tool workflow order
+- **x402-protocol** — CAIP-2 network identifiers, header conventions, atomic units, facilitator URL, supported chains
+- **x402-coding** — Import from subpaths (`@dexterai/x402/client`), prefer `wrapFetch()` for agents, `x402Middleware()` for servers
 
 ---
 
 ### Agent
 
-- **x402-engineer** — Specialized persona that knows the full Dexter x402 stack. Prefers the simplest pattern first, validates amounts and balances before payment, never exposes private keys, and reaches for `x402_search` whenever a user mentions paid APIs.
+- **x402-engineer** — Specialized persona that knows the full Dexter x402 stack. Validates amounts and balances before payment, never exposes private keys, reaches for `x402_search` whenever a user mentions paid APIs.
 
 ---
 
 ### Commands (3)
 
-Guided scaffolding workflows:
-
 | Command | What it does |
 |---------|-------------|
-| **setup-opendexter** | Install the OpenDexter MCP server into Cursor, Claude Code, Codex, VS Code, Windsurf, or Gemini CLI. Creates wallet and writes config. |
-| **setup-x402-client** | Add `@dexterai/x402` to a Node.js project with `wrapFetch()` boilerplate, env vars, and a test call example. |
-| **setup-x402-server** | Add `x402Middleware()` to an Express app with paywall configuration, curl test, and facilitator flow explanation. |
-
----
-
-## Quick Start
-
-### Use paid APIs (agent tools)
-
-After installing the plugin, your agent has the tools immediately. Try:
-
-```
-"Search for image generation APIs under $0.10"
-→ x402_search(query: "image generation", maxPriceUsdc: 0.10)
-
-"How much does this cost?"
-→ x402_check("https://x402.dexter.cash/api/v2-test", method: "POST")
-
-"Call it"
-→ x402_fetch("https://x402.dexter.cash/api/v2-test", method: "POST")
-
-"Check my balance"
-→ x402_wallet()
-```
-
-### Build an x402 client (SDK)
-
-```typescript
-import { wrapFetch } from '@dexterai/x402/client';
-
-const x402Fetch = wrapFetch(fetch, {
-  walletPrivateKey: process.env.SOLANA_PRIVATE_KEY!,
-});
-
-const response = await x402Fetch('https://x402-api.example.com/data');
-```
-
-### Build an x402 server (SDK)
-
-```typescript
-import { x402Middleware } from '@dexterai/x402/server';
-
-app.get('/api/data',
-  x402Middleware({
-    payTo: 'YourSolanaAddress...',
-    amount: '0.01',
-  }),
-  (req, res) => res.json({ data: 'premium content' })
-);
-```
+| **setup-opendexter** | Install the OpenDexter MCP server into Cursor, Claude Code, Codex, VS Code, Windsurf, or Gemini CLI. |
+| **setup-x402-client** | Add `@dexterai/x402` to a Node.js project with `wrapFetch()` boilerplate and a test call. |
+| **setup-x402-server** | Add `x402Middleware()` to an Express app with paywall configuration and test. |
 
 ---
 
@@ -170,58 +167,6 @@ app.get('/api/data',
 | Optimism | `eip155:10` | ETH |
 | Avalanche | `eip155:43114` | AVAX |
 | SKALE Base | `eip155:1187947933` | sFUEL (free) |
-
-The MCP and SDK auto-detect which chain a 402 response requires and sign with the appropriate method.
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│           Cursor Plugin (this repo) / Claude Code Plugin     │
-│                                                             │
-│  ┌─────────┐  ┌──────────┐  ┌────────┐  ┌──────────┐      │
-│  │  Rules  │  │  Skills  │  │ Agent  │  │ Commands │      │
-│  │ (2)     │  │ (7)      │  │ (1)    │  │ (3)      │      │
-│  └─────────┘  └──────────┘  └────────┘  └──────────┘      │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  MCP Server: @dexterai/opendexter                    │   │
-│  │  x402_search · x402_check · x402_fetch · x402_wallet│   │
-│  └──────────────────────┬──────────────────────────────┘   │
-└─────────────────────────┼───────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────┐
-│              @dexterai/x402 SDK (npm package)                │
-│                                                             │
-│  /client          /server           /react                  │
-│  wrapFetch        x402Middleware    useX402Payment           │
-│  createX402Client createX402Server  useAccessPass            │
-│  keypairWallet    stripePayTo      wallet adapters           │
-│                   dynamicPricing                             │
-│                   accessPass                                 │
-│                   browserSupport                             │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│           Dexter Facilitator (x402.dexter.cash)              │
-│                                                             │
-│  /verify    /settle    /supported    /healthz                │
-│                                                             │
-│  Solana · Base · Polygon · Arbitrum · Optimism · Avalanche  │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Dexter Marketplace (5,000+ APIs)                │
-│                                                             │
-│  AI · DeFi · Data · Tools · Games · Creative                │
-│  Quality-verified · Reputation-scored · Multi-chain          │
-└─────────────────────────────────────────────────────────────┘
-```
 
 ---
 

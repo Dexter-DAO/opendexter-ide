@@ -8,7 +8,7 @@
     "email": "dev@dexter.cash"
   },
   "homepage": "https://dexter.cash/opendexter",
-  "repository": "https://github.com/Dexter-DAO/dexter-cursor",
+  "repository": "https://github.com/Dexter-DAO/opendexter",
   "license": "MIT",
   "logo": "assets/logo.svg",
   "keywords": [
