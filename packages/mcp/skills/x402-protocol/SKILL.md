@@ -134,11 +134,7 @@ Fee payer must NOT appear in any instruction's accounts.
 
 ## Exact Scheme — EVM
 
-Uses EIP-3009 `transferWithAuthorization` for gasless ERC-20 transfers. Payer signs EIP-712 typed data; facilitator submits on-chain.
-
-## Exact-Approval Scheme — BSC
-
-Uses standard ERC-20 `approve` + facilitator-submitted `transferFrom` for chains that don't support EIP-3009 (e.g., BSC's USDC contract).
+Uses EIP-3009 `transferWithAuthorization` or Permit2 for gasless ERC-20 transfers (chain-dependent). Payer signs EIP-712 typed data; facilitator submits on-chain.
 
 ## CAIP-2 Network Identifiers
 
@@ -155,8 +151,6 @@ Uses standard ERC-20 `approve` + facilitator-submitted `transferFrom` for chains
 | Base Sepolia (testnet) | `eip155:84532` |
 | Solana devnet | `solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1` |
 
-Note: Sui (`sui:1`) is listed in some specs but not currently supported by the Dexter facilitator.
-
 ## Error Codes
 
 | Code | Scope | Meaning |
@@ -168,6 +162,7 @@ Note: Sui (`sui:1`) is listed in some specs but not currently supported by the D
 | `invalid_x402_version` | All | Wrong protocol version |
 | `invalid_transaction_state` | All | Tx failed on-chain |
 | `invalid_exact_evm_payload_signature` | EVM | Bad EIP-712 signature |
+| `invalid_exact_evm_payload_authorization_valid_after` | EVM | Auth not yet valid |
 | `invalid_exact_evm_payload_authorization_valid_before` | EVM | Auth expired |
 | `invalid_exact_evm_payload_authorization_value` | EVM | Amount too low |
 | `invalid_exact_evm_payload_recipient_mismatch` | EVM | Wrong recipient |

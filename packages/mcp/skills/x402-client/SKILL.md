@@ -212,9 +212,9 @@ The client caches the JWT access pass per host and sends it as `Authorization: B
 Search the Dexter marketplace for paid APIs:
 
 ```typescript
-import { capabilitySearch } from '@dexterai/x402/client';
+import { searchAPIs } from '@dexterai/x402/client';
 
-const result = await capabilitySearch({ query: 'get ETH spot price' });
+const result = await searchAPIs({ query: 'get ETH spot price' });
 for (const api of result.strongResults) {
   console.log(`${api.name}: ${api.price} — ${api.why}`);
 }
@@ -266,7 +266,7 @@ try {
 | `createKeypairWallet` | Create Solana wallet from private key (async) |
 | `createEvmKeypairWallet` | Create EVM wallet from private key (async) |
 | `createBudgetAccount` | Autonomous agent with spending controls |
-| `capabilitySearch` | Semantic search over the x402 marketplace |
+| `searchAPIs` | Semantic search over the x402 marketplace |
 | `getSponsoredRecommendations` | Extract sponsored recs from payment response |
 | `getSponsoredAccessInfo` | Get full sponsored-access extension data |
 | `fireImpressionBeacon` | Confirm sponsored rec delivery to ad network |
