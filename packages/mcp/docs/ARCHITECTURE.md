@@ -87,7 +87,7 @@ Source code: `packages/mcp/` in the [opendexter-ide](https://github.com/Dexter-D
 
 - Private key stored at `~/.dexterai-mcp/wallet.json`
 - Auto-created on first `opendexter wallet` or `opendexter install`
-- Dual-chain: Solana address + EVM address (same file)
+- Two keypairs in one file: Solana address + EVM address
 - User funds it with USDC, agent pays for x402 APIs directly
 - Vanity prefix: Solana starts with `dex`, EVM starts with `0x402DD`
 

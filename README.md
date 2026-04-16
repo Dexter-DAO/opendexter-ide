@@ -111,7 +111,7 @@ Seven tools cover everything:
 | **`x402_wallet`** | Show wallet address, USDC/SOL balances, and deposit instructions. |
 | **`x402_settings`** | Read or update your per-call spending limit. |
 
-A dual-chain wallet (Solana + EVM) is auto-created at `~/.dexterai-mcp/wallet.json` on first run. Fund either address with USDC and your agent can start paying for APIs immediately.
+Two wallets are auto-created at `~/.dexterai-mcp/wallet.json` on first run — one Solana, one EVM. Fund either address with USDC and your agent can start paying for APIs immediately.
 
 ---
 
