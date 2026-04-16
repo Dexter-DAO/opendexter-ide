@@ -143,7 +143,7 @@ Then add to your MCP client config:
 - Use `x402_check` before your first paid call to inspect pricing and schema.
 - Use `x402_access` when an endpoint requires wallet authentication rather than payment.
 - Use `x402_settings` to keep your default spend policy under control.
-- The wallet only needs USDC. The x402 facilitator pays Solana transaction fees.
+- The wallet only needs USDC. The x402 facilitator pays transaction fees on all chains.
 - Works with any x402 seller, not just Dexter endpoints.
 - The marketplace catalog powers dynamic tool discovery — MCP servers can fetch it at runtime and auto-register tools for each resource, no code changes needed when new APIs are added.
 

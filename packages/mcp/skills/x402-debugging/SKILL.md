@@ -9,7 +9,7 @@ description: "Diagnose x402 payment failures — facilitator health, error codes
 
 1. **Is the facilitator healthy?** `curl https://x402.dexter.cash/healthz`
 2. **Does it support the network?** `curl https://x402.dexter.cash/supported`
-3. **Does the wallet have funds?** Check USDC balance (the facilitator pays Solana tx fees)
+3. **Does the wallet have funds?** Check USDC balance (the facilitator pays tx fees on all chains)
 4. **Is the network format correct?** v2 uses CAIP-2 (`solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp`), not `"solana"`
 5. **Is the client handling 402?** Must use `wrapFetch`, `createX402Client`, or manual PAYMENT-SIGNATURE flow
 6. **Is the right scheme used?** Most chains use `exact`, BSC uses `exact-approval`
