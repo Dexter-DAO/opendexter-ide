@@ -17,7 +17,7 @@ npx @dexterai/opendexter install
 
 Supports: Cursor, Claude Code, Codex, VS Code, Windsurf, Gemini CLI. Claude Code gets full plugin support (MCP server + 6 skills) in a single install.
 
-2. The installer creates a local Solana wallet at `~/.dexterai-mcp/wallet.json`. Note the address it prints.
+2. The installer creates a dual-chain wallet (Solana + EVM) at `~/.dexterai-mcp/wallet.json`. Note the addresses it prints.
 
 3. Fund the wallet with USDC on Solana. Send to the address from step 2. You also need a tiny amount of SOL for transaction fees (~0.001 SOL).
 
