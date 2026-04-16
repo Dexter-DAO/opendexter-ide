@@ -89,7 +89,7 @@ Client ──retry + PaymentSignature──▶ Resource Server ──verify─�
 
 | Scheme | Description | Chains |
 |--------|-------------|--------|
-| `exact` | Direct transfer via TransferChecked (SVM) or Permit2 (EVM) | All chains |
+| `exact` | Direct transfer — TransferChecked on Solana, EIP-3009 or Permit2 on EVM (chain-dependent) | All chains |
 | `upto` | Batched/metered payments — pay up to an amount, settle actual usage | Base, Polygon, Arbitrum |
 | `bridge` | Cross-chain settlement — pay on one chain, resource on another | Solana ↔ Base |
 
