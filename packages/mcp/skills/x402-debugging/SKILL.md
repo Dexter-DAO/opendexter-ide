@@ -12,7 +12,7 @@ description: "Diagnose x402 payment failures — facilitator health, error codes
 3. **Does the wallet have funds?** Check USDC balance (the facilitator pays tx fees on all chains)
 4. **Is the network format correct?** v2 uses CAIP-2 (`solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp`), not `"solana"`
 5. **Is the client handling 402?** Must use `wrapFetch`, `createX402Client`, or manual PAYMENT-SIGNATURE flow
-6. **Is the right scheme used?** Most chains use `exact`, BSC uses `exact-approval`
+6. **Is the right scheme used?** All chains support `exact`. Some EVM chains also support `upto`. Check `/supported` for the full list.
 
 ## Common Issues and Fixes
 
@@ -31,7 +31,7 @@ description: "Diagnose x402 payment failures — facilitator health, error codes
 | "Unsupported network" | SDK doesn't have an adapter for this chain | Add the appropriate wallet (Solana or EVM) |
 | "User rejected signature" | User declined wallet signing prompt | Prompt user to try again, don't auto-retry |
 | "Transaction build failed" | Failed to construct the payment tx | Check wallet connection, RPC health, token accounts |
-| BSC payment fails | Wrong scheme — BSC needs `exact-approval`, not `exact` | Ensure facilitator returns `exact-approval` for `eip155:56` |
+| BSC payment fails | BSC USDC may lack Permit2 approval | Check facilitator `/supported` for BSC-specific requirements |
 
 ## Facilitator Endpoints
 
@@ -42,7 +42,7 @@ curl https://x402.dexter.cash/healthz
 # Supported networks and schemes
 curl https://x402.dexter.cash/supported
 # Returns: { kinds: [...], extensions: [...], signers: { ... } }
-# kinds include: exact (all chains), exact-approval (BSC), upto (Base/Polygon/Arbitrum), bridge (Solana/Base)
+# kinds include: exact (all chains), upto (Base/Polygon/Arbitrum), bridge (Solana/Base)
 
 # Manual verification
 curl -X POST https://x402.dexter.cash/verify \

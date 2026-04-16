@@ -89,8 +89,7 @@ Client ──retry + PaymentSignature──▶ Resource Server ──verify─�
 
 | Scheme | Description | Chains |
 |--------|-------------|--------|
-| `exact` | Direct transfer via TransferChecked (SVM) or EIP-3009 transferWithAuthorization (EVM) | All chains |
-| `exact-approval` | Approval-based ERC-20 transfer (for chains without EIP-3009) | BSC |
+| `exact` | Direct transfer via TransferChecked (SVM) or Permit2 (EVM) | All chains |
 | `upto` | Batched/metered payments — pay up to an amount, settle actual usage | Base, Polygon, Arbitrum |
 | `bridge` | Cross-chain settlement — pay on one chain, resource on another | Solana ↔ Base |
 

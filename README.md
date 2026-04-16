@@ -125,7 +125,7 @@ Deep knowledge the agent invokes when relevant:
 | **x402-client** | Build x402 clients: `wrapFetch()`, `createX402Client()`, Budget Accounts for agents, Sponsored Access, keypair wallets, access passes |
 | **x402-server** | Add x402 paywalls: `x402Middleware()` with multi-chain accept, Stripe PayTo, dynamic/token pricing, access passes, sponsored access injection |
 | **x402-react** | React hooks: `useX402Payment()` (payment state, balances, tx info), `useAccessPass()` (tier discovery, purchase, auto-fetch) |
-| **x402-protocol** | v2 spec: core types, payment flow, 4 schemes (exact, exact-approval, upto, bridge), HTTP/MCP/A2A transports, all CAIP-2 networks, error codes |
+| **x402-protocol** | v2 spec: core types, payment flow, 3 schemes (exact, upto, bridge), HTTP/MCP/A2A transports, all CAIP-2 networks, error codes |
 | **x402-debugging** | Diagnose failures: 27 SDK error codes, facilitator health, fee payer safety, retry support, pre-payment callbacks |
 
 ---
