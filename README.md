@@ -30,7 +30,7 @@
 ### Claude Code
 
 ```bash
-claude plugins marketplace add Dexter-DAO/opendexter
+claude plugins marketplace add Dexter-DAO/opendexter-ide
 claude plugins install opendexter
 ```
 
@@ -115,19 +115,18 @@ A local Solana wallet is auto-created at `~/.dexterai-mcp/wallet.json` on first 
 
 ---
 
-### Skills (7)
+### Skills (6)
 
 Deep knowledge the agent invokes when relevant:
 
 | Skill | What it teaches |
 |-------|-----------------|
-| **opendexter** | How to use the x402 tools effectively: search workflow, quality scores, funding flows, error recovery |
-| **x402-client** | Build x402 clients with `wrapFetch()`, `createX402Client()`, Solana/EVM keypair wallets, access passes |
-| **x402-server** | Add x402 paywalls with `x402Middleware()`, `createX402Server()`, Stripe PayTo, dynamic pricing |
-| **x402-react** | React hooks: `useX402Payment()`, `useAccessPass()`, wallet adapter and wagmi integration |
-| **x402-protocol** | v2 spec reference: core types, payment flow, HTTP/MCP/A2A transports, scheme mechanics, error codes |
-| **x402-marketplace** | Marketplace discovery: search API, quality scoring, categories, seller reputation, becoming a seller |
-| **x402-debugging** | Diagnose payment failures: facilitator health, error codes, common issues and fixes |
+| **opendexter** | How to use the x402 tools: search → check → fetch workflow, quality scores, funding flows, error recovery |
+| **x402-client** | Build x402 clients: `wrapFetch()`, `createX402Client()`, Budget Accounts for agents, Sponsored Access, keypair wallets, access passes |
+| **x402-server** | Add x402 paywalls: `x402Middleware()` with multi-chain accept, Stripe PayTo, dynamic/token pricing, access passes, sponsored access injection |
+| **x402-react** | React hooks: `useX402Payment()` (payment state, balances, tx info), `useAccessPass()` (tier discovery, purchase, auto-fetch) |
+| **x402-protocol** | v2 spec: core types, payment flow, 4 schemes (exact, exact-approval, upto, bridge), HTTP/MCP/A2A transports, all CAIP-2 networks, error codes |
+| **x402-debugging** | Diagnose failures: 27 SDK error codes, facilitator health, fee payer safety, retry support, pre-payment callbacks |
 
 ---
 
@@ -166,6 +165,7 @@ Injected into every conversation so the agent always knows the fundamentals:
 | Arbitrum | `eip155:42161` | ETH |
 | Optimism | `eip155:10` | ETH |
 | Avalanche | `eip155:43114` | AVAX |
+| BSC (BNB Chain) | `eip155:56` | BNB |
 | SKALE Base | `eip155:1187947933` | sFUEL (free) |
 
 ---
