@@ -1,5 +1,12 @@
 # OpenDexter Distribution Audit
 
+> **STATUS: HISTORICAL (2026-04-02)**
+>
+> This audit was conducted before the unification sprint of 2026-04-16. The issues
+> it documents (skill duplication across repos, broken installer, stale npm content)
+> have all been resolved. `packages/mcp/` now lives in this repo (opendexter-ide) and
+> is the single source of truth. See `ARCHITECTURE.md` for current structure.
+
 **Date:** 2026-04-02
 **Scope:** `@dexterai/opendexter` npm package, Claude Code plugin, Cursor plugin
 **Author:** Branch + Claude Code
