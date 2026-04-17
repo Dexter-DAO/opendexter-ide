@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SERVER_INSTRUCTIONS } from "@dexterai/mcp-instructions";
 import { VERSION } from "../config.js";
 import { registerSearchTool } from "../tools/search.js";
 import { registerFetchTool } from "../tools/fetch.js";
@@ -25,10 +26,15 @@ export async function startServer(opts: ServerOptions): Promise<void> {
     wallet = null;
   }
 
-  const server = new McpServer({
-    name: "Dexter x402 Gateway",
-    version: VERSION,
-  });
+  const server = new McpServer(
+    {
+      name: "Dexter x402 Gateway",
+      version: VERSION,
+    },
+    {
+      instructions: SERVER_INSTRUCTIONS,
+    },
+  );
 
   registerSearchTool(server, opts);
   registerFetchTool(server, wallet, opts);

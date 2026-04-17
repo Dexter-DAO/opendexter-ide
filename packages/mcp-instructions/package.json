@@ -1,0 +1,50 @@
+{
+  "name": "@dexterai/mcp-instructions",
+  "version": "1.0.0",
+  "description": "Shared MCP server instructions for the OpenDexter / Dexter x402 Gateway. Single source of truth consumed by both the hosted server (open.dexter.cash/mcp) and the npm-installable local server (@dexterai/opendexter).",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --clean --minify && tsc --emitDeclarationOnly --outDir dist",
+    "dev": "tsup src/index.ts --format esm,cjs --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "release": "npm version patch && npm publish --access public"
+  },
+  "keywords": [
+    "x402",
+    "mcp",
+    "opendexter",
+    "dexter",
+    "instructions",
+    "server-instructions"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dexter-DAO/opendexter-ide.git",
+    "directory": "packages/mcp-instructions"
+  }
+}
