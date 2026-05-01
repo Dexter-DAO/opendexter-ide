@@ -1,0 +1,55 @@
+{
+  "name": "@dexterai/x402-mcp-tools",
+  "version": "0.1.0",
+  "description": "Shared MCP tool registrations for the Dexter x402 ecosystem. One register*Tool function per tool, plus widget metadata. Consumed by @dexterai/opendexter (npm CLI), the hosted public MCP server, and the hosted authenticated MCP server.",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --outDir dist",
+    "dev": "tsup src/index.ts --format esm,cjs --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "release": "npm version patch && npm publish --access public"
+  },
+  "keywords": [
+    "x402",
+    "mcp",
+    "dexter",
+    "opendexter",
+    "tools",
+    "registrations"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@dexterai/x402-core": "^1.3.0",
+    "@modelcontextprotocol/sdk": "^1.17.4",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dexter-DAO/opendexter-ide.git",
+    "directory": "packages/x402-mcp-tools"
+  }
+}
