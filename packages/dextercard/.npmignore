@@ -1,0 +1,50 @@
+# Dextercard publish blocklist.
+#
+# When .npmignore is present, npm uses it (NOT .gitignore) to decide
+# what to publish. Combined with the `files` allowlist in package.json
+# this gives belt-and-suspenders coverage against accidental leaks.
+
+# Source — never publish; consumers get the built dist/
+src/
+tsconfig.json
+.eslintrc*
+.prettierrc*
+
+# Sourcemaps — exposing these defeats the point of shipping built JS.
+# Keep this rule even if the build script never emits them; it's the
+# guardrail for future-you adding --sourcemap to chase a stack trace.
+*.map
+**/*.map
+
+# Tests, fixtures, scratch
+test/
+tests/
+__tests__/
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+fixtures/
+coverage/
+
+# Local env / scratch
+.env*
+.DS_Store
+*.log
+*.bak
+*.tmp
+node_modules/
+
+# Build pipeline scratch
+.turbo/
+.tsbuildinfo
+*.tsbuildinfo
+
+# Editor / OS noise
+.vscode/
+.idea/
+.cursorrules
+*.swp
+
+# Internal helpers (we don't want consumers running these)
+scripts/

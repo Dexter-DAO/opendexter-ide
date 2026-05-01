@@ -14,15 +14,18 @@
     }
   },
   "files": [
-    "dist",
+    "dist/index.js",
+    "dist/index.cjs",
+    "dist/*.d.ts",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --clean && tsc --emitDeclarationOnly --outDir dist",
-    "dev": "tsup src/index.ts --format esm,cjs --watch",
+    "_build_note": "DO NOT add --sourcemap to tsup. Sourcemaps would expose original TS source, comments, and architecture to anyone who runs `npm install`. See .npmignore.",
+    "build": "tsup src/index.ts --format esm,cjs --clean --no-sourcemap && tsc --emitDeclarationOnly --outDir dist",
+    "dev": "tsup src/index.ts --format esm,cjs --watch --no-sourcemap",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run build && node ./scripts/check-no-sourcemaps.cjs",
     "release": "npm version patch && npm publish --access public"
   },
   "keywords": [
