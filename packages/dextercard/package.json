@@ -14,9 +14,7 @@
     }
   },
   "files": [
-    "dist/index.js",
-    "dist/index.cjs",
-    "dist/*.d.ts",
+    "dist",
     "README.md",
     "LICENSE"
   ],
