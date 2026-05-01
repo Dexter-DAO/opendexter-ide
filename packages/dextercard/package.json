@@ -1,6 +1,6 @@
 {
   "name": "@dexterai/dextercard",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Dextercard SDK — issue and manage virtual cards for AI agents. Wraps a regulated card-issuance carrier with a clean TypeScript API, self-managed sessions, and a captcha-aware login flow.",
   "type": "module",
   "main": "dist/index.js",
@@ -11,6 +11,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js",
+      "require": "./dist/browser.cjs"
     }
   },
   "files": [
@@ -20,8 +25,8 @@
   ],
   "scripts": {
     "_build_note": "DO NOT add --sourcemap to tsup. Sourcemaps would expose original TS source, comments, and architecture to anyone who runs `npm install`. See .npmignore.",
-    "build": "tsup src/index.ts --format esm,cjs --clean --no-sourcemap && tsc --emitDeclarationOnly --outDir dist",
-    "dev": "tsup src/index.ts --format esm,cjs --watch --no-sourcemap",
+    "build": "tsup src/index.ts src/browser.ts --format esm,cjs --clean --no-sourcemap && tsc --emitDeclarationOnly --outDir dist",
+    "dev": "tsup src/index.ts src/browser.ts --format esm,cjs --watch --no-sourcemap",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build && node ./scripts/check-no-sourcemaps.cjs",
     "release": "npm version patch && npm publish --access public"
