@@ -22,8 +22,23 @@ export { registerFetchTool, x402Fetch } from "./tools/fetch.js";
 export { registerAccessTool, accessWithWalletProof } from "./tools/access.js";
 export { registerWalletTool } from "./tools/wallet.js";
 
-// Compose helper
+// Compose helper (x402 toolset)
 export { composeAllTools, type ComposeAllToolsOpts } from "./compose.js";
+
+// Dextercard tool registrars
+export { registerCardStatusTool } from "./tools/cards/status.js";
+export { registerCardIssueTool } from "./tools/cards/issue.js";
+export { registerCardLinkWalletTool } from "./tools/cards/link-wallet.js";
+export { registerCardFreezeTool } from "./tools/cards/freeze.js";
+
+// Dextercard compose helper + adapter contract + widget metas
+export { composeCardTools, type ComposeCardToolsOpts } from "./compose-cards.js";
+export type { CardsAdapter } from "./cards-adapter.js";
+export {
+  buildCardToolMetas,
+  type CardToolMetas,
+  type CardWidgetUris,
+} from "./card-widget-meta.js";
 
 // Widget metadata helpers
 export {
@@ -52,6 +67,7 @@ export type {
   FetchToolOpts,
   AccessToolOpts,
   WalletToolOpts,
+  CardToolOpts,
 } from "./types.js";
 export { DEFAULT_CAPABILITY_PATH } from "./types.js";
 
