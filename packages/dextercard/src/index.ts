@@ -2,9 +2,11 @@ export { Dextercard } from "./client.js";
 export {
   DextercardApiError,
   DextercardNoAccountError,
+  DextercardRegionUnavailableError,
   classifyError,
   type DextercardErrorPayload,
 } from "./errors.js";
+export { rebrandPayload, rebrandString } from "./rebrand.js";
 export { DEXTERCARD_JWT_ENV, jwtFromEnv, jwtFromFile } from "./jwt.js";
 export {
   MemorySessionStore,

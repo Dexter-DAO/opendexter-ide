@@ -1,6 +1,6 @@
 {
   "name": "@dexterai/dextercard",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Dextercard SDK — issue and manage virtual cards for AI agents. Wraps a regulated card-issuance carrier with a clean TypeScript API, self-managed sessions, and a captcha-aware login flow.",
   "type": "module",
   "main": "dist/index.js",
