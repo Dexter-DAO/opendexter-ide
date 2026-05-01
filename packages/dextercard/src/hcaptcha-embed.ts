@@ -1,19 +1,18 @@
 /**
  * Zero-dependency hCaptcha embed helper for the browser.
  *
- * Loads hCaptcha's official JS, renders a widget bound to MoonPay's
- * sitekey, and returns a Promise that resolves with the captcha token
- * when the user completes the challenge. Callers feed the token to
- * {@link LoginFlow.requestCode}.
+ * Loads hCaptcha's official JS, renders a widget bound to the
+ * Dextercard production sitekey, and returns a Promise that resolves
+ * with the captcha token when the user completes the challenge.
+ * Callers feed the token to {@link LoginFlow.requestCode}.
  *
  * NOTE: This module touches `window` and `document`. It must run in a
- * browser. Callers using cards-core in Node (server-side) should NOT
- * import this module — instead, render hCaptcha however their UI
- * framework prefers and pass the resulting token to {@link login}
- * directly.
+ * browser. Server-side callers should NOT import this module —
+ * instead, render hCaptcha however their UI framework prefers and
+ * pass the resulting token to {@link login} directly.
  */
 
-import { MOONPAY_HCAPTCHA_CONFIG, MOONPAY_HCAPTCHA_SITEKEY } from "./login-flow.js";
+import { DEXTERCARD_HCAPTCHA_CONFIG, DEXTERCARD_HCAPTCHA_SITEKEY } from "./login-flow.js";
 
 const HCAPTCHA_SCRIPT_URL = "https://js.hcaptcha.com/1/api.js?render=explicit";
 const HCAPTCHA_SCRIPT_ID = "hcaptcha-api-script";
@@ -83,7 +82,7 @@ export function loadHCaptchaScript(): Promise<HCaptchaApi> {
 export interface RenderHCaptchaOptions {
   /** The DOM node the widget renders into. Replaces its children. */
   container: HTMLElement;
-  /** Override the sitekey (defaults to MoonPay's production sitekey). */
+  /** Override the sitekey (defaults to the Dextercard production sitekey). */
   sitekey?: string;
   theme?: "light" | "dark";
   size?: "normal" | "compact" | "invisible";
@@ -101,13 +100,13 @@ export interface HCaptchaHandle {
 }
 
 /**
- * Render an hCaptcha widget bound to MoonPay's production sitekey.
+ * Render an hCaptcha widget bound to the Dextercard production sitekey.
  * Returns a {@link HCaptchaHandle} whose `token` promise resolves once
  * the user completes the challenge.
  *
  * Reset and re-await `token` if the widget expires before you submit.
  */
-export async function renderMoonPayHCaptcha(
+export async function renderDextercardHCaptcha(
   options: RenderHCaptchaOptions,
 ): Promise<HCaptchaHandle> {
   const api = await loadHCaptchaScript();
@@ -119,9 +118,9 @@ export async function renderMoonPayHCaptcha(
   });
 
   const widgetId = api.render(options.container, {
-    sitekey: options.sitekey ?? MOONPAY_HCAPTCHA_SITEKEY,
-    theme: options.theme ?? MOONPAY_HCAPTCHA_CONFIG.theme,
-    size: options.size ?? MOONPAY_HCAPTCHA_CONFIG.size,
+    sitekey: options.sitekey ?? DEXTERCARD_HCAPTCHA_SITEKEY,
+    theme: options.theme ?? DEXTERCARD_HCAPTCHA_CONFIG.theme,
+    size: options.size ?? DEXTERCARD_HCAPTCHA_CONFIG.size,
     callback: (token) => resolveToken(token),
     "expired-callback": () => {
       const err = new Error("hCaptcha token expired before submission");

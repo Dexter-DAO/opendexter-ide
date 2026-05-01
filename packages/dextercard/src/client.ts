@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import type { MoonPaySession } from "./auth.js";
-import { classifyError, MoonPayApiError, type MoonPayErrorPayload } from "./errors.js";
+import type { DextercardSession } from "./auth.js";
+import { classifyError, DextercardApiError, type DextercardErrorPayload } from "./errors.js";
 import {
   CardOnboardingFinishSchema,
   CardOnboardingStartSchema,
@@ -23,40 +23,47 @@ import type {
   CardWalletEntry,
   CardWalletLinkInput,
   CardWalletUnlinkInput,
-  MoonPayClientOptions,
+  DextercardOptions,
   UserRetrieveResponse,
 } from "./types.js";
 
 const DEFAULT_BASE_URL = "https://agents.moonpay.com";
 const DEFAULT_AGENT = "dexter";
-const DEFAULT_CLI_VERSION = "1.42.2";
+// Wire-compatible CLI version sent as X-CLI-Version. Mirrors the public
+// CLI's value to avoid being rejected by version-sniffing middleware.
+const DEFAULT_CLIENT_VERSION = "1.42.2";
 const DEFAULT_TIMEOUT_MS = 30_000;
 const TOOL_PATH_PREFIX = "/api/tools/";
 
-export class MoonPayClient {
+/**
+ * Dextercard API client. Pass either a static `jwt` (simple, short-lived)
+ * or a `session` (long-lived, auto-refreshing). Concurrent calls that
+ * miss the JWT cache will coalesce on the underlying session refresh.
+ */
+export class Dextercard {
   private readonly staticJwt: string | null;
-  private readonly session: MoonPaySession | null;
+  private readonly session: DextercardSession | null;
   private readonly baseUrl: string;
   private readonly agent: string;
   private readonly agentId: string;
-  private readonly cliVersion: string;
+  private readonly clientVersion: string;
   private readonly fetchImpl: typeof fetch;
   private readonly timeoutMs: number;
 
-  constructor(opts: MoonPayClientOptions) {
+  constructor(opts: DextercardOptions) {
     const hasJwt = "jwt" in opts && typeof opts.jwt === "string" && opts.jwt.length > 0;
     const hasSession = "session" in opts && opts.session != null;
     if (hasJwt === hasSession) {
       throw new Error(
-        "MoonPayClient: provide exactly one of { jwt } or { session }",
+        "Dextercard: provide exactly one of { jwt } or { session }",
       );
     }
     this.staticJwt = hasJwt ? (opts as { jwt: string }).jwt : null;
-    this.session = hasSession ? (opts as { session: MoonPaySession }).session : null;
+    this.session = hasSession ? (opts as { session: DextercardSession }).session : null;
     this.baseUrl = (opts.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
     this.agent = opts.agent ?? DEFAULT_AGENT;
     this.agentId = opts.agentId ?? randomUUID();
-    this.cliVersion = opts.cliVersion ?? DEFAULT_CLI_VERSION;
+    this.clientVersion = opts.clientVersion ?? DEFAULT_CLIENT_VERSION;
     this.fetchImpl = opts.fetchImpl ?? fetch;
     this.timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   }
@@ -64,7 +71,7 @@ export class MoonPayClient {
   private async getJwt(): Promise<string> {
     if (this.staticJwt) return this.staticJwt;
     if (this.session) return this.session.getAccessToken();
-    throw new Error("MoonPayClient: no auth source");
+    throw new Error("Dextercard: no auth source");
   }
 
   // -- Account ---------------------------------------------------------------
@@ -143,7 +150,7 @@ export class MoonPayClient {
   // -- Internal --------------------------------------------------------------
 
   /**
-   * Invoke any MoonPay tool by snake_case name. Use this as the escape hatch
+   * Invoke any tool by snake_case name. Use this as the escape hatch
    * for endpoints not yet typed by the client.
    */
   async call<T = unknown>(
@@ -169,7 +176,7 @@ export class MoonPayClient {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${jwt}`,
-          "X-CLI-Version": this.cliVersion,
+          "X-CLI-Version": this.clientVersion,
           "X-Agent": this.agent,
           "X-Agent-Id": this.agentId,
         },
@@ -194,12 +201,12 @@ export class MoonPayClient {
     if (!response.ok) {
       const payload = (isJson && parsed && typeof parsed === "object"
         ? parsed
-        : { error: typeof parsed === "string" ? parsed : `HTTP ${response.status}` }) as MoonPayErrorPayload;
+        : { error: typeof parsed === "string" ? parsed : `HTTP ${response.status}` }) as DextercardErrorPayload;
       throw classifyError(tool, response.status, payload);
     }
 
     if (!isJson) {
-      throw new MoonPayApiError(tool, response.status, {
+      throw new DextercardApiError(tool, response.status, {
         error: `Expected JSON response, got ${contentType || "unknown content-type"}`,
       });
     }

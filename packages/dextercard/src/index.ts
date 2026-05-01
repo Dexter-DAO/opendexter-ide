@@ -1,23 +1,18 @@
-export { MoonPayClient } from "./client.js";
+export { Dextercard } from "./client.js";
 export {
-  MoonPayApiError,
-  MoonPayNoAccountError,
+  DextercardApiError,
+  DextercardNoAccountError,
   classifyError,
-  type MoonPayErrorPayload,
+  type DextercardErrorPayload,
 } from "./errors.js";
-export {
-  MOONPAY_CONFIG_DIR,
-  MOONPAY_JWT_ENV,
-  jwtFromEnv,
-  jwtFromFile,
-} from "./jwt.js";
+export { DEXTERCARD_JWT_ENV, jwtFromEnv, jwtFromFile } from "./jwt.js";
 export {
   MemorySessionStore,
-  MoonPaySession,
+  DextercardSession,
   login,
   refresh,
   verify,
-  type MoonPayAuthOptions,
+  type DextercardAuthOptions,
   type SessionStore,
   type SessionTokens,
 } from "./auth.js";
@@ -27,12 +22,12 @@ export {
 } from "./session-store.js";
 export {
   LoginFlow,
-  MOONPAY_HCAPTCHA_CONFIG,
-  MOONPAY_HCAPTCHA_SITEKEY,
+  DEXTERCARD_HCAPTCHA_CONFIG,
+  DEXTERCARD_HCAPTCHA_SITEKEY,
 } from "./login-flow.js";
 export {
   loadHCaptchaScript,
-  renderMoonPayHCaptcha,
+  renderDextercardHCaptcha,
   type HCaptchaHandle,
   type RenderHCaptchaOptions,
 } from "./hcaptcha-embed.js";
@@ -58,6 +53,6 @@ export type {
   CardWalletEntry,
   CardWalletLinkInput,
   CardWalletUnlinkInput,
-  MoonPayClientOptions,
+  DextercardOptions,
   UserRetrieveResponse,
 } from "./types.js";

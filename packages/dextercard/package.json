@@ -1,7 +1,7 @@
 {
-  "name": "@dexterai/cards-core",
-  "version": "0.2.0",
-  "description": "TypeScript HTTP client for the MoonPay MoonAgents Card API (agents.moonpay.com). Mirrors the public MoonPay CLI's wire format. Used by Dexter to issue and manage MoonAgents Cards programmatically.",
+  "name": "@dexterai/dextercard",
+  "version": "0.3.0",
+  "description": "Dextercard SDK — issue and manage virtual cards for AI agents. Wraps a regulated card-issuance carrier with a clean TypeScript API, self-managed sessions, and a captcha-aware login flow.",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -26,13 +26,13 @@
     "release": "npm version patch && npm publish --access public"
   },
   "keywords": [
-    "moonpay",
-    "moonagents",
-    "card",
+    "dextercard",
     "dexter",
-    "mastercard",
+    "card",
+    "agents",
+    "stablecoin",
     "x402",
-    "stablecoin"
+    "mastercard"
   ],
   "license": "MIT",
   "dependencies": {
@@ -49,6 +49,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Dexter-DAO/opendexter-ide.git",
-    "directory": "packages/cards-core"
+    "directory": "packages/dextercard"
   }
 }

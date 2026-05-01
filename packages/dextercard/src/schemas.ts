@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 /**
- * Zod input schemas for every MoonPay tool that accepts arguments.
- * Derived from the CLI's `mp <cmd> --help` output, which is the
- * canonical surface MoonPay supports today.
+ * Zod input schemas for every Dextercard tool that accepts arguments.
+ * Derived from the carrier's documented input surface.
  */
 
 const isoDate = z

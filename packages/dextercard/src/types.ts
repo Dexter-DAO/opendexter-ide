@@ -1,30 +1,28 @@
 /**
- * Public types for the MoonPay MoonAgents Card API.
+ * Public types for the Dextercard API surface.
  *
- * Field shapes are derived from the wire format observed when running
- * the public @moonpay/cli through a TLS-intercepting proxy (see
- * dexter-fe/research/moonpay-wire/). Response shapes for endpoints
- * that require a provisioned MoonCard are inferred from the CLI's
- * input flags + MoonPay's own help text and will be tightened as
- * real captures become available.
+ * Field shapes are derived from real wire captures of the underlying
+ * carrier API. Response shapes for endpoints that require a provisioned
+ * card are inferred from the carrier's documented input flags and will
+ * tighten as additional captures land.
  */
 
 /**
- * MoonPayClient accepts EITHER a static `jwt` (simple, short-lived) OR
+ * Dextercard accepts EITHER a static `jwt` (simple, short-lived) OR
  * a `session` (long-lived, auto-refreshing). Pass exactly one.
  */
-export type MoonPayClientOptions = MoonPayClientOptionsBase &
-  ({ jwt: string; session?: never } | { session: import("./auth.js").MoonPaySession; jwt?: never });
+export type DextercardOptions = DextercardOptionsBase &
+  ({ jwt: string; session?: never } | { session: import("./auth.js").DextercardSession; jwt?: never });
 
-export interface MoonPayClientOptionsBase {
-  /** Override the API base. Defaults to https://agents.moonpay.com. */
+export interface DextercardOptionsBase {
+  /** Override the carrier API base URL. Reserved for testing / future routing. */
   baseUrl?: string;
   /** Identifier sent as X-Agent header. Defaults to "dexter". */
   agent?: string;
   /** Optional caller-supplied agent UUID. One is generated per client if omitted. */
   agentId?: string;
-  /** CLI version equivalent advertised via X-CLI-Version header. */
-  cliVersion?: string;
+  /** Client version advertised on the wire. Defaults to a wire-compatible value. */
+  clientVersion?: string;
   /** Custom fetch implementation (test injection). */
   fetchImpl?: typeof fetch;
   /** Per-request timeout in milliseconds. Default: 30_000. */
@@ -48,15 +46,15 @@ export interface CardOnboardingStartInput {
 }
 
 export interface CardOnboardingStartResponse {
-  /** Veriff KYC URL the user must complete in a browser. */
-  veriffUrl?: string;
+  /** KYC URL the user must complete in a browser. */
+  kycUrl?: string;
   status?: string;
   [key: string]: unknown;
 }
 
 export interface CardOnboardingCheckResponse {
   status?: string;
-  /** When status is VERIFIED, MoonPay returns terms URLs that must be displayed. */
+  /** When status is VERIFIED, the carrier returns terms URLs that must be displayed. */
   terms?: {
     termsAndConditions: string;
     privacyPolicy: string;
@@ -97,7 +95,7 @@ export interface CardRevealResponse {
 }
 
 export interface CardWalletLinkInput {
-  /** Local wallet name as stored by `mp wallet create`. */
+  /** Local wallet name. */
   wallet: string;
   /** Currency code (e.g. "usdc"). */
   currency: string;

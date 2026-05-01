@@ -1,27 +1,27 @@
 /**
- * MoonPay Agents authentication.
+ * Dextercard authentication.
  *
- * MoonPay exposes its own auth surface at agents.moonpay.com (a thin
- * server-side wrapper over Supabase) so callers don't need MoonPay's
- * Supabase project credentials. Three endpoints:
+ * The carrier exposes a small auth surface so callers don't need its
+ * underlying identity provider's credentials. Three endpoints:
  *
  *   POST /api/tools/login   { email, captchaToken }   → triggers OTP email
  *   POST /api/tools/verify  { email, code }           → returns Session
  *   POST /api/tools/refresh { refreshToken }          → returns Session
  *
  * Sessions consist of:
- *   - accessToken: Supabase JWT, ~1 hour TTL
- *   - refreshToken: opaque MoonPay token, rotated on every refresh
+ *   - accessToken: JWT, ~1 hour TTL
+ *   - refreshToken: opaque token, single-use (rotates on every refresh)
  *   - expiresAt: unix seconds for the accessToken
  *
- * The {@link MoonPaySession} class owns the lifecycle: it fetches a
+ * The {@link DextercardSession} class owns the lifecycle: it fetches a
  * fresh JWT on demand and rotates the refresh token when the API
  * issues a new one. Callers persist the resulting tokens however they
  * want (env vars, encrypted file, KMS, etc.) via {@link SessionStore}.
  */
 
-import { MoonPayApiError, type MoonPayErrorPayload } from "./errors.js";
+import { DextercardApiError, type DextercardErrorPayload } from "./errors.js";
 
+/** Carrier API base URL. Internal — callers should not need to override. */
 const DEFAULT_BASE_URL = "https://agents.moonpay.com";
 const TOOL_PATH_PREFIX = "/api/tools/";
 
@@ -41,7 +41,8 @@ export interface SessionStore {
   clear?(): Promise<void> | void;
 }
 
-export interface MoonPayAuthOptions {
+export interface DextercardAuthOptions {
+  /** Override the carrier API base URL. Reserved for testing / future routing. */
   baseUrl?: string;
   fetchImpl?: typeof fetch;
   /** Per-request timeout in milliseconds. Default: 15_000. */
@@ -96,21 +97,21 @@ async function postJson<T>(
   if (!response.ok) {
     const payload = (parsed && typeof parsed === "object"
       ? parsed
-      : { error: String(parsed) }) as MoonPayErrorPayload;
-    throw new MoonPayApiError(tool, response.status, payload);
+      : { error: String(parsed) }) as DextercardErrorPayload;
+    throw new DextercardApiError(tool, response.status, payload);
   }
   return parsed as T;
 }
 
 /**
- * Trigger an OTP email. MoonPay requires a captcha token from a
- * third-party widget (hCaptcha / Turnstile, depending on deployment).
- * For server-side / automation use, request a captcha bypass when
- * opening a partnership with MoonPay.
+ * Trigger an OTP email. The carrier requires a captcha token from a
+ * third-party widget; pass it through unchanged. For server-side /
+ * automation use, request a captcha bypass when opening a partnership
+ * with the carrier.
  */
 export async function login(
   input: { email: string; captchaToken: string },
-  opts: MoonPayAuthOptions = {},
+  opts: DextercardAuthOptions = {},
 ): Promise<{ ok: true }> {
   const baseUrl = (opts.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
   const fetchImpl = opts.fetchImpl ?? fetch;
@@ -124,7 +125,7 @@ export async function login(
  */
 export async function verify(
   input: { email: string; code: string },
-  opts: MoonPayAuthOptions = {},
+  opts: DextercardAuthOptions = {},
 ): Promise<SessionTokens> {
   const baseUrl = (opts.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
   const fetchImpl = opts.fetchImpl ?? fetch;
@@ -137,10 +138,12 @@ export async function verify(
 /**
  * Mint a fresh access token from a refresh token. The response includes
  * a rotated refresh token; persist it to keep the session alive.
+ * Refresh tokens are single-use — failing to persist the rotated token
+ * will lock the caller out on the next refresh attempt.
  */
 export async function refresh(
   input: { refreshToken: string },
-  opts: MoonPayAuthOptions = {},
+  opts: DextercardAuthOptions = {},
 ): Promise<SessionTokens> {
   const baseUrl = (opts.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
   const fetchImpl = opts.fetchImpl ?? fetch;
@@ -158,26 +161,27 @@ function assertSessionShape(t: unknown): asserts t is SessionTokens {
     typeof (t as SessionTokens).refreshToken !== "string" ||
     typeof (t as SessionTokens).expiresAt !== "number"
   ) {
-    throw new MoonPayApiError("verify_or_refresh", 500, {
-      error: "Unexpected session shape returned by MoonPay",
+    throw new DextercardApiError("verify_or_refresh", 500, {
+      error: "Unexpected session shape returned by carrier",
     });
   }
 }
 
 /**
- * Manages a long-lived MoonPay session. Reads from a {@link SessionStore},
- * proactively refreshes before expiry, and persists rotated tokens back
- * to the store. Safe to share across many calls; concurrent
- * {@link getAccessToken} requests collapse into a single refresh.
+ * Manages a long-lived Dextercard session. Reads from a
+ * {@link SessionStore}, proactively refreshes before expiry, and
+ * persists rotated tokens back to the store. Safe to share across many
+ * calls; concurrent {@link getAccessToken} requests collapse into a
+ * single refresh.
  */
-export class MoonPaySession {
+export class DextercardSession {
   private readonly store: SessionStore;
   private readonly baseUrl: string;
   private readonly fetchImpl: typeof fetch;
   private readonly timeoutMs: number;
   private inflightRefresh: Promise<SessionTokens> | null = null;
 
-  constructor(store: SessionStore, opts: MoonPayAuthOptions = {}) {
+  constructor(store: SessionStore, opts: DextercardAuthOptions = {}) {
     this.store = store;
     this.baseUrl = (opts.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, "");
     this.fetchImpl = opts.fetchImpl ?? fetch;
@@ -201,8 +205,8 @@ export class MoonPaySession {
   async getAccessToken(): Promise<string> {
     const tokens = await this.store.load();
     if (!tokens) {
-      throw new MoonPayApiError("session", 401, {
-        error: "No MoonPay session. Run verify() first.",
+      throw new DextercardApiError("session", 401, {
+        error: "No Dextercard session. Run verify() first.",
       });
     }
     const nowSeconds = Math.floor(Date.now() / 1000);
@@ -217,8 +221,8 @@ export class MoonPaySession {
   async forceRefresh(): Promise<SessionTokens> {
     const tokens = await this.store.load();
     if (!tokens) {
-      throw new MoonPayApiError("session", 401, {
-        error: "No MoonPay session. Run verify() first.",
+      throw new DextercardApiError("session", 401, {
+        error: "No Dextercard session. Run verify() first.",
       });
     }
     return this.coalescedRefresh(tokens.refreshToken);
