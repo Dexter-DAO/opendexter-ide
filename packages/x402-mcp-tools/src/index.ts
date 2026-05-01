@@ -18,8 +18,8 @@
 // Tool registrars
 export { registerSearchTool } from "./tools/search.js";
 export { registerCheckTool } from "./tools/check.js";
-export { registerFetchTool } from "./tools/fetch.js";
-export { registerAccessTool } from "./tools/access.js";
+export { registerFetchTool, x402Fetch } from "./tools/fetch.js";
+export { registerAccessTool, accessWithWalletProof } from "./tools/access.js";
 export { registerWalletTool } from "./tools/wallet.js";
 
 // Compose helper

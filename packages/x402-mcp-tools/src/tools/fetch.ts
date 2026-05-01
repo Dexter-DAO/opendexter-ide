@@ -157,7 +157,7 @@ interface RuntimeFetchOpts {
   maxAmountUsdc: number;
 }
 
-async function x402Fetch(
+export async function x402Fetch(
   params: {
     url: string;
     method: string;

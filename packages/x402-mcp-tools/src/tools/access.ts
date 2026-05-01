@@ -43,7 +43,7 @@ function chooseSiwxChain(
   return supportedChains[0] ?? null;
 }
 
-async function accessWithWalletProof(
+export async function accessWithWalletProof(
   params: { url: string; method: string; body?: string; preferredNetwork?: string },
   wallet: WalletAdapter | null,
 ): Promise<Record<string, unknown>> {

@@ -1,15 +1,18 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { SERVER_INSTRUCTIONS } from "@dexterai/mcp-instructions";
-import { VERSION } from "../config.js";
-import { registerSearchTool } from "../tools/search.js";
-import { registerFetchTool } from "../tools/fetch.js";
-import { registerAccessTool } from "../tools/access.js";
-import { registerCheckTool } from "../tools/check.js";
-import { registerSettingsTool } from "../tools/settings.js";
-import { registerWalletTool } from "../tools/wallet-tool.js";
+import {
+  composeAllTools,
+  buildToolMetas,
+  type WidgetUris,
+} from "@dexterai/x402-mcp-tools";
+import { CAPABILITY_PATH, VERSION, getApiBase } from "../config.js";
 import { loadOrCreateWallet } from "../wallet/index.js";
+import { createNpmWalletAdapter } from "../wallet/adapter.js";
+import { loadSettings } from "../settings.js";
+import { registerSettingsTool } from "../tools/settings.js";
 import { registerWidgetResources } from "../resources/widgets.js";
+import { X402_WIDGET_URIS } from "../widget-uris.js";
 
 export interface ServerOptions {
   transport: "stdio" | "http";
@@ -22,26 +25,49 @@ export async function startServer(opts: ServerOptions): Promise<void> {
     wallet = await loadOrCreateWallet();
   } catch (err: any) {
     console.error(`[dexter-mcp] Wallet initialization failed: ${err.message}`);
-    console.error("[dexter-mcp] Starting in search-only mode. Set DEXTER_PRIVATE_KEY or fix ~/.dexterai-mcp/wallet.json to enable payments.");
+    console.error(
+      "[dexter-mcp] Starting in search-only mode. Set DEXTER_PRIVATE_KEY or fix ~/.dexterai-mcp/wallet.json to enable payments.",
+    );
     wallet = null;
   }
 
   const server = new McpServer(
-    {
-      name: "Dexter x402 Gateway",
-      version: VERSION,
-    },
-    {
-      instructions: SERVER_INSTRUCTIONS,
-    },
+    { name: "Dexter x402 Gateway", version: VERSION },
+    { instructions: SERVER_INSTRUCTIONS },
   );
 
-  registerSearchTool(server, opts);
-  registerFetchTool(server, wallet, opts);
-  registerAccessTool(server, wallet, opts);
-  registerCheckTool(server, opts);
+  // Wire the file-backed local wallet through the shared adapter contract.
+  const walletAdapter = wallet ? createNpmWalletAdapter(wallet) : null;
+
+  // Resolve widget URIs from this package's content-hashed HTML files,
+  // and pass them into the shared registrars via buildToolMetas().
+  const widgetUris: WidgetUris = {
+    search: X402_WIDGET_URIS.search,
+    fetch: X402_WIDGET_URIS.fetch,
+    pricing: X402_WIDGET_URIS.pricing,
+    wallet: X402_WIDGET_URIS.wallet,
+  };
+  const metas = buildToolMetas(widgetUris);
+
+  composeAllTools(server, {
+    apiBaseUrl: getApiBase(opts.dev),
+    capabilityPath: CAPABILITY_PATH,
+    metas,
+    wallet: walletAdapter,
+    // Per-call USDC cap is read from the local settings file. Wrapping in a
+    // callback (rather than passing the value once) lets users update
+    // ~/.dexterai-mcp/settings.json without restarting the server.
+    getMaxAmountUsdc: () => loadSettings().maxAmountUsdc,
+    walletlessHint:
+      "Configure DEXTER_PRIVATE_KEY (Solana) or EVM_PRIVATE_KEY (Base/Polygon/etc) for automatic settlement.",
+    noWalletTip:
+      "Set DEXTER_PRIVATE_KEY (Solana) or EVM_PRIVATE_KEY (EVM) env var, or run `npx @dexterai/opendexter wallet` to create one.",
+  });
+
+  // Settings stays npm-package-specific (filesystem-backed). Hosted servers
+  // do not surface this tool.
   registerSettingsTool(server);
-  registerWalletTool(server, wallet, opts);
+
   registerWidgetResources(server);
 
   if (opts.transport !== "stdio") {
