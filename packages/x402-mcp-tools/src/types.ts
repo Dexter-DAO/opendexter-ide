@@ -5,32 +5,13 @@
  * builds an opts object once and passes it to the registrars. Tools
  * that need session-aware behavior (the wallet helpers, fetch with a
  * specific signer) accept their dependencies through this opts bag
- * rather than reaching into a global, so the same registrar works in
+ * via the WalletAdapter contract, so the same registrar works in
  * every environment.
  */
 
 import type { ToolMetas } from "./widget-meta.js";
+import type { WalletAdapter, GetMaxAmountUsdc } from "./wallet-adapter.js";
 
-/**
- * Wallet handle used by tools that sign or report balances. The shape
- * is intentionally loose because each consumer wires up a different
- * wallet implementation:
- *   - npm CLI: file-based local keypair via @dexterai/opendexter's wallet
- *   - hosted public server: anonymous session-bound wallet
- *   - hosted authed server: Supabase-backed managed wallet
- *
- * The registrars treat the wallet as opaque and only call methods that
- * exist on every implementation. Each consumer is responsible for
- * passing in a wallet object that satisfies whatever the tool expects.
- */
-export type WalletHandle = unknown;
-
-/**
- * Settings tool opts — only used by the npm CLI consumer. The hosted
- * servers don't surface settings (they're filesystem-coupled to a
- * local install). Defined here for completeness; the package does NOT
- * export a registerSettingsTool — settings stays in the npm package.
- */
 export interface ToolBaseOpts {
   /** Resolved API base URL (e.g. https://x402.dexter.cash). No trailing slash. */
   apiBaseUrl: string;
@@ -43,26 +24,46 @@ export interface SearchToolOpts extends ToolBaseOpts {
   capabilityPath?: string;
 }
 
-export interface FetchToolOpts extends ToolBaseOpts {
-  /** Wallet used to sign payment authorizations. */
-  wallet: WalletHandle;
-  /** Optional default max-amount cap in USDC (consumer-specific policy). */
-  defaultMaxAmountUsdc?: number;
-}
-
-export interface AccessToolOpts extends ToolBaseOpts {
-  /** Wallet used to sign access proofs. */
-  wallet: WalletHandle;
-}
-
 export interface CheckToolOpts extends ToolBaseOpts {
   /** Capability search path appended to apiBaseUrl. Default: /api/x402gle/capability */
   capabilityPath?: string;
 }
 
+export interface FetchToolOpts extends ToolBaseOpts {
+  /**
+   * Wallet adapter providing balance, signer, and policy access. Pass
+   * null when the consumer has no signing wallet — the tool then returns
+   * canonical x402 payment requirements instead of attempting auto-pay.
+   */
+  wallet: WalletAdapter | null;
+  /**
+   * Per-call USDC cap callback. Read at call time to honor live setting
+   * changes. Defaults to Number.POSITIVE_INFINITY when omitted.
+   */
+  getMaxAmountUsdc?: GetMaxAmountUsdc;
+  /**
+   * Optional descriptive label used in the registrar's tool description
+   * to differentiate the wallet-bound and walletless modes. Defaults to
+   * a generic message; consumers can override (e.g., "Configure
+   * DEXTER_PRIVATE_KEY..." for the npm CLI).
+   */
+  walletlessHint?: string;
+}
+
+export interface AccessToolOpts extends ToolBaseOpts {
+  /** Wallet adapter that exposes Solana / EVM signers for SIWX. */
+  wallet: WalletAdapter | null;
+}
+
 export interface WalletToolOpts extends ToolBaseOpts {
   /** Wallet whose state is reported to callers. */
-  wallet: WalletHandle;
+  wallet: WalletAdapter | null;
+  /**
+   * Optional one-line "tip" surfaced when no wallet is configured. Lets
+   * the npm CLI show "Set DEXTER_PRIVATE_KEY..." while hosted servers
+   * show "Sign in to provision a managed wallet" or similar.
+   */
+  noWalletTip?: string;
 }
 
 /** Default capability search path on dexter-api. */

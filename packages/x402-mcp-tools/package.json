@@ -35,8 +35,11 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@dexterai/x402": "^2.0.0",
     "@dexterai/x402-core": "^1.3.0",
     "@modelcontextprotocol/sdk": "^1.17.4",
+    "@x402/core": "^2.6.0",
+    "@x402/extensions": "^2.6.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {

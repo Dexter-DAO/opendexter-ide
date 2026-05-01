@@ -3,20 +3,27 @@
  *
  * Shared MCP tool registrations for the Dexter x402 ecosystem.
  *
- * One register*Tool function per tool. Consumers (the npm @dexterai/opendexter
- * CLI, the hosted public MCP server, the hosted authenticated MCP server)
- * import the registrars they need, build an opts bag with their environment-
- * specific dependencies (wallet, api base URL, widget URIs), and call each
- * registrar in their own server bootstrap.
+ * One register*Tool function per tool plus a composeAllTools helper.
+ * Consumers (the npm @dexterai/opendexter CLI, the hosted public MCP
+ * server, the hosted authenticated MCP server) import what they need,
+ * build an opts bag with their environment-specific dependencies
+ * (wallet adapter, api base URL, widget URIs), and call the registrars
+ * from their own server bootstrap.
  *
- * The package depends on @dexterai/x402-core for HTTP/formatting/types and
- * stays free of any consumer-specific concerns: no filesystem reads, no
- * environment variables, no auth flows. Inject what you need through opts.
+ * Depends on @dexterai/x402-core for HTTP/formatting/types and stays
+ * free of any consumer-specific concerns: no filesystem reads, no
+ * environment variables, no auth flows. Inject what you need.
  */
 
 // Tool registrars
 export { registerSearchTool } from "./tools/search.js";
 export { registerCheckTool } from "./tools/check.js";
+export { registerFetchTool } from "./tools/fetch.js";
+export { registerAccessTool } from "./tools/access.js";
+export { registerWalletTool } from "./tools/wallet.js";
+
+// Compose helper
+export { composeAllTools, type ComposeAllToolsOpts } from "./compose.js";
 
 // Widget metadata helpers
 export {
@@ -27,9 +34,18 @@ export {
   type ToolMetas,
 } from "./widget-meta.js";
 
-// Registrar opts types
+// Wallet adapter contract
 export type {
-  WalletHandle,
+  WalletAdapter,
+  WalletInfo,
+  WalletBalances,
+  SolanaSigner,
+  EvmSigner,
+  GetMaxAmountUsdc,
+} from "./wallet-adapter.js";
+
+// Registrar opts
+export type {
   ToolBaseOpts,
   SearchToolOpts,
   CheckToolOpts,
