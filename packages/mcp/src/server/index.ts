@@ -3,16 +3,20 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { SERVER_INSTRUCTIONS } from "@dexterai/mcp-instructions";
 import {
   composeAllTools,
+  composeCardTools,
   buildToolMetas,
+  buildCardToolMetas,
   type WidgetUris,
+  type CardWidgetUris,
 } from "@dexterai/x402-mcp-tools";
 import { CAPABILITY_PATH, VERSION, getApiBase } from "../config.js";
 import { loadOrCreateWallet } from "../wallet/index.js";
 import { createNpmWalletAdapter } from "../wallet/adapter.js";
+import { createNpmCardsAdapter } from "../cards-adapter.js";
 import { loadSettings } from "../settings.js";
 import { registerSettingsTool } from "../tools/settings.js";
 import { registerWidgetResources } from "../resources/widgets.js";
-import { X402_WIDGET_URIS } from "../widget-uris.js";
+import { CARD_WIDGET_URIS, X402_WIDGET_URIS } from "../widget-uris.js";
 
 export interface ServerOptions {
   transport: "stdio" | "http";
@@ -62,6 +66,25 @@ export async function startServer(opts: ServerOptions): Promise<void> {
       "Configure DEXTER_PRIVATE_KEY (Solana) or EVM_PRIVATE_KEY (Base/Polygon/etc) for automatic settlement.",
     noWalletTip:
       "Set DEXTER_PRIVATE_KEY (Solana) or EVM_PRIVATE_KEY (EVM) env var, or run `npx @dexterai/opendexter wallet` to create one.",
+  });
+
+  // Dextercard tools — opt-in surface. The CardsAdapter resolves the
+  // active session lazily on first tool call, so registering them here
+  // costs nothing when no session is configured (handlers gracefully
+  // surface a `no_session` stage with the configured tip).
+  const cardWidgetUris: CardWidgetUris = {
+    status: CARD_WIDGET_URIS.status,
+    issue: CARD_WIDGET_URIS.issue,
+    linkWallet: CARD_WIDGET_URIS.linkWallet,
+  };
+  const cardMetas = buildCardToolMetas(cardWidgetUris);
+  const cardsAdapter = createNpmCardsAdapter();
+
+  composeCardTools(server, {
+    cards: cardsAdapter,
+    metas: cardMetas,
+    noSessionTip:
+      "No Dextercard session. Run `npx @dexterai/opendexter dextercard login` to provision one.",
   });
 
   // Settings stays npm-package-specific (filesystem-backed). Hosted servers

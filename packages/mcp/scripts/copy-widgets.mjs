@@ -24,6 +24,9 @@ const WIDGETS = [
   'x402-fetch-result.html',
   'x402-pricing.html',
   'x402-wallet.html',
+  'card-status.html',
+  'card-issue.html',
+  'card-link-wallet.html',
 ];
 
 const LIVE_SOURCE = process.env.DEXTER_MCP_ROOT

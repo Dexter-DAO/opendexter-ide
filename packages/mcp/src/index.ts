@@ -204,6 +204,44 @@ async function main() {
       },
     )
     .command(
+      "dextercard <subcommand>",
+      "Manage your Dextercard session (login, logout, status, refresh)",
+      (y) =>
+        y
+          .positional("subcommand", {
+            type: "string",
+            choices: ["login", "logout", "status", "refresh"] as const,
+            demandOption: true,
+          })
+          .option("email", {
+            type: "string",
+            description: "Email to receive the OTP (login only)",
+          })
+          .option("yes", {
+            alias: "y",
+            type: "boolean",
+            default: false,
+            description: "Skip confirmation prompts (logout only)",
+          }),
+      async (args) => {
+        const mod = await import("./cli/dextercard.js");
+        switch (args.subcommand) {
+          case "login":
+            await mod.cliDextercardLogin({ email: args.email });
+            break;
+          case "logout":
+            await mod.cliDextercardLogout({ yes: args.yes });
+            break;
+          case "status":
+            await mod.cliDextercardStatus();
+            break;
+          case "refresh":
+            await mod.cliDextercardRefresh();
+            break;
+        }
+      },
+    )
+    .command(
       "pay <url>",
       "Alias of fetch for clients that want an explicit payment verb",
       (y) =>

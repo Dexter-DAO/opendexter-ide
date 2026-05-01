@@ -11,7 +11,7 @@ import { registerAppResource, RESOURCE_MIME_TYPE } from "@modelcontextprotocol/e
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { X402_WIDGET_URIS } from "../widget-uris.js";
+import { CARD_WIDGET_URIS, X402_WIDGET_URIS } from "../widget-uris.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const WIDGETS_DIR = join(__dirname, "..", "widgets");
@@ -54,6 +54,30 @@ const WIDGET_DEFS: WidgetDef[] = [
     name: "x402 Wallet",
     description: "Wallet dashboard with address, USDC/SOL balances, and deposit QR code.",
     file: "x402-wallet.html",
+  },
+  {
+    id: CARD_WIDGET_URIS.status.replace("ui://dexter/", ""),
+    uri: CARD_WIDGET_URIS.status,
+    name: "Dextercard Status",
+    description:
+      "Current card state: stage indicator, account, card metadata, linked wallets, and recent transactions.",
+    file: "card-status.html",
+  },
+  {
+    id: CARD_WIDGET_URIS.issue.replace("ui://dexter/", ""),
+    uri: CARD_WIDGET_URIS.issue,
+    name: "Dextercard Issuance",
+    description:
+      "Stage-aware issuance wizard. Renders the correct next-step UI: identity collection, KYC link, terms acceptance, card creation, or single-use card reveal.",
+    file: "card-issue.html",
+  },
+  {
+    id: CARD_WIDGET_URIS.linkWallet.replace("ui://dexter/", ""),
+    uri: CARD_WIDGET_URIS.linkWallet,
+    name: "Dextercard Wallet Link",
+    description:
+      "Confirms a wallet → card spend authorization with currency, cap, and link status.",
+    file: "card-link-wallet.html",
   },
 ];
 
@@ -130,6 +154,8 @@ export function registerWidgetResources(server: McpServer): void {
                   connectDomains: [
                     "https://x402.dexter.cash",
                     "https://dexter.cash",
+                    // Dextercard widgets may fetch live status updates from the carrier.
+                    "https://agents.moonpay.com",
                   ],
                 },
               },
