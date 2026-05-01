@@ -37,13 +37,79 @@ try {
 
 ## Auth
 
-The client expects a Supabase JWT in the same format MoonPay's CLI uses.
-Today, the canonical way to obtain one is `mp login` (which persists an
-encrypted credential under `~/.config/moonpay/`). Future MoonPay-hosted
-OAuth or SSO flows can drop in via the `jwt` option.
+`@dexterai/cards-core` includes a complete auth stack so callers don't
+need to depend on MoonPay's CLI. Three building blocks:
 
-The client never decrypts the CLI's local credential store. Callers are
-responsible for sourcing the JWT and refreshing it.
+### `LoginFlow`
+
+High-level orchestration. Send the OTP, exchange the code for a session,
+optionally persist into a {@link SessionStore}, and resume across
+processes.
+
+```ts
+import { LoginFlow, EncryptedFileSessionStore, MoonPayClient } from "@dexterai/cards-core";
+
+// Browser flow: render hCaptcha, capture the token from the user, then:
+const flow = new LoginFlow();
+await flow.requestCode({ email: "user@example.com", captchaToken });
+
+// User receives an OTP email. Submit the code:
+const store = new EncryptedFileSessionStore("/path/to/session.enc", machineKey);
+const { session } = await flow.completeWithCode({
+  email: "user@example.com",
+  code: "123456",
+  store,
+});
+
+// On subsequent runs, resume:
+const session = await new LoginFlow().resume(store);
+const client = new MoonPayClient({ session });
+```
+
+### `MoonPaySession`
+
+Long-lived session manager. Reads from a {@link SessionStore},
+proactively refreshes JWTs before expiry, persists rotated refresh
+tokens. Concurrent calls coalesce into a single refresh. The
+`MoonPayClient` 401-retry path uses this to recover transparently
+when a JWT has been rejected mid-flight.
+
+### `EncryptedFileSessionStore`
+
+AES-256-GCM + scrypt encrypted file store. Pass any caller-controlled
+key material (passphrase, machine-bound random, KMS-fetched secret).
+Wrong key returns null instead of corrupting state.
+
+```ts
+const store = new EncryptedFileSessionStore(
+  `${process.env.HOME}/.config/dexter/cards-session.enc`,
+  process.env.DEXTER_SESSION_KEY!,
+);
+```
+
+For environments where you've already protected the storage path with
+filesystem permissions, the simpler `JsonFileSessionStore` writes a
+plaintext 0600-mode file.
+
+### hCaptcha
+
+MoonPay protects the OTP-trigger endpoint with hCaptcha (sitekey
+exported as `MOONPAY_HCAPTCHA_SITEKEY`). For browser callers, use
+`renderMoonPayHCaptcha`:
+
+```ts
+import { renderMoonPayHCaptcha, LoginFlow } from "@dexterai/cards-core";
+
+const widget = await renderMoonPayHCaptcha({ container: divEl });
+const captchaToken = await widget.token;
+widget.destroy();
+
+await new LoginFlow().requestCode({ email, captchaToken });
+```
+
+Server-side / automation: use a captcha-solving service that returns a
+real hCaptcha response token, OR open a partnership with MoonPay to
+request a captcha bypass for service-account flows.
 
 ## Methods
 

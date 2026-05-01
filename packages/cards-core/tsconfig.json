@@ -11,7 +11,8 @@
     "rootDir": "src",
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["node"]
+    "types": ["node"],
+    "lib": ["ES2022", "DOM"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

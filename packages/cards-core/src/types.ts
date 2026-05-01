@@ -9,9 +9,14 @@
  * real captures become available.
  */
 
-export interface MoonPayClientOptions {
-  /** Bearer JWT for the MoonPay user. Sourced from ~/.config/moonpay/. */
-  jwt: string;
+/**
+ * MoonPayClient accepts EITHER a static `jwt` (simple, short-lived) OR
+ * a `session` (long-lived, auto-refreshing). Pass exactly one.
+ */
+export type MoonPayClientOptions = MoonPayClientOptionsBase &
+  ({ jwt: string; session?: never } | { session: import("./auth.js").MoonPaySession; jwt?: never });
+
+export interface MoonPayClientOptionsBase {
   /** Override the API base. Defaults to https://agents.moonpay.com. */
   baseUrl?: string;
   /** Identifier sent as X-Agent header. Defaults to "dexter". */

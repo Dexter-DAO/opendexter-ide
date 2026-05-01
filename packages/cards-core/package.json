@@ -1,6 +1,6 @@
 {
   "name": "@dexterai/cards-core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TypeScript HTTP client for the MoonPay MoonAgents Card API (agents.moonpay.com). Mirrors the public MoonPay CLI's wire format. Used by Dexter to issue and manage MoonAgents Cards programmatically.",
   "type": "module",
   "main": "dist/index.js",

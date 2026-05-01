@@ -12,6 +12,31 @@ export {
   jwtFromFile,
 } from "./jwt.js";
 export {
+  MemorySessionStore,
+  MoonPaySession,
+  login,
+  refresh,
+  verify,
+  type MoonPayAuthOptions,
+  type SessionStore,
+  type SessionTokens,
+} from "./auth.js";
+export {
+  EncryptedFileSessionStore,
+  JsonFileSessionStore,
+} from "./session-store.js";
+export {
+  LoginFlow,
+  MOONPAY_HCAPTCHA_CONFIG,
+  MOONPAY_HCAPTCHA_SITEKEY,
+} from "./login-flow.js";
+export {
+  loadHCaptchaScript,
+  renderMoonPayHCaptcha,
+  type HCaptchaHandle,
+  type RenderHCaptchaOptions,
+} from "./hcaptcha-embed.js";
+export {
   CardOnboardingFinishSchema,
   CardOnboardingStartSchema,
   CardTransactionListSchema,
