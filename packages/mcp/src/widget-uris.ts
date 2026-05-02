@@ -1,14 +1,35 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const WIDGETS_DIR = join(__dirname, "..", "widgets");
+
+/**
+ * Candidate paths where the widget HTML files might live, tried in
+ * order. The build's copy-widgets.mjs places HTML at dist/widgets/,
+ * but in source-mode dev the files may sit alongside the package at
+ * a sibling path. We probe a small set so the hash works regardless
+ * of which layout is active at runtime.
+ */
+const WIDGETS_DIR_CANDIDATES = [
+  join(__dirname, "widgets"),       // built layout: dist/widget-uris.js + dist/widgets/
+  join(__dirname, "..", "widgets"), // legacy / source-mode layout
+];
+
+function resolveWidgetPath(fileName: string): string | null {
+  for (const dir of WIDGETS_DIR_CANDIDATES) {
+    const full = join(dir, fileName);
+    if (existsSync(full)) return full;
+  }
+  return null;
+}
 
 function versionedWidgetUri(baseUri: string, fileName: string): string {
+  const path = resolveWidgetPath(fileName);
+  if (!path) return baseUri;
   try {
-    const html = readFileSync(join(WIDGETS_DIR, fileName), "utf-8");
+    const html = readFileSync(path, "utf-8");
     const hash = createHash("sha1").update(html).digest("hex").slice(0, 8);
     return `${baseUri}-${hash}`;
   } catch {
