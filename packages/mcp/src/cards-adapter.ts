@@ -8,7 +8,17 @@ import {
   EncryptedFileSessionStore,
   LoginFlow,
 } from "@dexterai/dextercard";
-import type { CardsAdapter } from "@dexterai/x402-mcp-tools";
+import {
+  DextercardPairingRequiredError,
+  LocalCardOperations,
+  type CardsAdapter,
+  type CardOperations,
+} from "@dexterai/x402-mcp-tools";
+import {
+  createPairingClient,
+  pairingFilePath,
+  type PairingClient,
+} from "./cards-pairing.js";
 
 /**
  * npm CLI implementation of the CardsAdapter contract.
@@ -80,9 +90,105 @@ export function createNpmCardsAdapter(): NpmCardsAdapter {
   const key = ensureKey(configDir);
   const store = new EncryptedFileSessionStore(sessionPath, key);
 
-  let cached: Dextercard | null = null;
+  // Auto-pairing config. When set, getOperations() will mint a
+  // dexter.cash connector OAuth request_id and throw
+  // DextercardPairingRequiredError on no_session, instead of returning
+  // null and letting the agent surface the static "run npx dextercard
+  // login" tip. The shared registrars catch the error and turn it into
+  // a clean { stage: "auth_required", pairingUrl } tool result.
+  //
+  // Disabled by default for hygiene — set OPENDEXTER_AUTOPAIR=1 (and
+  // optionally OPENDEXTER_API_BASE_URL / OPENDEXTER_PAIRING_CLIENT_ID /
+  // OPENDEXTER_PAIRING_REDIRECT_URI to override) to enable. The
+  // production npm CLI sets this to 1 by default at build time.
+  const pairingEnabled = (process.env.OPENDEXTER_AUTOPAIR || "1").trim() !== "0";
+  const pairingApiBase = (process.env.OPENDEXTER_API_BASE_URL || "https://api.dexter.cash").replace(/\/+$/, "");
+  const pairingClientId = (process.env.OPENDEXTER_PAIRING_CLIENT_ID || "cid_opendexter_open_mcp").trim();
+  const pairingRedirectUri = (process.env.OPENDEXTER_PAIRING_REDIRECT_URI || "https://dexter.cash/connector/auth/done").trim();
+
+  const pairing: PairingClient | null = pairingEnabled
+    ? createPairingClient({
+        apiBaseUrl: pairingApiBase,
+        clientId: pairingClientId,
+        redirectUri: pairingRedirectUri,
+        scope: "dextercard",
+        pairingFilePath: pairingFilePath(configDir),
+      })
+    : null;
+
+  let cachedClient: Dextercard | null = null;
+  let cachedOps: CardOperations | null = null;
   let cachedEmail: string | null = null;
   let resumeAttempted = false;
+  // Per-process throttle so we don't slam dexter-api with poll requests
+  // when a card tool is called repeatedly in quick succession.
+  let lastPollAt = 0;
+  const POLL_THROTTLE_MS = 1000;
+
+  /**
+   * Try to satisfy a pending pairing without minting a fresh one. Returns:
+   *   - CardOperations if the user finished signing in and we just saved
+   *     their tokens (caller can return ops directly)
+   *   - null if there's no pending pairing or it's expired
+   *   - throws DextercardPairingRequiredError if pairing is still pending
+   */
+  async function tryResolvePending(): Promise<CardOperations | null> {
+    if (!pairing) return null;
+    const pending = pairing.load();
+    if (!pending) return null;
+
+    // Throttle polling so a tight loop of tool calls doesn't fan out
+    // into one HTTP request per call.
+    const now = Date.now();
+    if (now - lastPollAt < POLL_THROTTLE_MS) {
+      throw new DextercardPairingRequiredError(pending.loginUrl, pending.requestId);
+    }
+    lastPollAt = now;
+
+    let result;
+    try {
+      result = await pairing.redeem(pending.requestId);
+    } catch {
+      // Network/transient error. Surface the still-active URL so the
+      // user can retry on the next tool call.
+      throw new DextercardPairingRequiredError(pending.loginUrl, pending.requestId);
+    }
+
+    if (result.status === "completed") {
+      // Save the carrier session, drop the pairing capability.
+      store.save(result.dextercard);
+      pairing.clear();
+      cachedClient = null;
+      cachedOps = null;
+      cachedEmail = result.email ?? null;
+      resumeAttempted = false;
+      // Caller will fall through and the next pass through getOperations
+      // will resume from the freshly-saved session.
+      return null;
+    }
+
+    if (result.status === "pending") {
+      throw new DextercardPairingRequiredError(pending.loginUrl, pending.requestId);
+    }
+
+    // not_found / expired / consumed / no_dextercard_session — pairing
+    // is unusable. Drop it and let the caller mint a fresh one.
+    pairing.clear();
+    return null;
+  }
+
+  /**
+   * Mint a fresh pairing and throw the agent-facing error so the user
+   * gets a clickable login URL.
+   */
+  async function mintAndThrow(): Promise<never> {
+    if (!pairing) {
+      // Should not be reached when pairingEnabled is false (caller checks)
+      throw new Error("auto-pairing disabled");
+    }
+    const minted = await pairing.mint();
+    throw new DextercardPairingRequiredError(minted.loginUrl, minted.requestId);
+  }
 
   const adapter: NpmCardsAdapter = {
     state: () => ({
@@ -93,8 +199,11 @@ export function createNpmCardsAdapter(): NpmCardsAdapter {
     }),
     saveSession: (tokens) => {
       store.save(tokens);
-      // Reset cache so the next getClient() resumes fresh.
-      cached = null;
+      // Drop any outstanding pairing — we have a real session now.
+      pairing?.clear();
+      // Reset cache so the next getOperations() resumes fresh.
+      cachedClient = null;
+      cachedOps = null;
       cachedEmail = null;
       resumeAttempted = false;
     },
@@ -103,35 +212,77 @@ export function createNpmCardsAdapter(): NpmCardsAdapter {
         // Clear via the store so it tracks file removal correctly.
         store.clear?.();
       }
-      cached = null;
+      pairing?.clear();
+      cachedClient = null;
+      cachedOps = null;
       cachedEmail = null;
       resumeAttempted = false;
     },
     getStore: () => store,
-    async getClient() {
-      if (cached) return cached;
-      if (resumeAttempted) return null;
-      resumeAttempted = true;
+    async getOperations() {
+      if (cachedOps) return cachedOps;
 
-      const stored = store.load();
-      if (!stored) return null;
-
-      try {
-        const session: DextercardSession = await new LoginFlow().resume(store);
-        cached = new Dextercard({ session, agent: "dexter-cli" });
-        // Lazy-fetch user info to surface a friendly label. Failure here
-        // doesn't invalidate the client.
-        try {
-          const user = await cached.userRetrieve();
-          cachedEmail = user.email ?? null;
-        } catch {
-          /* swallow */
+      // Fast path: try to resume an existing encrypted session.
+      if (!resumeAttempted) {
+        resumeAttempted = true;
+        const stored = store.load();
+        if (stored) {
+          try {
+            const session: DextercardSession = await new LoginFlow().resume(store);
+            cachedClient = new Dextercard({ session, agent: "dexter-cli" });
+            cachedOps = new LocalCardOperations(cachedClient);
+            try {
+              const user = await cachedClient.userRetrieve();
+              cachedEmail = user.email ?? null;
+            } catch {
+              /* swallow */
+            }
+            return cachedOps;
+          } catch {
+            cachedClient = null;
+            cachedOps = null;
+            // Fall through to pairing path.
+          }
         }
-        return cached;
-      } catch {
-        cached = null;
-        return null;
       }
+
+      // Slow path: no resumable session. If auto-pairing is enabled,
+      // either resolve a pending pairing or mint a fresh one. Both
+      // throw DextercardPairingRequiredError to surface a clickable URL.
+      if (!pairing) return null;
+
+      // tryResolvePending throws if pairing still pending; returns null
+      // if there is no usable pending pairing OR if a completed pairing
+      // was just consumed (in which case we should retry the resume now
+      // that store has fresh tokens).
+      const justSaved = (await tryResolvePending()) === null;
+      if (justSaved) {
+        const stored = store.load();
+        if (stored) {
+          // Re-attempt resume with the freshly-saved tokens.
+          try {
+            const session: DextercardSession = await new LoginFlow().resume(store);
+            cachedClient = new Dextercard({ session, agent: "dexter-cli" });
+            cachedOps = new LocalCardOperations(cachedClient);
+            try {
+              const user = await cachedClient.userRetrieve();
+              cachedEmail = user.email ?? null;
+            } catch {
+              /* swallow */
+            }
+            return cachedOps;
+          } catch {
+            cachedClient = null;
+            cachedOps = null;
+            // Fall through and mint anew.
+          }
+        }
+        // Nothing on disk — mint a fresh pairing.
+        await mintAndThrow();
+      }
+
+      // Defensive — tryResolvePending should have thrown if pending.
+      return null;
     },
     describe() {
       return cachedEmail;

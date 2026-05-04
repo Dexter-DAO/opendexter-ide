@@ -6,6 +6,7 @@ import {
   CardOnboardingStartSchema,
 } from "@dexterai/dextercard";
 import type { CardToolOpts } from "../../types.js";
+import { maybeLoginRequiredResult } from "./_remote-failures.js";
 
 /**
  * card_issue — stage-aware Dextercard issuance.
@@ -68,7 +69,7 @@ export function registerCardIssueTool(server: McpServer, opts: CardToolOpts): vo
     },
     async (args) => {
       if (!cards) return wrap({ stage: "no_session", tip: noSessionTip, nextAction: "configure_session" }, meta);
-      const client = await cards.getClient();
+      const client = await cards.getOperations();
       if (!client) return wrap({ stage: "no_session", tip: noSessionTip, nextAction: "configure_session" }, meta);
 
       try {
@@ -191,6 +192,8 @@ export function registerCardIssueTool(server: McpServer, opts: CardToolOpts): vo
           nextAction: "call_card_status",
         }, meta);
       } catch (err: any) {
+        const loginRequired = maybeLoginRequiredResult(err, meta);
+        if (loginRequired) return loginRequired;
         return {
           content: [
             {
@@ -213,7 +216,7 @@ type DetectedStage =
   | "active"
   | "frozen";
 
-async function detectStage(client: import("@dexterai/dextercard").Dextercard): Promise<DetectedStage> {
+async function detectStage(client: import("../../card-operations.js").CardOperations): Promise<DetectedStage> {
   try {
     const card = await client.cardRetrieve();
     const status = String((card as { status?: string }).status ?? "").toLowerCase();

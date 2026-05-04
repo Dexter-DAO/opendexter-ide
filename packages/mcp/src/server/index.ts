@@ -80,11 +80,15 @@ export async function startServer(opts: ServerOptions): Promise<void> {
   const cardMetas = buildCardToolMetas(cardWidgetUris);
   const cardsAdapter = createNpmCardsAdapter();
 
+  // noSessionTip only surfaces when auto-pairing is disabled
+  // (OPENDEXTER_AUTOPAIR=0). In the normal path the adapter throws
+  // DextercardPairingRequiredError instead of returning null, so the
+  // shared registrars surface a clickable pairing URL automatically.
   composeCardTools(server, {
     cards: cardsAdapter,
     metas: cardMetas,
     noSessionTip:
-      "No Dextercard session. Run `npx @dexterai/opendexter dextercard login` to provision one.",
+      "Auto-pairing is disabled (OPENDEXTER_AUTOPAIR=0). Run `npx @dexterai/opendexter dextercard login` to provision a session manually, or unset OPENDEXTER_AUTOPAIR to enable browser-based pairing.",
   });
 
   // Settings stays npm-package-specific (filesystem-backed). Hosted servers

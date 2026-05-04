@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { DextercardNoAccountError } from "@dexterai/dextercard";
 import type { CardToolOpts } from "../../types.js";
+import { maybeLoginRequiredResult } from "./_remote-failures.js";
 
 /**
  * card_status — return everything the agent needs to render the
@@ -35,7 +36,7 @@ export function registerCardStatusTool(server: McpServer, opts: CardToolOpts): v
         return wrap(data, meta);
       }
 
-      const client = await cards.getClient();
+      const client = await cards.getOperations();
       if (!client) {
         const data = { stage: "no_session" as const, tip: noSessionTip };
         return wrap(data, meta);
@@ -104,6 +105,8 @@ export function registerCardStatusTool(server: McpServer, opts: CardToolOpts): v
         };
         return wrap(data, meta);
       } catch (err: any) {
+        const loginRequired = maybeLoginRequiredResult(err, meta);
+        if (loginRequired) return loginRequired;
         return {
           content: [
             {

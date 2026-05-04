@@ -34,6 +34,22 @@ export { registerCardFreezeTool } from "./tools/cards/freeze.js";
 // Dextercard compose helper + adapter contract + widget metas
 export { composeCardTools, type ComposeCardToolsOpts } from "./compose-cards.js";
 export type { CardsAdapter } from "./cards-adapter.js";
+
+// Card operations interface (the small subset of the Dextercard SDK
+// surface that registrars actually call) plus the two reference
+// implementations: a local wrapper around a real Dextercard, and a
+// remote HTTP+HMAC client for hosted servers that don't hold the
+// carrier session in-process.
+export {
+  LocalCardOperations,
+  type CardOperations,
+} from "./card-operations.js";
+export {
+  createRemoteCardOperations,
+  DextercardLoginRequiredError,
+  DextercardPairingRequiredError,
+  type RemoteCardOperationsOptions,
+} from "./remote-card-operations.js";
 export {
   buildCardToolMetas,
   type CardToolMetas,

@@ -102,7 +102,7 @@ export async function cliDextercardLogin(opts: { email?: string }): Promise<void
   // Best-effort: confirm by hitting userRetrieve through the resume path.
   const probe = p.spinner();
   probe.start("Confirming session…");
-  const client = await adapter.getClient();
+  const client = await adapter.getOperations();
   if (!client) {
     probe.stop("Session resume failed (refresh token may already be invalid).");
     p.cancel("Run `opendexter dextercard login` again.");
@@ -149,7 +149,7 @@ export async function cliDextercardStatus(): Promise<void> {
   console.log(JSON.stringify({ hasSession: state.hasSession, path: state.sessionPath }, null, 2));
   if (!state.hasSession) return;
 
-  const client = await adapter.getClient();
+  const client = await adapter.getOperations();
   if (!client) {
     console.log(JSON.stringify({ resumable: false }, null, 2));
     return;

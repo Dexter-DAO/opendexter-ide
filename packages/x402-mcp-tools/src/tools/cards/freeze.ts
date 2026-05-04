@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CardToolOpts } from "../../types.js";
+import { maybeLoginRequiredResult } from "./_remote-failures.js";
 
 /**
  * card_freeze — pause or resume Dextercard transactions.
@@ -29,7 +30,7 @@ export function registerCardFreezeTool(server: McpServer, opts: CardToolOpts): v
     },
     async (args) => {
       if (!cards) return wrap({ ok: false, tip: noSessionTip }, meta, true);
-      const client = await cards.getClient();
+      const client = await cards.getOperations();
       if (!client) return wrap({ ok: false, tip: noSessionTip }, meta, true);
 
       try {
@@ -46,6 +47,8 @@ export function registerCardFreezeTool(server: McpServer, opts: CardToolOpts): v
         };
         return wrap(data, meta);
       } catch (err: any) {
+        const loginRequired = maybeLoginRequiredResult(err, meta);
+        if (loginRequired) return loginRequired;
         return {
           content: [
             { type: "text" as const, text: JSON.stringify({ error: err.message || String(err) }, null, 2) },

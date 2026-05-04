@@ -118,16 +118,23 @@ interface WalletAdapter {
 }
 ```
 
-### `CardsAdapter`
+### `CardsAdapter` and `CardOperations`
 
-Resolves the active Dextercard client (or `null` when no session is configured). Returning `null` makes the card tools no-op gracefully with a configurable hint, instead of erroring.
+Resolves a {@link CardOperations} instance bound to the active user (or `null` when no session is configured). Returning `null` makes the card tools no-op gracefully with a configurable hint, instead of erroring.
 
 ```ts
 interface CardsAdapter {
-  getClient(): Promise<Dextercard | null> | Dextercard | null;
+  getOperations(): Promise<CardOperations | null> | CardOperations | null;
   describe?(): Promise<string | null> | string | null;
 }
 ```
+
+`CardOperations` is the small subset of the Dextercard SDK surface that the registrars actually call — exposed as an interface so consumers can plug in either:
+
+- `LocalCardOperations(dextercardClient)` — wraps a real `Dextercard` instance (npm CLI; any environment that holds the carrier session in-process).
+- `createRemoteCardOperations({ baseUrl, userId, hmacSecret })` — calls a remote `/internal/dextercard/*` HMAC-gated surface (hosted MCP servers that intentionally don't hold carrier sessions in-process). Translates HTTP errors back to the SDK's typed exceptions, so registrars work identically with either adapter.
+
+> **Migrating from 0.2.x:** `getClient(): Dextercard | null` was renamed to `getOperations(): CardOperations | null`. To preserve old behavior, wrap your existing Dextercard with `new LocalCardOperations(dextercard)`.
 
 ### Widget URIs
 

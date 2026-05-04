@@ -5,32 +5,36 @@
  * decrypt a session store, and never hold a JWT directly. Each
  * consumer (npm CLI, hosted public server, hosted authenticated
  * server) provides a {@link CardsAdapter} that returns a ready-to-use
- * {@link Dextercard} bound to the active user, or null when no
+ * {@link CardOperations} bound to the active user, or null when no
  * Dextercard session is configured for this consumer.
  *
  * This keeps the registrars environment-agnostic:
- *   - npm CLI reads the encrypted session store from disk and resumes
- *     a {@link DextercardSession}.
- *   - Hosted public server returns null (anonymous sessions can't
- *     issue cards).
- *   - Hosted authenticated server pulls a service-account JWT from
- *     KMS or builds a per-user session from Supabase auth.
+ *   - npm CLI reads the encrypted session store from disk, resumes a
+ *     `DextercardSession`, builds a `Dextercard`, and wraps it in
+ *     {@link LocalCardOperations}.
+ *   - Hosted public server gets a per-MCP-session bound user id and
+ *     constructs {@link RemoteCardOperations} that calls the
+ *     authenticated `dexter-api /internal/dextercard/*` surface over
+ *     HMAC-signed HTTP — never holds a carrier JWT in-process.
+ *   - Hosted authenticated server pulls a service-account credential
+ *     from secret storage and constructs whichever shape it prefers.
  *
- * Adapters MAY construct a fresh client per call (recommended when
- * the JWT rotates aggressively) or memoize one for the session.
+ * Adapters MAY construct a fresh operations object per call (recommended
+ * when the underlying JWT rotates aggressively) or memoize one.
  */
 
-import type { Dextercard } from "@dexterai/dextercard";
+import type { CardOperations } from "./card-operations.js";
 
 export interface CardsAdapter {
   /**
-   * Resolve the {@link Dextercard} bound to the active user, or null
+   * Resolve the {@link CardOperations} bound to the active user, or null
    * if no Dextercard session is configured for this consumer.
    *
    * Implementations may run async work here (e.g., load + decrypt a
-   * session file, fetch a service credential from a secret manager).
+   * session file, fetch a service credential from a secret manager,
+   * read a per-request user binding from MCP context).
    */
-  getClient(): Promise<Dextercard | null> | Dextercard | null;
+  getOperations(): Promise<CardOperations | null> | CardOperations | null;
 
   /**
    * Optional human-readable label for the active Dextercard account

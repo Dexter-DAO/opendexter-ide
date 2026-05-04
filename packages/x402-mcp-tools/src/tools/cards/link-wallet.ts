@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CardWalletLinkSchema } from "@dexterai/dextercard";
 import type { CardToolOpts } from "../../types.js";
+import { maybeLoginRequiredResult } from "./_remote-failures.js";
 
 /**
  * card_link_wallet — authorize a wallet to fund Dextercard
@@ -34,7 +35,7 @@ export function registerCardLinkWalletTool(server: McpServer, opts: CardToolOpts
     },
     async (args) => {
       if (!cards) return wrap({ ok: false, tip: noSessionTip }, meta, true);
-      const client = await cards.getClient();
+      const client = await cards.getOperations();
       if (!client) return wrap({ ok: false, tip: noSessionTip }, meta, true);
 
       try {
@@ -45,6 +46,8 @@ export function registerCardLinkWalletTool(server: McpServer, opts: CardToolOpts
         });
         return wrap({ ok: true, linked }, meta);
       } catch (err: any) {
+        const loginRequired = maybeLoginRequiredResult(err, meta);
+        if (loginRequired) return loginRequired;
         return {
           content: [
             { type: "text" as const, text: JSON.stringify({ error: err.message || String(err), tool: err.tool }, null, 2) },
