@@ -15,6 +15,7 @@ import { createNpmWalletAdapter } from "../wallet/adapter.js";
 import { createNpmCardsAdapter } from "../cards-adapter.js";
 import { loadSettings } from "../settings.js";
 import { registerSettingsTool } from "../tools/settings.js";
+import { registerCardLoginTools } from "../tools/card-login.js";
 import { registerWidgetResources } from "../resources/widgets.js";
 import { CARD_WIDGET_URIS, X402_WIDGET_URIS } from "../widget-uris.js";
 
@@ -90,6 +91,14 @@ export async function startServer(opts: ServerOptions): Promise<void> {
     noSessionTip:
       "Auto-pairing is disabled (OPENDEXTER_AUTOPAIR=0). Run `npx @dexterai/opendexter dextercard login` to provision a session manually, or unset OPENDEXTER_AUTOPAIR to enable browser-based pairing.",
   });
+
+  // Agent-driven carrier provisioning. Closes the bootstrap gap for users
+  // who haven't yet provisioned a Dextercard session at dexter.cash:
+  // card_login_start hands the agent a MoonPay URL the user opens to
+  // solve the captcha, card_login_complete exchanges the resulting OTP
+  // code for a carrier session, persisted to the same encrypted store
+  // that auto-pairing populates.
+  registerCardLoginTools(server, { cards: cardsAdapter });
 
   // Settings stays npm-package-specific (filesystem-backed). Hosted servers
   // do not surface this tool.
