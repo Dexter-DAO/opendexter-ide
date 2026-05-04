@@ -33,12 +33,127 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { verify } from "@dexterai/dextercard";
 import type { NpmCardsAdapter } from "../cards-adapter.js";
+import { getApiBase } from "../config.js";
 
 export interface CardLoginToolOpts {
   cards: NpmCardsAdapter;
+  /** Whether to register the captcha-bypass card_login_request_otp tool. Default true. */
+  enableCaptchaBypass?: boolean;
+  /** Override the dexter-api base URL the bypass tool calls. Defaults to the package's resolved api base. */
+  apiBaseUrl?: string;
+  /** Use development endpoints instead of production for getApiBase fallback. */
+  dev?: boolean;
 }
 
 export function registerCardLoginTools(server: McpServer, opts: CardLoginToolOpts): void {
+  const enableCaptchaBypass = opts.enableCaptchaBypass !== false;
+  const apiBaseUrl = (opts.apiBaseUrl || getApiBase(opts.dev || false)).replace(/\/+$/, "");
+
+  if (enableCaptchaBypass) {
+    server.tool(
+      "card_login_request_otp",
+      "Trigger a Dextercard one-time code email WITHOUT requiring the user to solve a captcha. " +
+        "Calls dexter-api's authorized partner endpoint, which solves the carrier's hCaptcha server-side and asks the carrier to send the OTP. " +
+        "Use this as the FIRST step of agent-driven Dextercard provisioning when the user wants the smoothest possible flow (zero browser tabs to open). " +
+        "After this returns ok, ASK THE USER for the 6-digit code that appeared in their email, then call card_login_complete with {email, code}. " +
+        "If this returns captcha_solver_not_configured or captcha_solve_failed, fall back to card_login_start (which hands the user a MoonPay URL to solve the captcha themselves).",
+      {
+        email: z
+          .string()
+          .email()
+          .describe("Email address the carrier should send the OTP to. The agent should ASK THE USER for this — don't guess."),
+      },
+      async (args) => {
+        try {
+          const res = await fetch(`${apiBaseUrl}/api/dextercard/login-no-captcha`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: args.email.trim() }),
+          });
+          const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+
+          if (!res.ok) {
+            return {
+              content: [
+                {
+                  type: "text" as const,
+                  text: JSON.stringify(
+                    {
+                      stage: "request_otp_failed",
+                      status: res.status,
+                      error: json.error || `HTTP ${res.status}`,
+                      message: json.message || json.tip || null,
+                      fallback:
+                        "If this is captcha_solver_not_configured or captcha_solve_failed, retry by calling card_login_start({email}) to get a manual MoonPay URL the user can open in their browser.",
+                    },
+                    null,
+                    2,
+                  ),
+                },
+              ],
+              structuredContent: {
+                stage: "request_otp_failed" as const,
+                error: String(json.error || `HTTP ${res.status}`),
+              },
+              isError: true,
+            } as any;
+          }
+
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify(
+                  {
+                    stage: "otp_sent",
+                    email: args.email,
+                    solveTimeMs: json.solveTimeMs,
+                    provider: json.provider,
+                    instructions: [
+                      `An OTP code has been sent to ${args.email}.`,
+                      "Ask the user to check their email inbox (including spam folder).",
+                      "When they tell you the 6-digit code, call card_login_complete with {email, code} to finish.",
+                    ],
+                    nextAction: "ask_user_for_otp_then_call_card_login_complete",
+                  },
+                  null,
+                  2,
+                ),
+              },
+            ],
+            structuredContent: {
+              stage: "otp_sent" as const,
+              email: args.email,
+            },
+          } as any;
+        } catch (err: any) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify(
+                  {
+                    stage: "request_otp_failed",
+                    error: err?.message || String(err),
+                    fallback:
+                      "Network error calling dexter-api. Retry once, or call card_login_start({email}) for the manual fallback flow.",
+                  },
+                  null,
+                  2,
+                ),
+              },
+            ],
+            structuredContent: {
+              stage: "request_otp_failed" as const,
+              error: err?.message || String(err),
+            },
+            isError: true,
+          } as any;
+        }
+      },
+    );
+  }
+
   server.tool(
     "card_login_start",
     "Begin agent-driven Dextercard provisioning. Returns a MoonPay login URL the user must open in their browser. " +
