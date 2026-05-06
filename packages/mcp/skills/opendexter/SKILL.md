@@ -18,6 +18,24 @@ Anytime the user wants to:
 
 If the user mentions `x402`, `OpenDexter`, `dexter.cash`, `open.dexter.cash/mcp`, paid APIs, USDC payments for APIs, or pasting a URL that returns 402 — this skill applies.
 
+## Hosted vs local — which mode am I on?
+
+OpenDexter ships in two flavors. Most of the surface is identical; a few tools and instructions differ. **Detect mode from the tool list before answering setup questions.**
+
+| Mode | URL / install | Wallet model | Tools that exist |
+|---|---|---|---|
+| **Hosted MCP** | `https://open.dexter.cash/mcp` (added as a connector in Claude.ai, ChatGPT, Cursor, etc.) | Session-managed by the gateway. The user pairs through dexter.cash; `x402_wallet` returns the session's funded balances. | `x402_search`, `x402_check`, `x402_fetch`, `x402_pay`, `x402_access`, `x402_wallet`, `card_status`, `card_issue`, `card_link_wallet`, `card_freeze` (10 tools) |
+| **Local npx** | `npx @dexterai/opendexter` (Claude Code, Cursor, Codex, Windsurf, Gemini CLI) | Local file at `~/.dexterai-mcp/wallet.json` (override with `DEXTER_PRIVATE_KEY` / `EVM_PRIVATE_KEY`). | All hosted tools **plus** `x402_settings`, `card_login_request_otp`, `card_login_complete` (13 tools) |
+
+**Quick detection rule**: if `x402_settings` is registered in the available tools, you're on **local npx**. If it isn't, you're on **hosted**. Same applies to `card_login_request_otp`/`card_login_complete`.
+
+Setup advice depends on mode:
+
+- **Hosted**: never tell the user to set environment variables, edit `~/.dexterai-mcp/settings.json`, or run a CLI command. They paired through dexter.cash; that's all the bootstrap they need.
+- **Local npx**: the wallet file lives at `~/.dexterai-mcp/wallet.json`. Spend cap edits go in `~/.dexterai-mcp/settings.json` (or call `x402_settings`). Env-var override available for production keys.
+
+When in doubt, run `x402_wallet` — it'll tell you whether you have a session and where to deposit.
+
 ## Tools, in the order they should be used
 
 ### 1. `x402_search` — Find APIs
@@ -84,7 +102,12 @@ Some endpoints require a wallet signature (Sign-In-With-X) instead of a per-call
 
 ### 6. `x402_wallet` — Multi-chain wallet
 
-Creates or resumes the local session, then returns deposit addresses and USDC balances across **Solana, Base, Polygon, Arbitrum, Optimism, Avalanche**. (The facilitator additionally settles on **BSC** and **SKALE** when the endpoint requires those chains.)
+Returns deposit addresses and USDC balances across **Solana, Base, Polygon, Arbitrum, Optimism, Avalanche**. (The facilitator additionally settles on **BSC** and **SKALE** when an endpoint requires those chains.)
+
+What "the wallet" means depends on mode:
+
+- **Hosted**: the session wallet managed by the gateway, provisioned when the user paired through dexter.cash. Funded by deposits to the addresses this tool returns.
+- **Local npx**: the file at `~/.dexterai-mcp/wallet.json`, or whatever key is in `DEXTER_PRIVATE_KEY` / `EVM_PRIVATE_KEY` if those env vars are set.
 
 Use it:
 
@@ -94,9 +117,11 @@ Use it:
 
 If a balance is zero, proactively show the deposit address and tell the user to fund before attempting the call.
 
-### 7. `x402_settings` *(local npm install only)*
+### 7. `x402_settings` *(local npx only)*
 
-Read or update the per-call USDC cap that gates automatic payments. Hosted at `~/.dexterai-mcp/settings.json`. Hot-reloaded — no restart needed after a change.
+Read or update the per-call USDC cap that gates automatic payments. Backed by `~/.dexterai-mcp/settings.json` and hot-reloaded — no restart needed after a change.
+
+**This tool does not exist on the hosted server.** If you're on hosted and the user wants to change spend limits, direct them to dexter.cash account settings.
 
 ## Dextercard tools
 
@@ -108,7 +133,7 @@ Returns the current account stage so the agent knows which next step to suggest.
 
 | Stage | Meaning | Next step |
 |---|---|---|
-| `no_session` | No Dextercard session paired | Direct user to `card_login_request_otp` (npm) or to the pairing URL surfaced by the tool |
+| `no_session` | No Dextercard session paired | **Local npx**: call `card_login_request_otp`, then `card_login_complete`. **Hosted**: surface the pairing URL the tool returns and tell the user to complete pairing on dexter.cash. |
 | `onboarding_required` | Session exists, account not started | Call `card_issue` with `step: "auto"` |
 | `pending_kyc` | KYC submitted, awaiting verification | Wait, then re-check |
 | `pending_finalize` | KYC passed, address/terms not submitted | Call `card_issue` with `step: "auto"` |
@@ -135,9 +160,11 @@ Pre-condition: card must be `active`. Post-condition: linked wallets show up in 
 
 Pass `frozen: true` to freeze, `frozen: false` to resume. Returns updated metadata.
 
-### `card_login_request_otp` / `card_login_complete` *(local npm install only)*
+### `card_login_request_otp` / `card_login_complete` *(local npx only)*
 
-Bootstrap a Dextercard session from inside the agent. `card_login_request_otp` returns a MoonPay URL the user opens in a browser to solve a captcha. `card_login_complete` exchanges the resulting OTP for a persisted session. After this completes, all `card_*` tools work as if the user had paired through dexter.cash.
+Bootstrap a Dextercard session from inside the agent without leaving the chat. `card_login_request_otp` returns a MoonPay URL the user opens in a browser to solve a captcha. `card_login_complete` exchanges the resulting OTP for a persisted session. After this completes, all `card_*` tools work as if the user had paired through dexter.cash.
+
+**Hosted users don't need these tools.** When `card_status` returns `no_session` on hosted, it returns a clickable pairing URL — surface that URL to the user and tell them to complete pairing on dexter.cash. After they pair, `card_status` will return `onboarding_required` (or further) and the standard `card_issue` flow continues.
 
 ## Workflow patterns
 
@@ -210,7 +237,19 @@ Endpoints declare which chains they accept; `x402_check` shows you the full per-
 
 ## Quick install
 
-Local npm install (Claude Code, Cursor, Codex, Windsurf, Gemini CLI):
+### Hosted MCP (recommended for most users)
+
+Add a single URL as a connector — no install, no env vars, no wallet file. Works in Claude.ai, ChatGPT, Cursor, and any MCP-compatible client.
+
+```
+https://open.dexter.cash/mcp
+```
+
+In Claude.ai: Settings → Connectors → Add custom connector, paste the URL. The first time `card_status` or `x402_wallet` runs, it'll surface a pairing URL to dexter.cash for one-time setup.
+
+### Local npx (for terminal-native agents)
+
+Best for Claude Code, Cursor, Codex, Windsurf, and Gemini CLI when you want the wallet on your own machine.
 
 ```bash
 npx @dexterai/opendexter
@@ -229,22 +268,16 @@ Or wire it into an MCP client config:
 }
 ```
 
-Hosted MCP (Claude.ai, ChatGPT, Cursor, any MCP-compatible client):
-
-```
-https://open.dexter.cash/mcp
-```
-
-Add as a hosted connector and skip the install entirely.
+The wallet lives at `~/.dexterai-mcp/wallet.json`. Override with `DEXTER_PRIVATE_KEY` (Solana) or `EVM_PRIVATE_KEY` (EVM chains) env vars for production keys. Spend cap lives in `~/.dexterai-mcp/settings.json` or via the `x402_settings` tool.
 
 ## Key behaviors to remember
 
 - **Search is semantic.** Typos and synonyms are handled. Describe what you want in plain English.
 - **Don't filter by chain in the query** — the ranker does that for you.
 - **Always run `x402_check` before the first paid call** to a new URL so the user sees the price.
-- **The wallet lives at `~/.dexterai-mcp/wallet.json`** for the local install. Override with `DEXTER_PRIVATE_KEY` (Solana) or `EVM_PRIVATE_KEY` (EVM chains) env vars.
+- **Detect mode before giving setup advice.** If `x402_settings` is in the tool list you're on local npx; otherwise hosted. Don't tell hosted users to set env vars or edit JSON files.
 - **Insufficient funds = soft failure.** Re-route to `x402_wallet` and surface the deposit address.
-- **Card tools fail loud on missing session.** When `card_status` returns `no_session`, run `card_login_request_otp` (local) or surface the pairing URL the tool returns (hosted).
+- **Card tools fail loud on missing session.** When `card_status` returns `no_session`, run `card_login_request_otp` (local npx) or surface the pairing URL the tool returns (hosted).
 - **After settlement, link the explorer URL** for the chain that paid (see table under `x402_fetch`).
 
 ## For API sellers
