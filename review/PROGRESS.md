@@ -95,13 +95,14 @@ boundary. **No P0.**
   capture of the post-finish `cardOnboardingCheck()` response (its
   `[key: string]: unknown` shape may already carry a distinguishing field),
   OR use the idempotent finish call as the probe. → Session 5.
-- **P1-2** the `@dexterai/x402` dep bump. **Part (a)** — bump `^2.0.0` →
-  `^3.2.1` in `packages/mcp` + `packages/x402-mcp-tools` — is **verified
-  safe** (`wrapFetch` signature + `/client` exports identical 2.1.0↔3.2.1)
-  but NOT yet applied: it's a 2-package dep change + reinstall + lockfile
-  churn into the published package, held for explicit go-ahead. **Part (b)**
-  — diff the 3.x SDK API against the 5 SDK skills' code examples — is the
-  real work, unchanged from Session 2's P1-4. → its own pass / Session 5.
+- **P1-2 part (a) — DONE.** `@dexterai/x402` bumped `^2.0.0` → `^3.2.1` in
+  both `packages/mcp` + `packages/x402-mcp-tools`; reinstalled (resolves
+  3.2.1), both typecheck clean, full mcp unit suite green (22 pass / 1
+  network test skipped / 0 fail). Also fixed a long-dead SIWX test that had
+  been broken since commit `6f71e5e` (wrong import path) — surfaced by the
+  bump, not caused by it. **Part (b)** — diff the 3.x SDK API against the 5
+  SDK skills' code examples — is the real remaining work, unchanged from
+  Session 2's P1-4. → its own pass / Session 5.
 
 ---
 

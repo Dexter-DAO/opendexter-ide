@@ -218,10 +218,11 @@ describe("siwx access flow", () => {
     const { Keypair } = await import("@solana/web3.js");
     const { declareSIWxExtension, SOLANA_MAINNET } = await import("@x402/extensions/sign-in-with-x");
     const { encodePaymentRequiredHeader } = await import("@x402/core/http");
-    const { accessWithWalletProof } = await import("../src/tools/access.js");
+    const { accessWithWalletProof } = await import("@dexterai/x402-mcp-tools");
+    const { createNpmWalletAdapter } = await import("../src/wallet/adapter.js");
 
     const keypair = Keypair.generate();
-    const wallet = {
+    const loadedWallet = {
       info: {
         solanaPrivateKey: (await import("bs58")).default.encode(keypair.secretKey),
         solanaAddress: keypair.publicKey.toBase58(),
@@ -230,6 +231,9 @@ describe("siwx access flow", () => {
       solanaKeypair: keypair,
       status: "created" as const,
     };
+    // accessWithWalletProof consumes the WalletAdapter contract, not the
+    // raw file-backed LoadedWallet — wrap it the same way the server does.
+    const wallet = createNpmWalletAdapter(loadedWallet);
 
     const declaration = declareSIWxExtension({
       domain: "example.com",

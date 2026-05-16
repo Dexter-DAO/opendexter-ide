@@ -242,16 +242,24 @@ correctly; carry it.
   local MCP CLI; the hosted MCP at `open.dexter.cash/mcp` remains the
   HTTP/streamable surface. Both packages typecheck green.
 
-### Verified, ready, but NOT yet applied — P1-2 part (a)
+### P1-2 part (a) — DONE.
 
-The `@dexterai/x402` dep bump (`^2.0.0` → `^3.2.1`) is **verified safe** —
-`wrapFetch`'s signature and the `/client` exports are identical between the
-installed 2.1.0 and 3.2.1, so `tools/fetch.ts` won't break. It is a
-two-package dependency change + a reinstall + a `package-lock.json` churn
-that flows into the published npm package, so it is held for explicit
-go-ahead rather than bundled with the source fixes. Apply: bump in both
-`packages/mcp/package.json` and `packages/x402-mcp-tools/package.json`,
-`npm install`, typecheck.
+The `@dexterai/x402` dep bump (`^2.0.0` → `^3.2.1`) is **applied** in both
+`packages/mcp` and `packages/x402-mcp-tools`. `npm install` resolved
+`@dexterai/x402@3.2.1`; both packages typecheck clean; the full mcp unit
+suite passes (22 passed, 1 network-integration test skipped, 0 failed). The
+`wrapFetch` API was verified compatible up front and the runtime confirmed it.
+
+**Bonus — fixed a long-dead test.** The SIWX test in `mcp.test.ts` had been
+broken since commit `6f71e5e` (the migration that moved `accessWithWalletProof`
+into `@dexterai/x402-mcp-tools`): the test still imported it from the local
+`../src/tools/access.js`, which only exports `cliAccess` — so it threw
+`accessWithWalletProof is not a function` on every run, masked because the
+suite was usually run with a name filter. Fixed: import from the package,
+and wrap the file-backed `LoadedWallet` in `createNpmWalletAdapter` (the
+function now consumes the `WalletAdapter` contract, not the raw wallet). The
+SIWX flow is once again actually tested. This was not caused by the bump —
+the bump just surfaced it.
 
 ### Carried — P1-1 (needs a wire capture before it can be fixed)
 
