@@ -16,10 +16,13 @@ no unbounded spend. The MCP runtime has a real live-reloadable spend cap, a
 real balance check, correct file perms, non-destructive corruption handling,
 and keys that never cross the tool boundary. The installer is solid
 engineering (backups, merges, idempotent). The skills are mostly accurate.
-The competitive position is genuinely strong on the two axes that matter —
-**cross-facilitator coverage** and **curation** — and the nearest "rival,"
-the CDP Bazaar, turned out to be a facilitator discovery extension OpenDexter
-already crawls, not a competing product.
+The competitive position is genuinely strong: the headline advantage is the
+**skills synthesis pipeline** (`04-competitive.md` §1.5, added on revision) —
+OpenDexter automatically turns every crawled x402 endpoint into a verified,
+drop-in agent tool, which no competitor does. Plus **cross-facilitator
+coverage** and an **open + AI-verified** catalog (not a walled garden). The
+nearest "rival," the CDP Bazaar, turned out to be a facilitator discovery
+extension OpenDexter already crawls, not a competing product.
 
 **So this is a polish-and-sharpen list, not a rescue.** Most of the work
 already happened in-session — Sessions 1, 2, and 3 fixed their quick wins as
@@ -199,15 +202,22 @@ The carried list is short. A sensible single fix-session sweep:
    config change, arguably a separate track from the plugin fixes.
 6. **P3-a/b/c** — opportunistic; P3-b needs a live Cursor, P3-c is internal.
 
-**One thing that is NOT on this list and should be:** the highest-ROI move
-from S4 is not a code fix at all — it's **making the curation + superset
-story legible** (lead every surface with "every x402 endpoint across every
-facilitator, quality-scored and gaming-checked"). That's a
-positioning/marketing action for the README, the landing page, the skill
-intro, and `SERVER_INSTRUCTIONS` (P1-a is the agent-facing slice of it). It
-belongs in whoever owns OpenDexter's external messaging, not the code-fix
-queue — but it is the single most valuable outcome of this review, so it is
-recorded here explicitly.
+**The single highest-ROI move is NOT on this code-fix list, by design.**
+Per `04-competitive.md` (revised §1.5 + Weakness 3), OpenDexter's real moat
+is the **skills synthesis pipeline** — it automatically turns every crawled
+endpoint into a verified, drop-in agent tool — and its real weakness is that
+**nobody has seen it work** (the proof gap). The fix is a *demonstration*,
+not code: an honest side-by-side — same task, "make an agent call and pay
+for an x402 API it has never seen," one column hand-wiring an integration,
+the other pasting an OpenDexter-synthesized tool definition and completing a
+real paid call — plus a cold-start demo (an endpoint nobody manually added,
+already a verified OpenDexter skill). This is a **separate workstream**:
+spec the demo (real endpoints from the live catalog, script, recording
+setup), then cut the video. It belongs with whoever owns OpenDexter's
+external proof/marketing, not the code-fix queue — but it is the single
+most valuable outcome of this review, so it is recorded here explicitly.
+`SERVER_INSTRUCTIONS` (P1-a) is the agent-facing slice of the same "make the
+moat visible" goal; the demo is the human-facing slice.
 
 ---
 
