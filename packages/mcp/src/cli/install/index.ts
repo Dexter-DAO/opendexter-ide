@@ -15,13 +15,37 @@ interface InstallOpts {
   skipWalletSetup?: boolean;
 }
 
+/**
+ * Render a client's MCP entry as a Codex-style TOML `[mcp_servers.opendexter]`
+ * block. Used for clients we can't safely auto-edit (TOML config), so the
+ * "manual" path still hands the user an exact block to paste instead of
+ * leaving them to figure out the format.
+ */
+function renderTomlBlock(entry: Record<string, unknown>): string {
+  const command = typeof entry.command === "string" ? entry.command : "npx";
+  const args = Array.isArray(entry.args) ? entry.args : [];
+  const argsToml = args.map((a) => JSON.stringify(String(a))).join(", ");
+  return [
+    "[mcp_servers.opendexter]",
+    `command = ${JSON.stringify(command)}`,
+    `args = [${argsToml}]`,
+  ].join("\n");
+}
+
 function writeClientConfig(clientId: ClientId, dev: boolean): { ok: boolean; message: string } {
   const config = getClientConfig(clientId, dev);
 
   if (config.manual) {
+    // We don't auto-edit TOML configs. Hand the user the exact block to
+    // paste rather than just naming the file and walking away.
     return {
       ok: false,
-      message: `${CLIENTS[clientId].name} requires manual configuration at ${config.configPath}`,
+      message: [
+        `${CLIENTS[clientId].name} uses a TOML config that the installer does not edit automatically.`,
+        `Add this block to ${config.configPath}:`,
+        "",
+        renderTomlBlock(config.entry),
+      ].join("\n"),
     };
   }
 
@@ -44,7 +68,7 @@ function writeClientConfig(clientId: ClientId, dev: boolean): { ok: boolean; mes
   }
 
   const section = (existing[config.sectionKey] as Record<string, unknown>) || {};
-  section["dexter-x402"] = config.entry;
+  section["opendexter"] = config.entry;
   existing[config.sectionKey] = section;
 
   writeFileSync(config.configPath, JSON.stringify(existing, null, 2) + "\n");
@@ -105,7 +129,7 @@ function installCursorPlugin(dev: boolean): { ok: boolean; message: string } {
 
   writeFileSync(
     join(target, "mcp.json"),
-    JSON.stringify({ mcpServers: { "dexter-x402": mcpEntry } }, null, 2) + "\n",
+    JSON.stringify({ mcpServers: { opendexter: mcpEntry } }, null, 2) + "\n",
   );
 
   const skillCount = existsSync(join(target, "skills"))

@@ -71,7 +71,7 @@ This scans your machine for supported MCP clients and installs OpenDexter into e
 ```json
 {
   "mcpServers": {
-    "dexter-x402": {
+    "opendexter": {
       "command": "npx",
       "args": ["-y", "@dexterai/opendexter@latest"]
     }
@@ -85,12 +85,12 @@ This scans your machine for supported MCP clients and installs OpenDexter into e
 npx @dexterai/opendexter install --client claude-code
 ```
 
-Manual MCP-only (no skills): `claude mcp add dexter-x402 -- npx -y @dexterai/opendexter@latest`
+Manual MCP-only (no skills): `claude mcp add opendexter -- npx -y @dexterai/opendexter@latest`
 
 **Codex** — `~/.codex/config.toml`:
 
 ```toml
-[mcp_servers.dexter-x402]
+[mcp_servers.opendexter]
 command = "npx"
 args = ["-y", "@dexterai/opendexter@latest"]
 ```

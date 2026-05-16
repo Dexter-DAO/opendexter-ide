@@ -27,39 +27,55 @@
 
 ## Install
 
-### Claude Code
+There are two ways to run OpenDexter. **Hosted** is the fastest: nothing to
+install, and the wallet is a session you fund with a QR code. **Local** runs
+the MCP server on your machine with a self-custodied wallet key.
+
+### Hosted (no install)
+
+Add the hosted MCP server to any MCP client's config. There is nothing to
+download; you pair and fund a session wallet at `dexter.cash`.
+
+```json
+{
+  "mcpServers": {
+    "opendexter": {
+      "url": "https://open.dexter.cash/mcp"
+    }
+  }
+}
+```
+
+That is the whole setup. Skip to [Fund your wallet](#fund-your-wallet).
+
+### Local (self-custody)
+
+Runs `@dexterai/opendexter` on your machine; the wallet key lives in
+`~/.dexterai-mcp/wallet.json`.
+
+**Claude Code.** Install the plugin (skills, rules, agent, commands, and
+the MCP server). Do not also add the hosted or local server by hand. The
+plugin already includes it.
 
 ```bash
 claude plugins marketplace add Dexter-DAO/opendexter-ide
 claude plugins install opendexter
 ```
 
-### Cursor
+**Cursor**
 
 ```bash
 npx @dexterai/opendexter install --client cursor
 ```
 
-Or add manually to `~/.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "opendexter": {
-      "command": "npx",
-      "args": ["-y", "@dexterai/opendexter"]
-    }
-  }
-}
-```
-
-### Any MCP Client
+**Any other MCP client.** The installer covers Codex, VS Code, Windsurf,
+and Gemini CLI:
 
 ```bash
-npx @dexterai/opendexter
+npx @dexterai/opendexter install --client <codex|vscode|windsurf|gemini-cli>
 ```
 
-Add this to your client's MCP config:
+Or add the server to your client's MCP config by hand:
 
 ```json
 {
@@ -71,6 +87,18 @@ Add this to your client's MCP config:
   }
 }
 ```
+
+### Fund your wallet
+
+A paid call needs USDC. After install, fund whichever wallet you are using:
+
+- **Hosted:** pair the session at `dexter.cash` and fund it with the QR code.
+- **Local:** send USDC (Solana or Base) to the address printed during
+  install, or run the `card_issue` tool to set up a Dextercard and fund
+  calls from that.
+
+Your agent can call `x402_wallet` at any time to show the address and
+current balance.
 
 ---
 

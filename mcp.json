@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "dexter-x402": {
+    "opendexter": {
       "command": "npx",
       "args": ["-y", "@dexterai/opendexter@latest"]
     }

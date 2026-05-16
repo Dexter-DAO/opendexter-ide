@@ -19,7 +19,7 @@ npx @dexterai/x402-discovery install
 ```json
 {
   "mcpServers": {
-    "dexter-x402": {
+    "opendexter": {
       "command": "npx",
       "args": ["-y", "@dexterai/x402-discovery@latest"]
     }

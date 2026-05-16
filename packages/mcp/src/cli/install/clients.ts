@@ -98,6 +98,12 @@ export function getClientConfig(client: ClientId, dev: boolean): ClientConfig {
       };
 
     case "claude-code":
+      // DEAD PATH — DO NOT route claude-code through writeClientConfig().
+      // runInstall() intercepts claude-code before this is reached and uses
+      // the `claude` CLI to install the plugin (skills + rules + agent +
+      // commands + MCP) instead. Writing a raw MCP entry to ~/.claude.json
+      // here would double-load the server alongside the plugin. This case
+      // exists only so the ClientId switch is exhaustive; keep it inert.
       return {
         configPath: join(homedir(), ".claude.json"),
         sectionKey: "mcpServers",

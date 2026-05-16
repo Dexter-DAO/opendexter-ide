@@ -42,7 +42,7 @@ If the installer doesn't support your client, add this to your MCP config:
 ```json
 {
   "mcpServers": {
-    "dexter-x402": {
+    "opendexter": {
       "command": "npx",
       "args": ["-y", "@dexterai/opendexter@latest"]
     }
