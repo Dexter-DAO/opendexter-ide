@@ -4,7 +4,7 @@
 OpenDexter plugin review. The full plan is in `../REVIEW-PLAN.md`; per-session
 findings are in `01-onboarding.md`, `02-skills-tools.md`, etc.
 
-**Last updated:** 2026-05-16 (Session 3 audit complete)
+**Last updated:** 2026-05-16 (Sessions 3 & 4 complete)
 
 ---
 
@@ -19,9 +19,9 @@ get carried to the synthesis (Session 5).
 |---|---|
 | 1 — Install & onboarding | **DONE + fixed + committed** (commit on `main`) |
 | 2 — Skills & tools | **DONE + fixed + committed** (commit on `main`) |
-| 3 — Technical / code audit | **DONE — audited, P2s fixed, 2 items carried** |
-| 4 — Competitive comparison | **NOT STARTED — this is next** |
-| 5 — Synthesis & prioritized fix list | not started |
+| 3 — Technical / code audit | **DONE — audited, P2s fixed, P1-2(a) done, 1 carried** |
+| 4 — Competitive comparison | **DONE — 04-competitive.md written** |
+| 5 — Synthesis & prioritized fix list | **NOT STARTED — this is next** |
 
 All work is committed to `opendexter-ide` `main`. **Nothing pushed yet** —
 push at a natural break or when the user asks.
@@ -106,14 +106,46 @@ boundary. **No P0.**
 
 ---
 
-## NEXT: Session 4 — Competitive comparison
+## Session 4 — DONE. What it found
 
-Goal (from REVIEW-PLAN.md): how does OpenDexter stack up against the other
-x402 discovery/payment tools? Use the competitive intel already gathered:
-`dexter-api/docs/competitive-intel/INTERFACE_COMPARISON_2026-05-15.md`.
-Competitive set: x402 Bazaar, Agentic.market, Agentcash, Pay.sh. Recon
-already found OpenDexter's edges (hosted MCP, ~2,000 catalog, multi-chain)
-and weaknesses (no MPP support, USDC-only). Write `review/04-competitive.md`.
+Full analysis in `04-competitive.md`. Key correction made mid-session:
+**"x402 Bazaar" is not a competitor product** — it is an x402 facilitator
+*discovery extension* (published as `@x402/extensions/bazaar`). Code-verified:
+Dexter's own facilitator implements it (`registerExtension({ key: "bazaar" })`)
+and OpenDexter's `bazaarCrawler` crawls every facilitator's Bazaar (Coinbase,
+PayAI, Ultraviolet, ZAUTH). So OpenDexter's corpus is a structural *superset*
+of any single facilitator's catalog.
+
+- **Real competitor products:** Agentcash + Pay.sh (shipped, code-audited).
+  Coinbase's presence = a facilitator + the Agentic.market UI, not a packaged
+  rival tool.
+- **OpenDexter's two structural wins** (both true by construction, both
+  under-sold): crawls *every* facilitator's Bazaar; *curates* (quality score
+  + gaming detection + human gate) where others just list.
+- **Two weaknesses:** no MPP (Agentcash/Pay.sh have it; Coinbase ecosystem
+  also x402-only — track MPP-only-endpoint share, decide later); USDC-only
+  (cheap env-allowlist fix — add PYUSD if on-chain demand exists).
+- **Carry to Session 5 as P1:** rewrite `SERVER_INSTRUCTIONS`
+  (`@dexterai/mcp-instructions`) to a prescriptive SOP shape — Pay.sh is the
+  benchmark; OpenDexter's is descriptive-only. Cheap, prose, real agent-UX win.
+
+---
+
+## NEXT: Session 5 — Synthesis & prioritized fix list
+
+Goal (from REVIEW-PLAN.md): consolidate Sessions 1-4 into one prioritized
+action list — P0/P1/P2/P3, each with what/why/effort/which-surface. This is
+the doc that drives the separate *fix* phase. Write `review/05-synthesis.md`.
+
+Inputs to fold in: the carried items across all four findings docs —
+- S1: `--all` false-positives, Cursor double-MCP-write live check, stale
+  `ARCHITECTURE.md` diagram.
+- S2: P2 prose (only `opendexter` + `x402-protocol` skills worth it).
+- S3: **P1-1** card stage `not_issued` gap (needs a wire capture first);
+  **P1-2(b)** the SDK-skill 3.x accuracy diff (the real remaining SDK work);
+  P2-1 dead `headers` plumbing in `x402Fetch`.
+- S4: rewrite `SERVER_INSTRUCTIONS` to SOP shape; add PYUSD to allowlist if
+  demand exists; the curation/superset legibility framing.
 
 ---
 
