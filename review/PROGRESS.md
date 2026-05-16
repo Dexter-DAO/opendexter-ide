@@ -4,7 +4,7 @@
 OpenDexter plugin review. The full plan is in `../REVIEW-PLAN.md`; per-session
 findings are in `01-onboarding.md`, `02-skills-tools.md`, etc.
 
-**Last updated:** 2026-05-16 (Sessions 3 & 4 complete)
+**Last updated:** 2026-05-16 (ALL 5 SESSIONS COMPLETE — review done)
 
 ---
 
@@ -17,11 +17,16 @@ get carried to the synthesis (Session 5).
 
 | Session | State |
 |---|---|
-| 1 — Install & onboarding | **DONE + fixed + committed** (commit on `main`) |
-| 2 — Skills & tools | **DONE + fixed + committed** (commit on `main`) |
-| 3 — Technical / code audit | **DONE — audited, P2s fixed, P1-2(a) done, 1 carried** |
+| 1 — Install & onboarding | **DONE + fixed + committed** |
+| 2 — Skills & tools | **DONE + fixed + committed** |
+| 3 — Technical / code audit | **DONE — audited, P2s fixed, P1-2(a) done** |
 | 4 — Competitive comparison | **DONE — 04-competitive.md written** |
-| 5 — Synthesis & prioritized fix list | **NOT STARTED — this is next** |
+| 5 — Synthesis & prioritized fix list | **DONE — 05-synthesis.md written** |
+
+**The review is complete.** The prioritized fix list lives in
+`05-synthesis.md` — that is the doc that drives the separate fix phase.
+11 findings already fixed in-session + committed; 10 carried (0 P0, 3 P1,
+4 P2, 3 P3). Read `05-synthesis.md` first when starting fix work.
 
 All work is committed to `opendexter-ide` `main`. **Nothing pushed yet** —
 push at a natural break or when the user asks.
@@ -131,28 +136,41 @@ of any single facilitator's catalog.
 
 ---
 
-## NEXT: Session 5 — Synthesis & prioritized fix list
+## Session 5 — DONE. The review is complete.
 
-Goal (from REVIEW-PLAN.md): consolidate Sessions 1-4 into one prioritized
-action list — P0/P1/P2/P3, each with what/why/effort/which-surface. This is
-the doc that drives the separate *fix* phase. Write `review/05-synthesis.md`.
+`05-synthesis.md` is the prioritized fix list — read it first before any fix
+work. Final tally: **0 P0, 3 P1, 4 P2, 3 P3** carried; 11 findings already
+fixed in-session.
 
-Inputs to fold in: the carried items across all four findings docs —
-- S1: `--all` false-positives, Cursor double-MCP-write live check, stale
-  `ARCHITECTURE.md` diagram.
-- S2: P2 prose (only `opendexter` + `x402-protocol` skills worth it).
-- S3: **P1-1** card stage `not_issued` gap (needs a wire capture first);
-  **P1-2(b)** the SDK-skill 3.x accuracy diff (the real remaining SDK work);
-  P2-1 dead `headers` plumbing in `x402Fetch`.
-- S4: rewrite `SERVER_INSTRUCTIONS` to SOP shape; add PYUSD to allowlist if
-  demand exists; the curation/superset legibility framing.
+The carried P1s:
+- **P1-a** rewrite `SERVER_INSTRUCTIONS` to a prescriptive SOP shape (highest
+  leverage, ready, effort M).
+- **P1-b** diff the 5 SDK skills against `@dexterai/x402@3.2.x` (the real
+  remaining SDK work, ready, effort M-L).
+- **P1-c** the card `not_issued` state-machine gap — **blocked**: needs a
+  wire capture of a post-finish `cardOnboardingCheck()` response before it
+  can be fixed correctly. Do not ship a guess on a KYC path.
+
+Plus the non-code highest-ROI item: make the **curation + superset** story
+legible across every surface (positioning, not a code fix — P1-a is its
+agent-facing slice).
+
+---
+
+## NEXT: the fix phase (separate from this review)
+
+The review is done. The next phase executes `05-synthesis.md`. Suggested
+sweep (detail in that doc): P1-a first → P2-b/c/d together → P1-b as its own
+block → P1-c once the wire capture lands → P2-a after the on-chain PYUSD
+check → P3s opportunistically. Out of scope and recorded only: MPP support
+(track as a metric), Dextercard spend-policy depth (Dextercard roadmap).
 
 ---
 
 ## Reference
 
 - Plan: `../REVIEW-PLAN.md`
-- Competitive intel already done: `dexter-api/docs/competitive-intel/
-  INTERFACE_COMPARISON_2026-05-15.md` (use in Session 4).
-- The recon found OpenDexter's edges (hosted MCP, ~2,000 catalog, multi-chain)
-  and weaknesses (no MPP support, USDC-only) — detail in REVIEW-PLAN.md.
+- Findings docs: `01-onboarding.md`, `02-skills-tools.md`, `03-technical.md`,
+  `04-competitive.md` — and `05-synthesis.md`, the consolidated fix list.
+- Competitive intel base: `dexter-api/docs/competitive-intel/
+  INTERFACE_COMPARISON_2026-05-15.md`.
