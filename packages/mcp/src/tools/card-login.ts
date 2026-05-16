@@ -159,7 +159,7 @@ export function registerCardLoginTools(server: McpServer, opts: CardLoginToolOpt
     "Begin agent-driven Dextercard provisioning. Returns a MoonPay login URL the user must open in their browser. " +
       "They solve the carrier's hCaptcha there (we cannot solve captchas from MCP — carrier policy), click Continue, and the carrier emails them a one-time code. " +
       "Once the user reads the code from their email, the agent calls `card_login_complete` with {email, code} to finish. " +
-      "Use this tool ONLY when card_status returns `no_dextercard_session` after a successful pairing — i.e., the user has signed in to dexter.cash but has never provisioned a carrier session. For users who already have a session, the auto-pairing flow handles everything.",
+      "Use this tool ONLY when card_status returns stage `no_session` — i.e., the user has signed in to dexter.cash but has never provisioned a carrier session. For users who already have a session, the auto-pairing flow handles everything.",
     {
       email: z
         .string()

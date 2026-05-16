@@ -5,7 +5,7 @@ description: "Use OpenDexter to find and pay for x402 APIs from any AI agent. Tr
 
 # OpenDexter
 
-OpenDexter is the public x402 gateway for AI agents. One MCP server, one wallet, eight chains. Search thousands of paid APIs, see the price before paying, call any of them with automatic USDC settlement, and (optionally) drive a real Dextercard from the same surface.
+OpenDexter is the public x402 gateway for AI agents: one MCP server and one wallet that works across eight chains. From it an agent can search thousands of paid APIs, see the price before paying, call any of them with automatic USDC settlement, and optionally drive a Dextercard from the same surface.
 
 ## When to use this skill
 
@@ -82,8 +82,9 @@ Calls the endpoint and pays automatically from the local wallet. Returns the API
 |---|---|---|
 | `url` | string | The x402 resource URL |
 | `method` | string | HTTP method (default GET) |
-| `body` | any | Request body for POST/PUT (object or string) |
-| `headers` | object | Optional custom headers |
+| `body` | string | JSON request body for POST/PUT |
+| `maxAmountUsdc` | number | Optional per-call spend cap, overrides the default for this one call |
+| `multipart` | object | For file uploads. POSTs `multipart/form-data` instead of JSON; carries `fields` (text) and `files` (read from disk). POST/PUT only, 200 MB max. |
 
 If the wallet has no USDC, the call fails. Run `x402_wallet` first, surface the deposit address for the right chain, and tell the user to fund. Then retry.
 
@@ -162,9 +163,26 @@ Pass `frozen: true` to freeze, `frozen: false` to resume. Returns updated metada
 
 ### `card_login_request_otp` / `card_login_complete` *(local npx only)*
 
-Bootstrap a Dextercard session from inside the agent without leaving the chat. `card_login_request_otp` returns a MoonPay URL the user opens in a browser to solve a captcha. `card_login_complete` exchanges the resulting OTP for a persisted session. After this completes, all `card_*` tools work as if the user had paired through dexter.cash.
+Bootstrap a Dextercard session from inside the agent without leaving the chat.
 
-**Hosted users don't need these tools.** When `card_status` returns `no_session` on hosted, it returns a clickable pairing URL — surface that URL to the user and tell them to complete pairing on dexter.cash. After they pair, `card_status` will return `onboarding_required` (or further) and the standard `card_issue` flow continues.
+`card_login_request_otp` is the smooth path: it solves the carrier's captcha
+server-side and asks the carrier to email the user a one-time code. No browser
+tab. After it returns ok, ask the user for the 6-digit code from their email,
+then call `card_login_complete` with `{email, code}` to persist the session.
+
+If `card_login_request_otp` returns `captcha_solver_not_configured` or
+`captcha_solve_failed`, fall back to `card_login_start` — that one returns a
+MoonPay URL the user opens to solve the captcha themselves, after which they
+still get an OTP email and you still finish with `card_login_complete`.
+
+Once `card_login_complete` succeeds, all `card_*` tools work as if the user
+had paired through dexter.cash.
+
+**Hosted users don't need these tools.** When `card_status` returns
+`no_session` on hosted, it returns a clickable pairing URL — surface that URL
+to the user and tell them to complete pairing on dexter.cash. After they pair,
+`card_status` returns `onboarding_required` (or further) and the standard
+`card_issue` flow continues.
 
 ## Workflow patterns
 
