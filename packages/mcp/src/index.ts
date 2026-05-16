@@ -15,7 +15,7 @@ async function main() {
       "Start the MCP server (default)",
       (y) =>
         y.option("transport", {
-          choices: ["stdio", "http"] as const,
+          choices: ["stdio"] as const,
           default: "stdio" as const,
           description: "Transport mode",
         }),

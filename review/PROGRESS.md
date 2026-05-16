@@ -4,7 +4,7 @@
 OpenDexter plugin review. The full plan is in `../REVIEW-PLAN.md`; per-session
 findings are in `01-onboarding.md`, `02-skills-tools.md`, etc.
 
-**Last updated:** 2026-05-16
+**Last updated:** 2026-05-16 (Session 3 audit complete)
 
 ---
 
@@ -19,8 +19,8 @@ get carried to the synthesis (Session 5).
 |---|---|
 | 1 — Install & onboarding | **DONE + fixed + committed** (commit on `main`) |
 | 2 — Skills & tools | **DONE + fixed + committed** (commit on `main`) |
-| 3 — Technical / code audit | **NOT STARTED — this is next** |
-| 4 — Competitive comparison | not started |
+| 3 — Technical / code audit | **DONE — audited, P2s fixed, 2 items carried** |
+| 4 — Competitive comparison | **NOT STARTED — this is next** |
 | 5 — Synthesis & prioritized fix list | not started |
 
 All work is committed to `opendexter-ide` `main`. **Nothing pushed yet** —
@@ -71,25 +71,48 @@ those 5 skills. Do this as part of Session 3 or as a dedicated pass.
 
 ---
 
-## NEXT: Session 3 — Technical / code audit
+## Session 3 — DONE. What was found + fixed
 
-Goal (from REVIEW-PLAN.md): is the MCP server + packages correct, safe, clean?
-Audit-first — write `review/03-technical.md`, fix quick P1s, carry big ones.
+Full findings in `03-technical.md`. The runtime is **money-safe and
+well-architected** — real spend cap (live-reloadable, $5 default), real
+balance check before paying, `0o600`/`0o700` file perms, non-destructive
+corrupted-wallet handling (backs up to `.bak`), keys never cross the tool
+boundary. **No P0.**
 
-Scope:
-- The x402 payment flow: `x402_fetch` — balance checks, settlement, error
-  handling, the per-call spend cap (`x402_settings`).
-- Wallet custody: file-backed `~/.dexterai-mcp/wallet.json` vs hosted session.
-  Key handling, corruption detection.
-- Card tools: the OTP login flow (`card_login_*`), KYC, PAN/CVV reveal path.
-- Dead code, error-handling gaps, security (key exposure, injection).
-- The `http` transport is "not yet implemented" — real gap or fine?
-- **Fold in P1-4** — the `@dexterai/x402` 2.x→3.x version skew + SDK-skill
-  accuracy check belongs naturally with the technical audit.
+**Fixed in-session (committed, both packages typecheck green):**
+- **P2-2** `card-login.ts` file header rewrote to document all three login
+  tools — `card_login_request_otp` (preferred, zero-tab) was missing.
+- **P2-3** `http` removed from the `--transport` CLI `choices` (it just
+  exited 1); `ServerOptions.transport` tightened to `"stdio"`, dead exit
+  branch removed.
 
-Key files: `packages/mcp/src/` (server, tools, wallet, cards-adapter),
-`packages/x402-mcp-tools/src/` (the shared tool registrars),
-`packages/mcp/test/mcp.test.ts` (existing test coverage).
+**Carried — two items, both real, neither silent:**
+- **P1-1** `card_status` + `card_issue detectStage` cannot represent
+  "onboarding finished, card not yet created" — both collapse it into
+  `pending_finalize`, so a finished user is told to finalize again.
+  CANNOT be fixed surgically: `@dexterai/dextercard@0.5.0`'s
+  `CardOnboardingCheckResponse` has no `finalized` field. Needs a wire
+  capture of the post-finish `cardOnboardingCheck()` response (its
+  `[key: string]: unknown` shape may already carry a distinguishing field),
+  OR use the idempotent finish call as the probe. → Session 5.
+- **P1-2** the `@dexterai/x402` dep bump. **Part (a)** — bump `^2.0.0` →
+  `^3.2.1` in `packages/mcp` + `packages/x402-mcp-tools` — is **verified
+  safe** (`wrapFetch` signature + `/client` exports identical 2.1.0↔3.2.1)
+  but NOT yet applied: it's a 2-package dep change + reinstall + lockfile
+  churn into the published package, held for explicit go-ahead. **Part (b)**
+  — diff the 3.x SDK API against the 5 SDK skills' code examples — is the
+  real work, unchanged from Session 2's P1-4. → its own pass / Session 5.
+
+---
+
+## NEXT: Session 4 — Competitive comparison
+
+Goal (from REVIEW-PLAN.md): how does OpenDexter stack up against the other
+x402 discovery/payment tools? Use the competitive intel already gathered:
+`dexter-api/docs/competitive-intel/INTERFACE_COMPARISON_2026-05-15.md`.
+Competitive set: x402 Bazaar, Agentic.market, Agentcash, Pay.sh. Recon
+already found OpenDexter's edges (hosted MCP, ~2,000 catalog, multi-chain)
+and weaknesses (no MPP support, USDC-only). Write `review/04-competitive.md`.
 
 ---
 

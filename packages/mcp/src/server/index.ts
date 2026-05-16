@@ -20,7 +20,7 @@ import { registerWidgetResources } from "../resources/widgets.js";
 import { CARD_WIDGET_URIS, X402_WIDGET_URIS } from "../widget-uris.js";
 
 export interface ServerOptions {
-  transport: "stdio" | "http";
+  transport: "stdio";
   dev: boolean;
 }
 
@@ -105,11 +105,6 @@ export async function startServer(opts: ServerOptions): Promise<void> {
   registerSettingsTool(server);
 
   registerWidgetResources(server);
-
-  if (opts.transport !== "stdio") {
-    console.error("HTTP transport not yet implemented. Use --transport=stdio");
-    process.exit(1);
-  }
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

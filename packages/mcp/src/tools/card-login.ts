@@ -1,17 +1,30 @@
 /**
  * Agent-driven Dextercard provisioning.
  *
- * Two MCP tools that let an agent walk a user through provisioning a
+ * Three MCP tools that let an agent walk a user through provisioning a
  * Dextercard session entirely through the conversation, no terminal
- * commands required:
+ * commands required. There are two ways to trigger the OTP email —
+ * request_otp (preferred) and start (fallback) — and one tool to
+ * exchange the code:
  *
- *   card_login_start   →  Hand the agent a MoonPay login URL the user
- *                         opens in a browser. They solve the carrier's
- *                         hCaptcha there (we can't solve captchas from
- *                         an MCP tool, by carrier policy) and click
+ *   card_login_request_otp →  The preferred first step. Calls
+ *                         dexter-api's authorized partner endpoint,
+ *                         which solves the carrier's hCaptcha
+ *                         server-side and asks the carrier to send the
+ *                         OTP. The user opens zero browser tabs. Gated
+ *                         behind enableCaptchaBypass (default on); if
+ *                         the server-side solve is unavailable the tool
+ *                         tells the agent to fall back to
+ *                         card_login_start.
+ *
+ *   card_login_start   →  The fallback. Hands the agent a MoonPay login
+ *                         URL the user opens in a browser. They solve
+ *                         the carrier's hCaptcha there and click
  *                         Continue. MoonPay sends an OTP email. No
  *                         server-side state — this tool is just a URL
- *                         template + instructions.
+ *                         template + instructions. Use when
+ *                         card_login_request_otp returns
+ *                         captcha_solver_not_configured / _solve_failed.
  *
  *   card_login_complete →  Agent receives the OTP code from the user
  *                         (after they read it from email) and calls
@@ -26,8 +39,7 @@
  * This closes the bootstrap gap: combined with the auto-pairing flow
  * that landed in 1.10.0, an agent can now take a brand-new user from
  * "I want a Dextercard" to "card issued" entirely through MCP tool
- * calls + two browser tabs the user opens (one for dexter.cash sign-in,
- * one for MoonPay captcha) and one OTP code paste.
+ * calls — zero browser tabs on the request_otp path, one OTP code paste.
  */
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
