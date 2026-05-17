@@ -63,7 +63,14 @@ function extractPriceUsdc(accept: Record<string, unknown>): number | null {
   return amount / Math.pow(10, decimals);
 }
 
-async function evaluatePaymentRequirements(
+/**
+ * Money-safety gate for x402_fetch. Given the 402 `accepts` array, the
+ * wallet, and the per-call USDC cap, decides whether any payment option
+ * is both within policy (price <= cap) and funded (balance >= price).
+ * Exported so it can be unit-tested directly — it is the single most
+ * important spend-safety check on the paid path.
+ */
+export async function evaluatePaymentRequirements(
   wallet: WalletAdapter,
   requirements: Record<string, unknown> | null,
   effectiveMaxAmount: number,
@@ -177,11 +184,16 @@ export async function x402Fetch(
   const requestHeaders: Record<string, string> = {
     ...(params.headers || {}),
   };
-  if (!isMultipart) {
+  if (isMultipart) {
+    // fetch must set Content-Type itself so the multipart boundary is
+    // correct. Drop any caller-supplied Content-Type (any casing) so a
+    // stray header cannot corrupt the upload.
+    for (const key of Object.keys(requestHeaders)) {
+      if (key.toLowerCase() === "content-type") delete requestHeaders[key];
+    }
+  } else {
     requestHeaders["Content-Type"] = "application/json";
   }
-  // When multipart, deliberately do NOT set Content-Type — fetch sets it
-  // with the multipart boundary itself.
 
   const fetchOpts: RequestInit = {
     method: params.method || "GET",
@@ -332,6 +344,15 @@ export function registerFetchTool(server: McpServer, opts: FetchToolOpts): void 
       .default("GET")
       .describe("HTTP method"),
     body: z.string().optional().describe("JSON request body for POST/PUT"),
+    headers: z
+      .record(z.string())
+      .optional()
+      .describe(
+        "Optional custom request headers, e.g. an Authorization or X-API-Key " +
+          "header for an endpoint whose authMode is apiKey or apiKey+paid. " +
+          "Content-Type is managed automatically (JSON, or the multipart " +
+          "boundary) — do not set it here.",
+      ),
     maxAmountUsdc: z
       .number()
       .positive()
@@ -382,6 +403,7 @@ export function registerFetchTool(server: McpServer, opts: FetchToolOpts): void 
     url: string;
     method: "GET" | "POST" | "PUT" | "DELETE";
     body?: string;
+    headers?: Record<string, string>;
     maxAmountUsdc?: number;
     multipart?: MultipartInput;
   }) => {
@@ -392,6 +414,7 @@ export function registerFetchTool(server: McpServer, opts: FetchToolOpts): void 
           url: args.url,
           method: args.method,
           body: args.body,
+          headers: args.headers,
           multipart: args.multipart,
         },
         wallet,

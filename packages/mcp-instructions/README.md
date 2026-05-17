@@ -10,10 +10,17 @@ implementations in the Dexter stack:
 2. **Local npm-installable server** `@dexterai/opendexter`
    (source: `~/websites/opendexter-ide/packages/mcp/src/server/index.ts`)
 
-Both servers must send the same workflow guidance in their
-`initialize` response `instructions` field. Before this package,
-those two codebases drifted — the hosted server had the guidance,
-the npm package did not.
+Both servers must send the same instructions in their `initialize`
+response `instructions` field. Before this package, those two
+codebases drifted — the hosted server had the guidance, the npm
+package did not.
+
+The instructions string is written as a **prescriptive operating
+procedure**: explicit intent-to-tool routing, failure recipes keyed
+to the real error strings the tools return, the Dextercard stage
+machine, and a short safety model. It is deliberately not a
+descriptive feature list — an agent follows a procedure far more
+reliably.
 
 ## Usage
 

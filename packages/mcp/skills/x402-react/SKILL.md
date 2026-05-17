@@ -139,7 +139,7 @@ function DataDashboard() {
         <div>
           {tiers.map(t => (
             <button key={t.id} onClick={() => purchasePass(t.id)} disabled={isPurchasing}>
-              {t.label} — ${t.price}
+              {t.label}: ${t.price}
             </button>
           ))}
         </div>

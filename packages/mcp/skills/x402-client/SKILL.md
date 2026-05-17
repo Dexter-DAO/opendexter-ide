@@ -5,13 +5,13 @@ description: "Integrate x402 payments into any Node.js or browser application us
 
 # @dexterai/x402 Client SDK
 
-Add automatic x402 payment handling to any application. The client detects 402 responses, signs a USDC payment, and retries — all transparently.
+Add automatic x402 payment handling to any application. The client detects 402 responses, signs a USDC payment, and retries, all transparently.
 
 ```bash
 npm install @dexterai/x402
 ```
 
-## Pattern 1: wrapFetch (Simplest — Recommended for Node.js)
+## Pattern 1: wrapFetch (simplest, recommended for Node.js)
 
 One function, wraps `fetch`, handles everything:
 
@@ -83,7 +83,7 @@ const response = await client.fetch('https://x402-api.example.com/data');
 | `verbose` | boolean | Debug logging |
 | `accessPass` | AccessPassClientConfig | Access pass configuration |
 | `onPaymentRequired` | (requirements) => boolean \| Promise<boolean> | Pre-payment callback |
-| `maxRetries` | number | Retry attempts for transient failures (default 0). Safe — EIP-3009 nonces prevent double payments. |
+| `maxRetries` | number | Retry attempts for transient failures (default 0). Safe: EIP-3009 nonces prevent double payments. |
 | `retryDelayMs` | number | Base delay between retries in ms (default 500, doubles each attempt) |
 
 ### Multi-chain with EVM
@@ -174,7 +174,7 @@ const response = await x402Fetch(url);
 const recs = getSponsoredRecommendations(response);
 if (recs) {
   for (const rec of recs) {
-    console.log(`${rec.sponsor}: ${rec.description} — ${rec.resourceUrl}`);
+    console.log(`${rec.sponsor}: ${rec.description} (${rec.resourceUrl})`);
   }
   await fireImpressionBeacon(response); // Confirm delivery to ad network
 }
@@ -212,11 +212,11 @@ The client caches the JWT access pass per host and sends it as `Authorization: B
 Search the Dexter marketplace for paid APIs:
 
 ```typescript
-import { searchAPIs } from '@dexterai/x402/client';
+import { capabilitySearch } from '@dexterai/x402/client';
 
-const result = await searchAPIs({ query: 'get ETH spot price' });
+const result = await capabilitySearch({ query: 'get ETH spot price' });
 for (const api of result.strongResults) {
-  console.log(`${api.name}: ${api.price} — ${api.why}`);
+  console.log(`${api.name}: ${api.price} (${api.why})`);
 }
 ```
 
@@ -266,7 +266,7 @@ try {
 | `createKeypairWallet` | Create Solana wallet from private key (async) |
 | `createEvmKeypairWallet` | Create EVM wallet from private key (async) |
 | `createBudgetAccount` | Autonomous agent with spending controls |
-| `searchAPIs` | Semantic search over the x402 marketplace |
+| `capabilitySearch` | Semantic search over the x402 marketplace |
 | `getSponsoredRecommendations` | Extract sponsored recs from payment response |
 | `getSponsoredAccessInfo` | Get full sponsored-access extension data |
 | `fireImpressionBeacon` | Confirm sponsored rec delivery to ad network |

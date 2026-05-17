@@ -352,6 +352,87 @@ describe("install config", () => {
   });
 });
 
+// ── Payment Policy Gate Tests ─────────────────────────────────────────────
+//
+// evaluatePaymentRequirements is the spend-safety filter on the paid path:
+// given a 402 `accepts` array, the wallet, and the per-call USDC cap, it
+// decides whether any option is within policy (price <= cap) AND funded
+// (balance >= price). These tests exercise the real exported function with
+// a fake WalletAdapter, not a re-implementation.
+
+describe("payment policy gate", () => {
+  // Minimal WalletAdapter: only getAvailableUsdc is exercised by
+  // evaluatePaymentRequirements. The rest satisfy the type with stubs.
+  function fakeWallet(balances: Record<string, number>) {
+    return {
+      getInfo: () => ({}),
+      getAvailableUsdc: async (network: string) => balances[network] ?? 0,
+      getAllBalances: async () => ({ totalUsdc: 0, chains: {} }),
+      getPaymentSigners: () => ({}),
+      getSolanaSigner: () => null,
+      getEvmSigner: () => null,
+    };
+  }
+
+  // Build a 402 requirements object. amount is in base units; with the
+  // default 6 decimals, "100000" => $0.10.
+  function accept(network: string, amountBaseUnits: string) {
+    return { scheme: "exact", network, amount: amountBaseUnits };
+  }
+
+  it("rejects when every option's price exceeds the per-call cap", async () => {
+    const { evaluatePaymentRequirements } = await import("@dexterai/x402-mcp-tools");
+    const wallet = fakeWallet({ "solana": 100 }); // funded plenty
+    const requirements = { accepts: [accept("solana", "500000")] }; // $0.50
+
+    const result = await evaluatePaymentRequirements(wallet as any, requirements, 0.1);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("Payment policy blocked");
+      expect(result.error).toContain("$0.10"); // surfaces the cap
+    }
+  });
+
+  it("rejects when the option is within cap but the wallet is underfunded", async () => {
+    const { evaluatePaymentRequirements } = await import("@dexterai/x402-mcp-tools");
+    const wallet = fakeWallet({ "solana": 0.02 }); // only $0.02 on chain
+    const requirements = { accepts: [accept("solana", "100000")] }; // $0.10, under cap
+
+    const result = await evaluatePaymentRequirements(wallet as any, requirements, 1.0);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("Insufficient balance");
+    }
+  });
+
+  it("accepts when at least one chain is both within cap and funded", async () => {
+    const { evaluatePaymentRequirements } = await import("@dexterai/x402-mcp-tools");
+    // Base is broke, Solana is funded — the gate should pick Solana.
+    const wallet = fakeWallet({ "eip155:8453": 0, "solana": 5 });
+    const requirements = {
+      accepts: [
+        accept("eip155:8453", "100000"), // $0.10, unfunded
+        accept("solana", "100000"), // $0.10, funded
+      ],
+    };
+
+    const result = await evaluatePaymentRequirements(wallet as any, requirements, 1.0);
+
+    expect(result.ok).toBe(true);
+  });
+
+  it("treats an empty accepts array as a free call (ok)", async () => {
+    const { evaluatePaymentRequirements } = await import("@dexterai/x402-mcp-tools");
+    const wallet = fakeWallet({});
+
+    const result = await evaluatePaymentRequirements(wallet as any, { accepts: [] }, 0.1);
+
+    expect(result.ok).toBe(true);
+  });
+});
+
 // ── Integration Tests (require network) ───────────────────────────────────
 
 describe("integration", () => {

@@ -16,9 +16,9 @@ Anytime the user wants to:
 - **Check or fund a wallet** for x402 payments
 - **Manage a Dextercard** (issue a card, link a funding wallet, freeze, check status)
 
-If the user mentions `x402`, `OpenDexter`, `dexter.cash`, `open.dexter.cash/mcp`, paid APIs, USDC payments for APIs, or pasting a URL that returns 402 — this skill applies.
+This skill applies if the user mentions `x402`, `OpenDexter`, `dexter.cash`, `open.dexter.cash/mcp`, paid APIs, USDC payments for APIs, or pasting a URL that returns 402.
 
-## Hosted vs local — which mode am I on?
+## Hosted vs local: which mode am I on?
 
 OpenDexter ships in two flavors. Most of the surface is identical; a few tools and instructions differ. **Detect mode from the tool list before answering setup questions.**
 
@@ -34,13 +34,13 @@ Setup advice depends on mode:
 - **Hosted**: never tell the user to set environment variables, edit `~/.dexterai-mcp/settings.json`, or run a CLI command. They paired through dexter.cash; that's all the bootstrap they need.
 - **Local npx**: the wallet file lives at `~/.dexterai-mcp/wallet.json`. Spend cap edits go in `~/.dexterai-mcp/settings.json` (or call `x402_settings`). Env-var override available for production keys.
 
-When in doubt, run `x402_wallet` — it'll tell you whether you have a session and where to deposit.
+When in doubt, run `x402_wallet`. It tells you whether you have a session and where to deposit.
 
 ## Tools, in the order they should be used
 
-### 1. `x402_search` — Find APIs
+### 1. `x402_search`: Find APIs
 
-**Always start here for discovery.** Semantic capability search across the marketplace. Returns two tiers — `strongResults` (high-confidence capability matches) and `relatedResults` (adjacent services worth knowing about). Each result includes name, URL, price, network, qualityScore (0–100), verified status, host, tier, similarity, a short `why` ranking explanation, and a `chains[]` array with every payment option.
+**Always start here for discovery.** Semantic capability search across the marketplace. Returns two tiers: `strongResults` (high-confidence capability matches) and `relatedResults` (adjacent services worth knowing about). Each result includes name, URL, price, network, qualityScore (0–100), verified status, host, tier, similarity, a short `why` ranking explanation, and a `chains[]` array with every payment option.
 
 | Param | Type | Description |
 |---|---|---|
@@ -50,9 +50,9 @@ When in doubt, run `x402_wallet` — it'll tell you whether you have a session a
 | `testnets` | boolean | Include testnet-only resources (default false) |
 | `rerank` | boolean | LLM cross-encoder rerank of top results (default true). Set `false` for deterministic order. |
 
-Do not pre-filter by chain or category — the ranker handles synonyms and expansion internally.
+Do not pre-filter by chain or category. The ranker handles synonyms and expansion internally.
 
-### 2. `x402_check` — Preview pricing
+### 2. `x402_check`: Preview pricing
 
 Probes an endpoint and returns its 402 payment requirements (price per chain, accepted assets, schema hints) **without paying**. Use this before the first paid call.
 
@@ -63,7 +63,7 @@ Probes an endpoint and returns its 402 payment requirements (price per chain, ac
 
 If the endpoint returns 200 with no 402, tell the user it's free. If it returns 401/403, the provider requires its own auth before x402 settlement is offered.
 
-### 3. `x402_fetch` — Call and pay
+### 3. `x402_fetch`: Call and pay
 
 Calls the endpoint and pays automatically from the local wallet. Returns the API response **plus** a settlement receipt (transaction hash, amount, chain). On success, link the hash to the right explorer:
 
@@ -86,22 +86,22 @@ Calls the endpoint and pays automatically from the local wallet. Returns the API
 | `maxAmountUsdc` | number | Optional per-call spend cap, overrides the default for this one call |
 | `multipart` | object | For file uploads. POSTs `multipart/form-data` instead of JSON; carries `fields` (text) and `files` (read from disk). POST/PUT only, 200 MB max. |
 
-If the wallet has no USDC, the call fails. Run `x402_wallet` first, surface the deposit address for the right chain, and tell the user to fund. Then retry.
+If the wallet has no USDC, the call fails. Run `x402_wallet` first, surface the deposit address for the right chain, tell the user to fund it, then retry the call.
 
-### 4. `x402_pay` — Alias of `x402_fetch`
+### 4. `x402_pay`: Alias of `x402_fetch`
 
 Use whichever name reads more naturally. Same parameters, same behavior.
 
-### 5. `x402_access` — Identity-gated endpoints
+### 5. `x402_access`: Identity-gated endpoints
 
-Some endpoints require a wallet signature (Sign-In-With-X) instead of a per-call payment. Use this tool for those — it presents the wallet proof and returns the response.
+Some endpoints require a wallet signature (Sign-In-With-X) instead of a per-call payment. Use this tool for those: it presents the wallet proof and returns the response.
 
 | Param | Type | Description |
 |---|---|---|
 | `url` | string | The identity-gated endpoint URL |
 | `method` | string | HTTP method (default GET) |
 
-### 6. `x402_wallet` — Multi-chain wallet
+### 6. `x402_wallet`: Multi-chain wallet
 
 Returns deposit addresses and USDC balances across **Solana, Base, Polygon, Arbitrum, Optimism, Avalanche**. (The facilitator additionally settles on **BSC** and **SKALE** when an endpoint requires those chains.)
 
@@ -120,15 +120,15 @@ If a balance is zero, proactively show the deposit address and tell the user to 
 
 ### 7. `x402_settings` *(local npx only)*
 
-Read or update the per-call USDC cap that gates automatic payments. Backed by `~/.dexterai-mcp/settings.json` and hot-reloaded — no restart needed after a change.
+Read or update the per-call USDC cap that gates automatic payments. Backed by `~/.dexterai-mcp/settings.json` and hot-reloaded, so no restart is needed after a change.
 
 **This tool does not exist on the hosted server.** If you're on hosted and the user wants to change spend limits, direct them to dexter.cash account settings.
 
 ## Dextercard tools
 
-Dextercard is the optional payment-card surface — issue a real card backed by your funded wallet, then spend at any merchant. Cards are created via Crossmint and provisioned through the same MCP session.
+Dextercard is the optional payment-card surface. Issue a card backed by your funded wallet, then spend at any merchant. Cards are created via Crossmint and provisioned through the same MCP session.
 
-### `card_status` — Always run this first
+### `card_status`: Always run this first
 
 Returns the current account stage so the agent knows which next step to suggest. Possible stages:
 
@@ -144,11 +144,11 @@ Returns the current account stage so the agent knows which next step to suggest.
 
 Always call `card_status` before `card_issue` or `card_link_wallet`. Do not assume state.
 
-### `card_issue` — Drive issuance
+### `card_issue`: Drive issuance
 
 Walks the user through KYC and provisioning one step at a time. Use `step: "auto"` and let the tool decide the right action; only override with explicit step names if the user wants manual control.
 
-### `card_link_wallet` — Authorize a wallet to fund the card
+### `card_link_wallet`: Authorize a wallet to fund the card
 
 | Param | Type | Description |
 |---|---|---|
@@ -157,9 +157,9 @@ Walks the user through KYC and provisioning one step at a time. Use `step: "auto
 
 Pre-condition: card must be `active`. Post-condition: linked wallets show up in `card_status.wallets`.
 
-### `card_freeze` — Pause or resume the card
+### `card_freeze`: Pause or resume the card
 
-Pass `frozen: true` to freeze, `frozen: false` to resume. Returns updated metadata.
+Pass `frozen: true` to freeze or `frozen: false` to resume, and the tool returns the updated card metadata.
 
 ### `card_login_request_otp` / `card_login_complete` *(local npx only)*
 
@@ -171,7 +171,7 @@ tab. After it returns ok, ask the user for the 6-digit code from their email,
 then call `card_login_complete` with `{email, code}` to persist the session.
 
 If `card_login_request_otp` returns `captcha_solver_not_configured` or
-`captcha_solve_failed`, fall back to `card_login_start` — that one returns a
+`captcha_solve_failed`, fall back to `card_login_start`. That one returns a
 MoonPay URL the user opens to solve the captcha themselves, after which they
 still get an OTP email and you still finish with `card_login_complete`.
 
@@ -179,7 +179,7 @@ Once `card_login_complete` succeeds, all `card_*` tools work as if the user
 had paired through dexter.cash.
 
 **Hosted users don't need these tools.** When `card_status` returns
-`no_session` on hosted, it returns a clickable pairing URL — surface that URL
+`no_session` on hosted, it returns a clickable pairing URL. Surface that URL
 to the user and tell them to complete pairing on dexter.cash. After they pair,
 `card_status` returns `onboarding_required` (or further) and the standard
 `card_issue` flow continues.
@@ -207,7 +207,7 @@ to the user and tell them to complete pairing on dexter.cash. After they pair,
 
 ### "I want a Dextercard"
 
-1. `card_status` — find the current stage
+1. `card_status` to find the current stage
 2. From the stage, route to the right next step (see table above)
 3. Use `card_issue { step: "auto" }` to advance, repeat until `active`
 4. `card_link_wallet` to authorize a funding wallet
@@ -233,7 +233,7 @@ A `verified: true` flag means the resource has passed Dexter's automated quality
 
 Wallet funding (any of these accepts USDC and is shown by `x402_wallet`):
 
-- **Solana** (preferred — fastest finality, lowest fees for most users)
+- **Solana** (preferred: fastest finality, lowest fees for most users)
 - **Base**
 - **Polygon**
 - **Arbitrum**
@@ -250,14 +250,14 @@ Endpoints declare which chains they accept; `x402_check` shows you the full per-
 ## Pricing
 
 - Most endpoints cost **$0.01 – $0.10** per call.
-- Compute-heavy endpoints (image gen, large completions, on-chain analytics) cost more — `x402_check` will show the real number.
+- Compute-heavy endpoints (image gen, large completions, on-chain analytics) cost more. `x402_check` shows the real number.
 - The wallet only needs USDC. The facilitator pays gas on every supported chain.
 
 ## Quick install
 
 ### Hosted MCP (recommended for most users)
 
-Add a single URL as a connector — no install, no env vars, no wallet file. Works in Claude.ai, ChatGPT, Cursor, and any MCP-compatible client.
+Add a single URL as a connector. No install, no env vars, no wallet file. Works in Claude.ai, ChatGPT, Cursor, and any MCP-compatible client.
 
 ```
 https://open.dexter.cash/mcp
@@ -291,7 +291,7 @@ The wallet lives at `~/.dexterai-mcp/wallet.json`. Override with `DEXTER_PRIVATE
 ## Key behaviors to remember
 
 - **Search is semantic.** Typos and synonyms are handled. Describe what you want in plain English.
-- **Don't filter by chain in the query** — the ranker does that for you.
+- **Don't filter by chain in the query.** The ranker does that for you.
 - **Always run `x402_check` before the first paid call** to a new URL so the user sees the price.
 - **Detect mode before giving setup advice.** If `x402_settings` is in the tool list you're on local npx; otherwise hosted. Don't tell hosted users to set env vars or edit JSON files.
 - **Insufficient funds = soft failure.** Re-route to `x402_wallet` and surface the deposit address.
@@ -305,7 +305,7 @@ Want your API on the marketplace?
 1. Visit `https://dexter.cash/onboard`
 2. Add `x402Middleware` from `@dexterai/x402/server` to your endpoints
 3. Register your resource URL with the facilitator
-4. Dexter's quality bot verifies and scores your endpoint automatically — usually within an hour
+4. Dexter's quality bot verifies and scores your endpoint automatically, usually within an hour
 
 Listings update in `x402_search` results once the resource is verified.
 

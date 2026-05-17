@@ -79,7 +79,7 @@ After payment, `req.x402` contains `{ transaction, payer, network }`.
 Inject sponsored recommendations into your API responses after settlement:
 
 ```typescript
-// Default injection — adds _x402_sponsored field to response body
+// Default injection: adds _x402_sponsored field to response body
 x402Middleware({ payTo: '...', amount: '0.05', sponsoredAccess: true })
 
 // Custom injection
@@ -216,17 +216,20 @@ Clients receive a JWT in the `ACCESS-PASS` header and send it as `Authorization:
 ```typescript
 import { createDynamicPricing, formatPricing } from '@dexterai/x402/server';
 
-const pricing = createDynamicPricing({
-  basePrice: 0.001,
-  perCharacter: 0.00001,
-});
+const pricingConfig = {
+  unitSize: 1000,      // chars per billing unit
+  ratePerUnit: 0.01,   // $0.01 per unit
+  minUsd: 0.01,        // floor
+};
+const pricing = createDynamicPricing(pricingConfig);
 
 app.post('/api/generate', async (req, res) => {
-  const quote = pricing.getQuote(req.body.prompt);
-  // Use quote.amountAtomic in x402Middleware or manual flow
+  const quote = pricing.calculate(req.body.prompt);
+  // Use quote.amountAtomic in x402Middleware or the manual flow.
+  // quote also carries usdAmount, units, and a quoteHash for retry validation.
 });
 
-console.log(formatPricing(pricing)); // Human-readable pricing summary
+console.log(formatPricing(pricingConfig)); // Human-readable pricing summary
 ```
 
 ### Token-based (LLM-accurate with tiktoken)
@@ -235,7 +238,9 @@ console.log(formatPricing(pricing)); // Human-readable pricing summary
 import { createTokenPricing, countTokens, formatTokenPricing } from '@dexterai/x402/server';
 
 const pricing = createTokenPricing({ model: 'gpt-4o' });
-const quote = pricing.getQuote({ inputText: prompt, estimatedOutputTokens: 500 });
+// calculate() is async and takes the input text (plus an optional system prompt).
+const quote = await pricing.calculate(prompt);
+// quote carries amountAtomic, usdAmount, inputTokens, and a quoteHash.
 
 // Utility functions
 const tokens = await countTokens(prompt, 'gpt-4o');
@@ -244,12 +249,17 @@ console.log(formatTokenPricing('gpt-4o')); // Pricing summary
 
 ## Browser Paywall
 
-Render an HTML paywall for browser visitors hitting a 402:
+Render an HTML paywall for browser visitors hitting a 402. API clients still
+receive the standard JSON 402; only `Accept: text/html` requests see the page.
+Mount it before your paywalled routes:
 
 ```typescript
 import { x402BrowserSupport } from '@dexterai/x402/server';
 
-app.use(x402BrowserSupport({ theme: 'dark' }));
+app.use(x402BrowserSupport()); // defaults are fine for most servers
+
+// Optional branding: { title, branding, sdkUrl, showEndpoint, rpcUrl }
+app.use(x402BrowserSupport({ title: 'Premium API', branding: 'Acme Data' }));
 ```
 
 ## Model Registry
@@ -302,7 +312,7 @@ console.log(formatModelPricing('gpt-4o'));  // human-readable pricing
 | `formatModelPricing` | Format model pricing as string |
 | `isValidModelId` | Check if a model ID exists in registry |
 | `getAvailableModelIds` | List all model IDs |
-| `getModelsByTier` | Filter models by tier (fast/standard/flagship) |
+| `getModelsByTier` | Filter models by tier (fast/standard/reasoning/premium/specialized) |
 | `getModelsByFamily` | Filter models by family (gpt-4o, o1, etc.) |
 | `getActiveModels` | Get non-deprecated models |
 | `getTextModels` | Get text-capable models |

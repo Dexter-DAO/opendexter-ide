@@ -1,6 +1,6 @@
 ---
 name: x402-debugging
-description: "Diagnose x402 payment failures — facilitator health, error codes, balance issues, settlement timeouts, and protocol mismatches. Trigger when a payment fails, a 402 response is unexpected, settlement times out, or the user reports an x402 error."
+description: "Diagnose x402 payment failures: facilitator health, error codes, balance issues, settlement timeouts, and protocol mismatches. Trigger when a payment fails, a 402 response is unexpected, settlement times out, or the user reports an x402 error."
 ---
 
 # x402 Debugging Guide
@@ -162,7 +162,7 @@ const client = createX402Client({
 });
 ```
 
-Retries are safe — EIP-3009 nonces and Solana blockhash expiry prevent double payments.
+Retries are safe: EIP-3009 nonces and Solana blockhash expiry prevent double payments.
 
 ## Fee Payer Safety (Solana)
 
