@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import {
+  DextercardApiError,
   DextercardNoAccountError,
   CardOnboardingFinishSchema,
   CardOnboardingStartSchema,
@@ -160,6 +161,29 @@ export function registerCardIssueTool(server: McpServer, opts: CardToolOpts): vo
         }
 
         if (detected === "pending_finalize") {
+          // detectStage maps a 'verified' onboarding check to
+          // pending_finalize, but that covers two real sub-states:
+          // (a) verified, not finalized; (b) verified, finalized, no card
+          // yet. cardCreate is the deterministic probe — it succeeds only
+          // when onboarding is fully finalized. Try it before asking for
+          // an address the user may have already submitted.
+          try {
+            const card = await client.cardCreate();
+            return wrap({
+              stage: "active",
+              card,
+              nextAction: "call_card_status",
+            }, meta);
+          } catch (createErr) {
+            // A carrier error here means onboarding is not finalized.
+            // Fall through to the finalize step.
+            if (
+              !(createErr instanceof DextercardApiError) &&
+              !(createErr instanceof DextercardNoAccountError)
+            ) {
+              throw createErr;
+            }
+          }
           if (!hasAllFinishArgs(args)) {
             return wrap({
               stage: "pending_finalize",

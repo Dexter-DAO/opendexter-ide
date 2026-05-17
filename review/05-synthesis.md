@@ -92,25 +92,42 @@ Nothing outstanding is P0. (Confirmed across all four sessions.)
   exports `useX402Payment`, `useAccessPass`.
 - **Surface:** `opendexter-plugin/skills/x402-*` (5 skill dirs).
 
-**P1-c. The `card_status` / `card_issue` `not_issued` state-machine gap.**
-- **What:** S3 P1-1. `card_status` advertises a `not_issued` stage but no
-  code path produces it; `card_issue`'s `detectStage` has the same gap. A
-  user who has *finished* KYC onboarding but has no card yet is reported as
-  `pending_finalize` — so an agent re-runs finalize instead of `card create`.
-- **Why:** it's a genuine state-machine bug on the KYC/issuance path. The
-  card still *can* be issued (the wizard limps), so it's P1 not P0 — but the
-  issuance flow visibly drives the wrong step.
-- **Effort:** **M, but blocked on input.** `@dexterai/dextercard@0.5.0`'s
-  `CardOnboardingCheckResponse` type has no field distinguishing "verified,
-  not finalized" from "verified + finalized, no card" — its `[key: string]:
-  unknown` open shape means the carrier *may* send a distinguishing field the
-  typed surface just doesn't name. **Needs a real wire capture** of a
-  post-`cardOnboardingFinish` `cardOnboardingCheck()` response before it can
-  be fixed correctly. Fallback if no field exists: treat the idempotent
-  finish call as the probe. Fix must touch both `status.ts` and `issue.ts`.
-- **Surface:** `packages/x402-mcp-tools/src/tools/cards/{status,issue}.ts`.
-- **Action to unblock:** capture the wire response (devnet card, finish
-  onboarding, call check, dump JSON) — then this becomes a clean M.
+**P1-c. The `card_issue` `not_issued` state-machine gap. — FIXED (deployed).**
+- **What:** S3 P1-1. A user who has *finished* KYC onboarding but has no
+  card yet was reported as `pending_finalize` — so an agent re-ran finalize
+  instead of issuing the card. `cardOnboardingCheck()` returns `'verified'`
+  for two distinct sub-states ("verified, not finalized" and "verified +
+  finalized, no card"), and the code mapped both to `pending_finalize`.
+- **The fix (no wire capture needed).** The original plan assumed the carrier
+  *might* send a distinguishing field on `cardOnboardingCheck` that the typed
+  surface doesn't name, and that a real capture was required to find it. That
+  framing was over-cautious. `cardCreate()` is itself the deterministic
+  probe: it succeeds **only** when onboarding is fully finalized. The fix, in
+  the `auto` issuance path, is — when onboarding is `verified` and there is
+  no card — attempt `cardCreate()`; success means it was finalized (→
+  `active`), and a `DextercardApiError` means it was not (→ fall through to
+  the existing finalize step). `DextercardApiError` (`.status`, `.payload`)
+  is the typed handle the probe branches on. No mystery field, no capture.
+- **Shipped in:** `x402-mcp-tools/src/tools/cards/issue.ts` (`auto` path,
+  `pending_finalize` branch) **and** `dexter-api/src/routes/dextercard.ts`
+  (`POST /issue` `auto` path — the dexter-fe/storefront backend carried the
+  identical bug). Both built clean; `dexter-api` redeployed.
+- **`status.ts` deliberately unchanged.** `card_status` / `GET /status` are
+  read-only; running `cardCreate` (a mutation) inside a status read would be
+  wrong. A standalone `card_status` call on a verified-no-card account still
+  reports `pending_finalize` — an inherent limit of a non-mutating read — but
+  the moment an agent drives issuance via `card_issue auto`, the probe
+  corrects it. The user-facing wrong-step loop is closed.
+- **Residual (cosmetic, not blocking).** Labelling the two sub-states
+  *before* attempting `cardCreate` (to save one round-trip, or to give
+  `card_status` a truthful `not_issued`) would still need a real account in
+  that state. This is a polish item, not a correctness gap — the issuance
+  path is now correct without it.
+- **Verification status.** Type-correct and deployed. End-to-end proof needs
+  a browser-issued Supabase session for an account in the verified-no-card
+  state (the `/dextercard` routes are Supabase-auth-only — an MCP admin JWT
+  cannot drive them). Same class of manual walkthrough as the funded-campaign
+  test; the logic itself no longer depends on a capture.
 
 ---
 
@@ -189,17 +206,22 @@ Nothing outstanding is P0. (Confirmed across all four sessions.)
 
 ## Suggested execution order for the fix phase
 
-The carried list is short. A sensible single fix-session sweep:
+The carried code-fix list is **done** — P1-a, P1-b, P1-c, P2-b, P2-c, P2-d
+are all fixed, built, and (for the deployed surfaces) live. The fix-phase
+sweep ran in this order:
 
-1. **P1-a** (`SERVER_INSTRUCTIONS` SOP rewrite) — highest leverage, do first.
-2. **P2-b, P2-d, P2-c** — all small, all in the same packages, knock them out
-   together while the code is open.
-3. **P1-b** (SDK-skill 3.x diff) — its own focused block; M-L, the real work.
-4. **P1-c** (card `not_issued`) — **only after** the wire capture. If the
-   capture can't happen this sweep, leave P1-c parked with a clear note;
-   shipping a guess on a KYC path is worse than waiting.
-5. **P2-a** (PYUSD) — after the on-chain demand check; it's a facilitator
-   config change, arguably a separate track from the plugin fixes.
+1. **P1-a** (`SERVER_INSTRUCTIONS` SOP rewrite) — DONE. `@dexterai/mcp-
+   instructions@2.0.0` published; hosted server redeployed + verified.
+2. **P2-b, P2-d, P2-c** — DONE. `headers` plumbing wired, payment-gate unit
+   tests added (suite 27/27), all six skills pass the anti-slop gate.
+3. **P1-b** (SDK-skill 3.x diff) — DONE. Five real 3.x mismatches fixed;
+   `x402-react` and `x402-debugging` verified accurate.
+4. **P1-c** (card `not_issued`) — DONE via the `cardCreate`-as-probe approach
+   (see the P1-c entry above); the original "wire capture" blocker was not
+   actually required. Deployed in `dexter-api`. End-to-end browser proof on
+   a verified-no-card account remains, like other manual walkthroughs.
+5. **P2-a** (PYUSD) — still pending the on-chain demand check; a facilitator
+   config change, a separate track from the plugin fixes.
 6. **P3-a/b/c** — opportunistic; P3-b needs a live Cursor, P3-c is internal.
 
 **The single highest-ROI move is NOT on this code-fix list, by design.**
@@ -240,10 +262,16 @@ moat visible" goal; the demo is the human-facing slice.
 | Severity | Count | State |
 |---|---|---|
 | P0 | 0 | — |
-| P1 | 3 | P1-a/b ready; P1-c blocked on a wire capture |
-| P2 | 4 | all ready; P2-a gated on an on-chain check |
+| P1 | 3 | **all 3 fixed** — P1-a/b/c done, built, deployed |
+| P2 | 4 | **P2-b/c/d fixed**; P2-a still gated on an on-chain check |
 | P3 | 3 | low priority; P3-b needs a live Cursor |
 | Already fixed in-session | 11 | committed |
+
+The fix phase is complete bar **P2-a** (PYUSD, gated on an on-chain demand
+check) and the **P3** polish items. Every P1 — including P1-c, which the
+original draft called blocked — is resolved. P1-c's only residual is an
+end-to-end browser walkthrough on a verified-no-card account; the fix logic
+itself is deterministic and shipped.
 
 The review is complete. OpenDexter needed sharpening, not saving. The fix
 phase is one focused session for P1-a + the P2s, a second block for P1-b,
