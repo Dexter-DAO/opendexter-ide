@@ -3,8 +3,8 @@
   "contractId": "opendexter-hosted-full-descriptor-v2",
   "source": {
     "repository": "https://github.com/Dexter-DAO/dexter-mcp",
-    "commit": "015f0b2b85244f9837ad16c780d3e4d7dfd32fee",
-    "tree": "d49831efd81aff25853e98d43b4f60040e0fde5b",
+    "commit": "f79fdd0512eb9f0b798a22f0634aa7e50f5ab728",
+    "tree": "36e85827252683d4ea5f8d86a98df3fbd9c55946",
     "descriptorPath": "release/open-tool-descriptors.json",
     "descriptorMaterializerPath": "scripts/materialize-open-tool-descriptors.mjs",
     "toolContractPath": "lib/open-tool-contracts.mjs",
@@ -25,15 +25,15 @@
     },
     "integratedApiRelease": {
       "repository": "https://github.com/Dexter-DAO/dexter-api",
-      "commit": "58cf412db8d1487cb8fa4ee3319fee121410aaef",
-      "tree": "05b6186b75202a9f6f0f88dfe7d38f9d7ed6cb9a",
-      "governedContractCommit": "64dc058fdc9b6929fd34d0eb48a39ef5edb87ec3",
-      "governedContractTree": "1ab982e4f8b32ce6a7318ac960c064f0521afc5f"
+      "commit": "0138a4a87916f0bf27f128c30e7c88f365864b2a",
+      "tree": "9ee214a14c7cd86427457a503610d0dd9badbfbd",
+      "governedContractCommit": "61cc13057c19d3cfa3fbedc64e15082334ae429c",
+      "governedContractTree": "9ee214a14c7cd86427457a503610d0dd9badbfbd"
     },
     "portfolioProjection": {
       "repository": "https://github.com/Dexter-DAO/dexter-api",
-      "commit": "58cf412db8d1487cb8fa4ee3319fee121410aaef",
-      "tree": "05b6186b75202a9f6f0f88dfe7d38f9d7ed6cb9a",
+      "commit": "0138a4a87916f0bf27f128c30e7c88f365864b2a",
+      "tree": "9ee214a14c7cd86427457a503610d0dd9badbfbd",
       "sourcePaths": [
         "src/portfolio/approvedActionTargets.ts",
         "src/routes/passkeyMcpBinding.ts",
@@ -48,8 +48,8 @@
     },
     "facilitator": {
       "repository": "https://github.com/Dexter-DAO/dexter-facilitator",
-      "commit": "bee9792417bf23cf28c600138b3cbcc0475f682f",
-      "tree": "de1515b4102e0e55cc00b9105445ff5a1957a0e1",
+      "commit": "09158b98f8a918c501543191b19362e22d86c6bc",
+      "tree": "4d25e276a168af6b52bfc2fc658b73022edd826e",
       "bindingFixture": {
         "consumerPath": "tests/fixtures/governed-agent-trade-api-facilitator-binding-vault-0434.json",
         "apiPath": "tests/fixtures/governed-agent-trade-api-facilitator-binding-v1.json",
@@ -88,9 +88,9 @@
     "recipe": "accepted-public-health+canonical-mcp-git+sterile-source-materializer/v1",
     "node": "v22.19.0",
     "npm": "10.9.3",
-    "packageLockSha256": "309cb4d57e428899e44604f007fa4d41d76b81557ed8c0ab2331df254d861df8",
-    "sourceArchiveSha256": "43a58320f9ab40e59cae869b8fb74a5bef2c7644bbbe5bb81c73c3382d6aab92",
-    "descriptorSha256": "9495aac891ba47fd0567394a885a26711d12fd919d94abc523cc0e1d2301f5db"
+    "packageLockSha256": "caa22a78af9f9d80aeff62634f1733ae773915399052874b3b58a055249dac33",
+    "sourceArchiveSha256": "2506447c5ec08d01416f26364f7aa747212667b07855759eb28be221cc176a7b",
+    "descriptorSha256": "09d94e43f5a58c31e90c9a5c1eadc3829da5bab7538f7f19291c6a9102d97ffc"
   },
   "mcp": {
     "url": "https://open.dexter.cash/mcp",
@@ -3733,7 +3733,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/x402-pricing-00f4540d",
+          "resourceUri": "ui://dexter/x402-pricing-d69d709d",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash",
@@ -3750,8 +3750,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/x402-pricing-00f4540d",
-        "openai/outputTemplate": "ui://dexter/x402-pricing-00f4540d",
+        "ui/resourceUri": "ui://dexter/x402-pricing-d69d709d",
+        "openai/outputTemplate": "ui://dexter/x402-pricing-d69d709d",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,
@@ -4090,7 +4090,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/x402-fetch-result-0bca08ca",
+          "resourceUri": "ui://dexter/x402-fetch-result-825b48c8",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash",
@@ -4107,8 +4107,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/x402-fetch-result-0bca08ca",
-        "openai/outputTemplate": "ui://dexter/x402-fetch-result-0bca08ca",
+        "ui/resourceUri": "ui://dexter/x402-fetch-result-825b48c8",
+        "openai/outputTemplate": "ui://dexter/x402-fetch-result-825b48c8",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,
@@ -4815,7 +4815,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/x402-fetch-result-0bca08ca",
+          "resourceUri": "ui://dexter/x402-fetch-result-825b48c8",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash",
@@ -4832,8 +4832,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/x402-fetch-result-0bca08ca",
-        "openai/outputTemplate": "ui://dexter/x402-fetch-result-0bca08ca",
+        "ui/resourceUri": "ui://dexter/x402-fetch-result-825b48c8",
+        "openai/outputTemplate": "ui://dexter/x402-fetch-result-825b48c8",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,
@@ -5306,7 +5306,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/x402-pricing-00f4540d",
+          "resourceUri": "ui://dexter/x402-pricing-d69d709d",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash",
@@ -5323,8 +5323,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/x402-pricing-00f4540d",
-        "openai/outputTemplate": "ui://dexter/x402-pricing-00f4540d",
+        "ui/resourceUri": "ui://dexter/x402-pricing-d69d709d",
+        "openai/outputTemplate": "ui://dexter/x402-pricing-d69d709d",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,
@@ -6086,7 +6086,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/dexter-wallet-45230403",
+          "resourceUri": "ui://dexter/dexter-wallet-d61851fe",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash",
@@ -6105,8 +6105,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/dexter-wallet-45230403",
-        "openai/outputTemplate": "ui://dexter/dexter-wallet-45230403",
+        "ui/resourceUri": "ui://dexter/dexter-wallet-d61851fe",
+        "openai/outputTemplate": "ui://dexter/dexter-wallet-d61851fe",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,
@@ -6686,7 +6686,7 @@
     {
       "name": "dexter_prepare_asset_action",
       "title": "Prepare a Governed Send, Buy, or Sell",
-      "description": "Persist and evaluate one exact Send, Buy, or Sell without signing or submitting it. Treat this Prepare response as the proof of current runtime capability. For any natural-language stock Buy or Sell, pass companyQuery and let Dexter resolve and pin the current catalog product; never pass a remembered stock assetId, mint, or symbol. The assetId variants remain for a non-stock approved holding or approvedActionTarget returned by dexter_wallet_portfolio. In the current integrated release, covered Buy and Sell may continue autonomously, while Send is preserved in the input contract but fails closed with protected_agent_send_sdk_required before capacity reservation or intent creation. A Buy uses exactly one amount mode: amountAtomic is the exact USDC budget to spend, while shareQuantity is the human decimal underlying-share-equivalent quantity requested and may be paired with maximumSpendAtomic as a USDC ceiling. Keep shareQuantity as a human decimal; Dexter resolves the exact product version, current display multiplier, and raw minimum output. Never send both modes, and never treat shareQuantity as exact output because slight overfill is possible. Sell and Send amountAtomic are selected-asset input. operationId is only the Idempotency-Key. The server resolves the wallet and reusable bounded mandate; enrollment, extension, or owner escalation happens outside model-callable tools only when the request is not already covered.",
+      "description": "Persist and evaluate one exact Send, Buy, or Sell without signing or submitting it. Treat this Prepare response as the proof of current runtime capability. For any natural-language stock Buy or Sell, pass companyQuery and let Dexter resolve and pin the current catalog product; never pass a remembered stock assetId, mint, or symbol. The assetId variants remain for a non-stock approved holding or approvedActionTarget returned by dexter_wallet_portfolio. In the current integrated release, covered Buy and Sell may continue autonomously, while Send is preserved in the input contract but fails closed with protected_agent_send_sdk_required before capacity reservation or intent creation. A Buy uses exactly one amount mode: amountAtomic is the exact USDC budget to spend, while shareQuantity is the human decimal underlying-share-equivalent quantity requested and may be paired with maximumSpendAtomic as a USDC ceiling. Keep shareQuantity as a human decimal; Dexter resolves the exact product version, current display multiplier, and raw minimum output. Never send both modes, and never treat shareQuantity as exact output because slight overfill is possible. Sell uses exactly one amount mode: valueUsd is the positive human decimal USD market value to sell at preparation, and amountAtomic is exact selected-asset token input. Dexter sizes the token input for valueUsd from the latest reported USD price and checks the selected value against the current sale quote; net USDC proceeds are approximate until the receipt. Send amountAtomic is selected-asset input. operationId is only the Idempotency-Key. The server resolves the wallet and reusable bounded mandate; enrollment, extension, or owner escalation happens outside model-callable tools only when the request is not already covered.",
       "inputSchema": {
         "anyOf": [
           {
@@ -6925,6 +6925,75 @@
               "action",
               "companyQuery",
               "amountAtomic"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "operationId": {
+                "$ref": "#/anyOf/0/properties/operationId"
+              },
+              "action": {
+                "$ref": "#/anyOf/4/properties/action"
+              },
+              "assetId": {
+                "$ref": "#/anyOf/0/properties/assetId"
+              },
+              "memo": {
+                "$ref": "#/anyOf/1/properties/memo"
+              },
+              "maxSlippageBps": {
+                "$ref": "#/anyOf/1/properties/maxSlippageBps"
+              },
+              "maxPriceImpactBps": {
+                "$ref": "#/anyOf/1/properties/maxSlippageBps"
+              },
+              "valueUsd": {
+                "type": "string",
+                "maxLength": 39,
+                "pattern": "^(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "description": "USD market value to sell at preparation, as a positive human decimal such as 1 or 12.50. Dexter sizes the token input from the latest reported USD price. Dexter checks the selected value against the current sale quote. Net USDC proceeds are approximate until the receipt. Use valueUsd or amountAtomic, never both."
+              }
+            },
+            "required": [
+              "operationId",
+              "action",
+              "assetId",
+              "valueUsd"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "operationId": {
+                "$ref": "#/anyOf/0/properties/operationId"
+              },
+              "action": {
+                "$ref": "#/anyOf/5/properties/action"
+              },
+              "companyQuery": {
+                "$ref": "#/anyOf/2/properties/companyQuery"
+              },
+              "memo": {
+                "$ref": "#/anyOf/1/properties/memo"
+              },
+              "maxSlippageBps": {
+                "$ref": "#/anyOf/1/properties/maxSlippageBps"
+              },
+              "maxPriceImpactBps": {
+                "$ref": "#/anyOf/1/properties/maxSlippageBps"
+              },
+              "valueUsd": {
+                "$ref": "#/anyOf/6/properties/valueUsd"
+              }
+            },
+            "required": [
+              "operationId",
+              "action",
+              "companyQuery",
+              "valueUsd"
             ],
             "additionalProperties": false
           }
@@ -7430,8 +7499,307 @@
                 "type": "string",
                 "enum": [
                   "input",
-                  "share-quantity"
+                  "share-quantity",
+                  "usd-value"
                 ]
+              },
+              "usdValue": {
+                "type": "object",
+                "properties": {
+                  "namespace": {
+                    "type": "string",
+                    "const": "dexter-governed-usd-value/v1"
+                  },
+                  "semantics": {
+                    "type": "string",
+                    "const": "approximate-input-market-value"
+                  },
+                  "requestedValueUsd": {
+                    "type": "string",
+                    "maxLength": 39
+                  },
+                  "selectedReferenceValueUsd": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "rounding": {
+                    "type": "string",
+                    "const": "floor"
+                  },
+                  "amountAtomic": {
+                    "$ref": "#/properties/business/properties/amountAtomic/anyOf/0"
+                  },
+                  "rawDecimalAmount": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "displayAmount": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "amountModel": {
+                    "type": "string",
+                    "enum": [
+                      "raw-decimals",
+                      "scaled-ui-amount"
+                    ]
+                  },
+                  "mint": {
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 64
+                  },
+                  "tokenProgram": {
+                    "type": "string",
+                    "enum": [
+                      "spl-token",
+                      "token-2022"
+                    ]
+                  },
+                  "assetDecimals": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 18
+                  },
+                  "mintStateDigest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "mintObservedSlot": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "mintObservedAtUnixMs": {
+                    "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                  },
+                  "preparedAtUnixMs": {
+                    "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                  },
+                  "price": {
+                    "type": "object",
+                    "properties": {
+                      "mint": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/mint"
+                      },
+                      "usdPrice": {
+                        "type": "string",
+                        "maxLength": 128
+                      },
+                      "quantityUnit": {
+                        "type": "string",
+                        "enum": [
+                          "raw-decimals",
+                          "scaled-ui"
+                        ]
+                      },
+                      "source": {
+                        "type": "string"
+                      },
+                      "retrievedAtUnixMs": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "marketBlockId": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "expiresAtUnixMs": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "settlementUsdPrice": {
+                        "type": "object",
+                        "properties": {
+                          "mint": {
+                            "type": "string",
+                            "const": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                          },
+                          "usdPrice": {
+                            "$ref": "#/properties/preview/properties/usdValue/properties/price/properties/usdPrice"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "retrievedAtUnixMs": {
+                            "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          "marketBlockId": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "mint",
+                          "usdPrice",
+                          "source",
+                          "retrievedAtUnixMs",
+                          "marketBlockId"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "mint",
+                      "usdPrice",
+                      "quantityUnit",
+                      "source",
+                      "retrievedAtUnixMs",
+                      "marketBlockId",
+                      "expiresAtUnixMs",
+                      "settlementUsdPrice"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "balance": {
+                    "type": "object",
+                    "properties": {
+                      "amountAtomic": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "pattern": "^(0|[1-9][0-9]*)$"
+                      },
+                      "observedSlot": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "observedAtUnixMs": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                      }
+                    },
+                    "required": [
+                      "amountAtomic",
+                      "observedSlot",
+                      "observedAtUnixMs"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "multiplier": {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "enum": [
+                          "identity",
+                          "token-2022-scaled-ui-current",
+                          "token-2022-scaled-ui-scheduled"
+                        ]
+                      },
+                      "value": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/price/properties/usdPrice"
+                      },
+                      "currentValue": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/multiplier/properties/value"
+                      },
+                      "scheduledValue": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/preview/properties/usdValue/properties/multiplier/properties/value"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "scheduledEffectiveTimestampUnixSeconds": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "minimum": -9007199254740,
+                            "maximum": 9007199254740
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "effectiveTimestampUnixSeconds": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/preview/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "nextValue": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/preview/properties/usdValue/properties/multiplier/properties/value"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "nextEffectiveTimestampUnixSeconds": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/preview/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "observedSlot": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "observedAtUnixMs": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "mintStateDigest": {
+                        "$ref": "#/properties/preview/properties/usdValue/properties/mintStateDigest"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "value",
+                      "currentValue",
+                      "scheduledValue",
+                      "scheduledEffectiveTimestampUnixSeconds",
+                      "effectiveTimestampUnixSeconds",
+                      "nextValue",
+                      "nextEffectiveTimestampUnixSeconds",
+                      "observedSlot",
+                      "observedAtUnixMs",
+                      "mintStateDigest"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "namespace",
+                  "semantics",
+                  "requestedValueUsd",
+                  "selectedReferenceValueUsd",
+                  "rounding",
+                  "amountAtomic",
+                  "rawDecimalAmount",
+                  "displayAmount",
+                  "amountModel",
+                  "mint",
+                  "tokenProgram",
+                  "assetDecimals",
+                  "mintStateDigest",
+                  "mintObservedSlot",
+                  "mintObservedAtUnixMs",
+                  "preparedAtUnixMs",
+                  "price",
+                  "balance",
+                  "multiplier"
+                ],
+                "additionalProperties": false
               },
               "requestedShareQuantity": {
                 "anyOf": [
@@ -7772,9 +8140,7 @@
                         "type": "object",
                         "properties": {
                           "amountAtomic": {
-                            "type": "string",
-                            "maxLength": 20,
-                            "pattern": "^(0|[1-9][0-9]*)$"
+                            "$ref": "#/properties/preview/properties/usdValue/properties/balance/properties/amountAtomic"
                           },
                           "mint": {
                             "$ref": "#/properties/attribution/properties/wallet/properties/vaultPda"
@@ -7851,7 +8217,7 @@
                         ]
                       },
                       "multiplierObservedAtSlot": {
-                        "$ref": "#/properties/preview/properties/feeSummary/properties/platformFee/anyOf/0/properties/amountAtomic"
+                        "$ref": "#/properties/preview/properties/usdValue/properties/balance/properties/amountAtomic"
                       },
                       "multiplierEffectiveAtUnixMs": {
                         "anyOf": [
@@ -7909,7 +8275,7 @@
               "expectedOutputAtomic": {
                 "anyOf": [
                   {
-                    "$ref": "#/properties/preview/properties/feeSummary/properties/platformFee/anyOf/0/properties/amountAtomic"
+                    "$ref": "#/properties/preview/properties/usdValue/properties/balance/properties/amountAtomic"
                   },
                   {
                     "type": "null"
@@ -7919,7 +8285,7 @@
               "minimumOutputAtomic": {
                 "anyOf": [
                   {
-                    "$ref": "#/properties/preview/properties/feeSummary/properties/platformFee/anyOf/0/properties/amountAtomic"
+                    "$ref": "#/properties/preview/properties/usdValue/properties/balance/properties/amountAtomic"
                   },
                   {
                     "type": "null"
@@ -8024,7 +8390,7 @@
                         "$ref": "#/properties/attribution/properties/wallet/properties/vaultPda"
                       },
                       "exactRentLamports": {
-                        "$ref": "#/properties/preview/properties/feeSummary/properties/platformFee/anyOf/0/properties/amountAtomic"
+                        "$ref": "#/properties/preview/properties/usdValue/properties/balance/properties/amountAtomic"
                       },
                       "fundingPolicy": {
                         "type": "string",
@@ -8043,7 +8409,7 @@
                       "fundedLamports": {
                         "anyOf": [
                           {
-                            "$ref": "#/properties/preview/properties/feeSummary/properties/platformFee/anyOf/0/properties/amountAtomic"
+                            "$ref": "#/properties/preview/properties/usdValue/properties/balance/properties/amountAtomic"
                           },
                           {
                             "type": "null"
@@ -8152,7 +8518,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/governed-action-7aecc51f",
+          "resourceUri": "ui://dexter/governed-action-a09a16bd",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash"
@@ -8168,8 +8534,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/governed-action-7aecc51f",
-        "openai/outputTemplate": "ui://dexter/governed-action-7aecc51f",
+        "ui/resourceUri": "ui://dexter/governed-action-a09a16bd",
+        "openai/outputTemplate": "ui://dexter/governed-action-a09a16bd",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,
@@ -8940,8 +9306,307 @@
                 "type": "string",
                 "enum": [
                   "input",
-                  "share-quantity"
+                  "share-quantity",
+                  "usd-value"
                 ]
+              },
+              "usdValue": {
+                "type": "object",
+                "properties": {
+                  "namespace": {
+                    "type": "string",
+                    "const": "dexter-governed-usd-value/v1"
+                  },
+                  "semantics": {
+                    "type": "string",
+                    "const": "approximate-input-market-value"
+                  },
+                  "requestedValueUsd": {
+                    "type": "string",
+                    "maxLength": 39
+                  },
+                  "selectedReferenceValueUsd": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "rounding": {
+                    "type": "string",
+                    "const": "floor"
+                  },
+                  "amountAtomic": {
+                    "$ref": "#/properties/business/properties/amountAtomic/anyOf/0"
+                  },
+                  "rawDecimalAmount": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "displayAmount": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "amountModel": {
+                    "type": "string",
+                    "enum": [
+                      "raw-decimals",
+                      "scaled-ui-amount"
+                    ]
+                  },
+                  "mint": {
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 64
+                  },
+                  "tokenProgram": {
+                    "type": "string",
+                    "enum": [
+                      "spl-token",
+                      "token-2022"
+                    ]
+                  },
+                  "assetDecimals": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 18
+                  },
+                  "mintStateDigest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "mintObservedSlot": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "mintObservedAtUnixMs": {
+                    "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                  },
+                  "preparedAtUnixMs": {
+                    "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                  },
+                  "price": {
+                    "type": "object",
+                    "properties": {
+                      "mint": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mint"
+                      },
+                      "usdPrice": {
+                        "type": "string",
+                        "maxLength": 128
+                      },
+                      "quantityUnit": {
+                        "type": "string",
+                        "enum": [
+                          "raw-decimals",
+                          "scaled-ui"
+                        ]
+                      },
+                      "source": {
+                        "type": "string"
+                      },
+                      "retrievedAtUnixMs": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "marketBlockId": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "expiresAtUnixMs": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "settlementUsdPrice": {
+                        "type": "object",
+                        "properties": {
+                          "mint": {
+                            "type": "string",
+                            "const": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                          },
+                          "usdPrice": {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/price/properties/usdPrice"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "retrievedAtUnixMs": {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          "marketBlockId": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "mint",
+                          "usdPrice",
+                          "source",
+                          "retrievedAtUnixMs",
+                          "marketBlockId"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "mint",
+                      "usdPrice",
+                      "quantityUnit",
+                      "source",
+                      "retrievedAtUnixMs",
+                      "marketBlockId",
+                      "expiresAtUnixMs",
+                      "settlementUsdPrice"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "balance": {
+                    "type": "object",
+                    "properties": {
+                      "amountAtomic": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "pattern": "^(0|[1-9][0-9]*)$"
+                      },
+                      "observedSlot": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "observedAtUnixMs": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      }
+                    },
+                    "required": [
+                      "amountAtomic",
+                      "observedSlot",
+                      "observedAtUnixMs"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "multiplier": {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "enum": [
+                          "identity",
+                          "token-2022-scaled-ui-current",
+                          "token-2022-scaled-ui-scheduled"
+                        ]
+                      },
+                      "value": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/price/properties/usdPrice"
+                      },
+                      "currentValue": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                      },
+                      "scheduledValue": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "scheduledEffectiveTimestampUnixSeconds": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "minimum": -9007199254740,
+                            "maximum": 9007199254740
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "effectiveTimestampUnixSeconds": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "nextValue": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "nextEffectiveTimestampUnixSeconds": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "observedSlot": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "observedAtUnixMs": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "mintStateDigest": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintStateDigest"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "value",
+                      "currentValue",
+                      "scheduledValue",
+                      "scheduledEffectiveTimestampUnixSeconds",
+                      "effectiveTimestampUnixSeconds",
+                      "nextValue",
+                      "nextEffectiveTimestampUnixSeconds",
+                      "observedSlot",
+                      "observedAtUnixMs",
+                      "mintStateDigest"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "namespace",
+                  "semantics",
+                  "requestedValueUsd",
+                  "selectedReferenceValueUsd",
+                  "rounding",
+                  "amountAtomic",
+                  "rawDecimalAmount",
+                  "displayAmount",
+                  "amountModel",
+                  "mint",
+                  "tokenProgram",
+                  "assetDecimals",
+                  "mintStateDigest",
+                  "mintObservedSlot",
+                  "mintObservedAtUnixMs",
+                  "preparedAtUnixMs",
+                  "price",
+                  "balance",
+                  "multiplier"
+                ],
+                "additionalProperties": false
               },
               "requestedShareQuantity": {
                 "anyOf": [
@@ -9140,9 +9805,7 @@
                       "type": "object",
                       "properties": {
                         "amountAtomic": {
-                          "type": "string",
-                          "maxLength": 20,
-                          "pattern": "^(0|[1-9][0-9]*)$"
+                          "$ref": "#/properties/tradeSummary/properties/usdValue/properties/balance/properties/amountAtomic"
                         },
                         "mint": {
                           "$ref": "#/properties/attribution/properties/wallet/properties/vaultPda"
@@ -9246,7 +9909,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/governed-action-7aecc51f",
+          "resourceUri": "ui://dexter/governed-action-a09a16bd",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash"
@@ -9262,8 +9925,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/governed-action-7aecc51f",
-        "openai/outputTemplate": "ui://dexter/governed-action-7aecc51f",
+        "ui/resourceUri": "ui://dexter/governed-action-a09a16bd",
+        "openai/outputTemplate": "ui://dexter/governed-action-a09a16bd",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,
@@ -9836,8 +10499,307 @@
                 "type": "string",
                 "enum": [
                   "input",
-                  "share-quantity"
+                  "share-quantity",
+                  "usd-value"
                 ]
+              },
+              "usdValue": {
+                "type": "object",
+                "properties": {
+                  "namespace": {
+                    "type": "string",
+                    "const": "dexter-governed-usd-value/v1"
+                  },
+                  "semantics": {
+                    "type": "string",
+                    "const": "approximate-input-market-value"
+                  },
+                  "requestedValueUsd": {
+                    "type": "string",
+                    "maxLength": 39
+                  },
+                  "selectedReferenceValueUsd": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "rounding": {
+                    "type": "string",
+                    "const": "floor"
+                  },
+                  "amountAtomic": {
+                    "$ref": "#/properties/tradeSummary/properties/amountAtomic"
+                  },
+                  "rawDecimalAmount": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "displayAmount": {
+                    "type": "string",
+                    "maxLength": 256
+                  },
+                  "amountModel": {
+                    "type": "string",
+                    "enum": [
+                      "raw-decimals",
+                      "scaled-ui-amount"
+                    ]
+                  },
+                  "mint": {
+                    "type": "string",
+                    "minLength": 32,
+                    "maxLength": 64
+                  },
+                  "tokenProgram": {
+                    "type": "string",
+                    "enum": [
+                      "spl-token",
+                      "token-2022"
+                    ]
+                  },
+                  "assetDecimals": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 18
+                  },
+                  "mintStateDigest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "mintObservedSlot": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "mintObservedAtUnixMs": {
+                    "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                  },
+                  "preparedAtUnixMs": {
+                    "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                  },
+                  "price": {
+                    "type": "object",
+                    "properties": {
+                      "mint": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mint"
+                      },
+                      "usdPrice": {
+                        "type": "string",
+                        "maxLength": 128
+                      },
+                      "quantityUnit": {
+                        "type": "string",
+                        "enum": [
+                          "raw-decimals",
+                          "scaled-ui"
+                        ]
+                      },
+                      "source": {
+                        "type": "string"
+                      },
+                      "retrievedAtUnixMs": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "marketBlockId": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "expiresAtUnixMs": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "settlementUsdPrice": {
+                        "type": "object",
+                        "properties": {
+                          "mint": {
+                            "type": "string",
+                            "const": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                          },
+                          "usdPrice": {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/price/properties/usdPrice"
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "retrievedAtUnixMs": {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          "marketBlockId": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "mint",
+                          "usdPrice",
+                          "source",
+                          "retrievedAtUnixMs",
+                          "marketBlockId"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "mint",
+                      "usdPrice",
+                      "quantityUnit",
+                      "source",
+                      "retrievedAtUnixMs",
+                      "marketBlockId",
+                      "expiresAtUnixMs",
+                      "settlementUsdPrice"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "balance": {
+                    "type": "object",
+                    "properties": {
+                      "amountAtomic": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "pattern": "^(0|[1-9][0-9]*)$"
+                      },
+                      "observedSlot": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "observedAtUnixMs": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      }
+                    },
+                    "required": [
+                      "amountAtomic",
+                      "observedSlot",
+                      "observedAtUnixMs"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "multiplier": {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "enum": [
+                          "identity",
+                          "token-2022-scaled-ui-current",
+                          "token-2022-scaled-ui-scheduled"
+                        ]
+                      },
+                      "value": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/price/properties/usdPrice"
+                      },
+                      "currentValue": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                      },
+                      "scheduledValue": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "scheduledEffectiveTimestampUnixSeconds": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "minimum": -9007199254740,
+                            "maximum": 9007199254740
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "effectiveTimestampUnixSeconds": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "nextValue": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "nextEffectiveTimestampUnixSeconds": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "observedSlot": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "observedAtUnixMs": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "mintStateDigest": {
+                        "$ref": "#/properties/tradeSummary/properties/usdValue/properties/mintStateDigest"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "value",
+                      "currentValue",
+                      "scheduledValue",
+                      "scheduledEffectiveTimestampUnixSeconds",
+                      "effectiveTimestampUnixSeconds",
+                      "nextValue",
+                      "nextEffectiveTimestampUnixSeconds",
+                      "observedSlot",
+                      "observedAtUnixMs",
+                      "mintStateDigest"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "namespace",
+                  "semantics",
+                  "requestedValueUsd",
+                  "selectedReferenceValueUsd",
+                  "rounding",
+                  "amountAtomic",
+                  "rawDecimalAmount",
+                  "displayAmount",
+                  "amountModel",
+                  "mint",
+                  "tokenProgram",
+                  "assetDecimals",
+                  "mintStateDigest",
+                  "mintObservedSlot",
+                  "mintObservedAtUnixMs",
+                  "preparedAtUnixMs",
+                  "price",
+                  "balance",
+                  "multiplier"
+                ],
+                "additionalProperties": false
               },
               "requestedShareQuantity": {
                 "anyOf": [
@@ -10036,9 +10998,7 @@
                       "type": "object",
                       "properties": {
                         "amountAtomic": {
-                          "type": "string",
-                          "maxLength": 20,
-                          "pattern": "^(0|[1-9][0-9]*)$"
+                          "$ref": "#/properties/tradeSummary/properties/usdValue/properties/balance/properties/amountAtomic"
                         },
                         "mint": {
                           "$ref": "#/properties/assetMint/anyOf/1"
@@ -10519,7 +11479,7 @@
           "confirmationSlot": {
             "anyOf": [
               {
-                "$ref": "#/properties/tradeSummary/properties/feeSummary/properties/routeFees/items/properties/amountAtomic"
+                "$ref": "#/properties/tradeSummary/properties/usdValue/properties/balance/properties/amountAtomic"
               },
               {
                 "type": "null"
@@ -10699,7 +11659,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/governed-action-7aecc51f",
+          "resourceUri": "ui://dexter/governed-action-a09a16bd",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash"
@@ -10715,8 +11675,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/governed-action-7aecc51f",
-        "openai/outputTemplate": "ui://dexter/governed-action-7aecc51f",
+        "ui/resourceUri": "ui://dexter/governed-action-a09a16bd",
+        "openai/outputTemplate": "ui://dexter/governed-action-a09a16bd",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,
@@ -11367,8 +12327,307 @@
                     "type": "string",
                     "enum": [
                       "input",
-                      "share-quantity"
+                      "share-quantity",
+                      "usd-value"
                     ]
+                  },
+                  "usdValue": {
+                    "type": "object",
+                    "properties": {
+                      "namespace": {
+                        "type": "string",
+                        "const": "dexter-governed-usd-value/v1"
+                      },
+                      "semantics": {
+                        "type": "string",
+                        "const": "approximate-input-market-value"
+                      },
+                      "requestedValueUsd": {
+                        "type": "string",
+                        "maxLength": 39
+                      },
+                      "selectedReferenceValueUsd": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "rounding": {
+                        "type": "string",
+                        "const": "floor"
+                      },
+                      "amountAtomic": {
+                        "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/amountAtomic"
+                      },
+                      "rawDecimalAmount": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "displayAmount": {
+                        "type": "string",
+                        "maxLength": 256
+                      },
+                      "amountModel": {
+                        "type": "string",
+                        "enum": [
+                          "raw-decimals",
+                          "scaled-ui-amount"
+                        ]
+                      },
+                      "mint": {
+                        "type": "string",
+                        "minLength": 32,
+                        "maxLength": 64
+                      },
+                      "tokenProgram": {
+                        "type": "string",
+                        "enum": [
+                          "spl-token",
+                          "token-2022"
+                        ]
+                      },
+                      "assetDecimals": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 18
+                      },
+                      "mintStateDigest": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "mintObservedSlot": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "mintObservedAtUnixMs": {
+                        "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "preparedAtUnixMs": {
+                        "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                      },
+                      "price": {
+                        "type": "object",
+                        "properties": {
+                          "mint": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mint"
+                          },
+                          "usdPrice": {
+                            "type": "string",
+                            "maxLength": 128
+                          },
+                          "quantityUnit": {
+                            "type": "string",
+                            "enum": [
+                              "raw-decimals",
+                              "scaled-ui"
+                            ]
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "retrievedAtUnixMs": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          "marketBlockId": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "expiresAtUnixMs": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          "settlementUsdPrice": {
+                            "type": "object",
+                            "properties": {
+                              "mint": {
+                                "type": "string",
+                                "const": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                              },
+                              "usdPrice": {
+                                "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/price/properties/usdPrice"
+                              },
+                              "source": {
+                                "type": "string"
+                              },
+                              "retrievedAtUnixMs": {
+                                "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                              },
+                              "marketBlockId": {
+                                "anyOf": [
+                                  {
+                                    "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "mint",
+                              "usdPrice",
+                              "source",
+                              "retrievedAtUnixMs",
+                              "marketBlockId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "mint",
+                          "usdPrice",
+                          "quantityUnit",
+                          "source",
+                          "retrievedAtUnixMs",
+                          "marketBlockId",
+                          "expiresAtUnixMs",
+                          "settlementUsdPrice"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "balance": {
+                        "type": "object",
+                        "properties": {
+                          "amountAtomic": {
+                            "type": "string",
+                            "maxLength": 20,
+                            "pattern": "^(0|[1-9][0-9]*)$"
+                          },
+                          "observedSlot": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          "observedAtUnixMs": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          }
+                        },
+                        "required": [
+                          "amountAtomic",
+                          "observedSlot",
+                          "observedAtUnixMs"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "multiplier": {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "enum": [
+                              "identity",
+                              "token-2022-scaled-ui-current",
+                              "token-2022-scaled-ui-scheduled"
+                            ]
+                          },
+                          "value": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/price/properties/usdPrice"
+                          },
+                          "currentValue": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                          },
+                          "scheduledValue": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "scheduledEffectiveTimestampUnixSeconds": {
+                            "anyOf": [
+                              {
+                                "type": "integer",
+                                "minimum": -9007199254740,
+                                "maximum": 9007199254740
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "effectiveTimestampUnixSeconds": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "nextValue": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "nextEffectiveTimestampUnixSeconds": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "observedSlot": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          "observedAtUnixMs": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                          },
+                          "mintStateDigest": {
+                            "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/mintStateDigest"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "value",
+                          "currentValue",
+                          "scheduledValue",
+                          "scheduledEffectiveTimestampUnixSeconds",
+                          "effectiveTimestampUnixSeconds",
+                          "nextValue",
+                          "nextEffectiveTimestampUnixSeconds",
+                          "observedSlot",
+                          "observedAtUnixMs",
+                          "mintStateDigest"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "required": [
+                      "namespace",
+                      "semantics",
+                      "requestedValueUsd",
+                      "selectedReferenceValueUsd",
+                      "rounding",
+                      "amountAtomic",
+                      "rawDecimalAmount",
+                      "displayAmount",
+                      "amountModel",
+                      "mint",
+                      "tokenProgram",
+                      "assetDecimals",
+                      "mintStateDigest",
+                      "mintObservedSlot",
+                      "mintObservedAtUnixMs",
+                      "preparedAtUnixMs",
+                      "price",
+                      "balance",
+                      "multiplier"
+                    ],
+                    "additionalProperties": false
                   },
                   "requestedShareQuantity": {
                     "anyOf": [
@@ -11567,9 +12826,7 @@
                           "type": "object",
                           "properties": {
                             "amountAtomic": {
-                              "type": "string",
-                              "maxLength": 20,
-                              "pattern": "^(0|[1-9][0-9]*)$"
+                              "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/balance/properties/amountAtomic"
                             },
                             "mint": {
                               "$ref": "#/properties/statusAfter/properties/assetMint/anyOf/1"
@@ -12050,7 +13307,7 @@
               "confirmationSlot": {
                 "anyOf": [
                   {
-                    "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/feeSummary/properties/routeFees/items/properties/amountAtomic"
+                    "$ref": "#/properties/statusAfter/properties/tradeSummary/properties/usdValue/properties/balance/properties/amountAtomic"
                   },
                   {
                     "type": "null"
@@ -12249,7 +13506,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/governed-action-7aecc51f",
+          "resourceUri": "ui://dexter/governed-action-a09a16bd",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash"
@@ -12265,8 +13522,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/governed-action-7aecc51f",
-        "openai/outputTemplate": "ui://dexter/governed-action-7aecc51f",
+        "ui/resourceUri": "ui://dexter/governed-action-a09a16bd",
+        "openai/outputTemplate": "ui://dexter/governed-action-a09a16bd",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,
@@ -12852,8 +14109,307 @@
                       "type": "string",
                       "enum": [
                         "input",
-                        "share-quantity"
+                        "share-quantity",
+                        "usd-value"
                       ]
+                    },
+                    "usdValue": {
+                      "type": "object",
+                      "properties": {
+                        "namespace": {
+                          "type": "string",
+                          "const": "dexter-governed-usd-value/v1"
+                        },
+                        "semantics": {
+                          "type": "string",
+                          "const": "approximate-input-market-value"
+                        },
+                        "requestedValueUsd": {
+                          "type": "string",
+                          "maxLength": 39
+                        },
+                        "selectedReferenceValueUsd": {
+                          "type": "string",
+                          "maxLength": 256
+                        },
+                        "rounding": {
+                          "type": "string",
+                          "const": "floor"
+                        },
+                        "amountAtomic": {
+                          "$ref": "#/properties/items/items/properties/tradeSummary/properties/amountAtomic"
+                        },
+                        "rawDecimalAmount": {
+                          "type": "string",
+                          "maxLength": 256
+                        },
+                        "displayAmount": {
+                          "type": "string",
+                          "maxLength": 256
+                        },
+                        "amountModel": {
+                          "type": "string",
+                          "enum": [
+                            "raw-decimals",
+                            "scaled-ui-amount"
+                          ]
+                        },
+                        "mint": {
+                          "type": "string",
+                          "minLength": 32,
+                          "maxLength": 64
+                        },
+                        "tokenProgram": {
+                          "type": "string",
+                          "enum": [
+                            "spl-token",
+                            "token-2022"
+                          ]
+                        },
+                        "assetDecimals": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 18
+                        },
+                        "mintStateDigest": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        },
+                        "mintObservedSlot": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "mintObservedAtUnixMs": {
+                          "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                        },
+                        "preparedAtUnixMs": {
+                          "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                        },
+                        "price": {
+                          "type": "object",
+                          "properties": {
+                            "mint": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mint"
+                            },
+                            "usdPrice": {
+                              "type": "string",
+                              "maxLength": 128
+                            },
+                            "quantityUnit": {
+                              "type": "string",
+                              "enum": [
+                                "raw-decimals",
+                                "scaled-ui"
+                              ]
+                            },
+                            "source": {
+                              "type": "string"
+                            },
+                            "retrievedAtUnixMs": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                            },
+                            "marketBlockId": {
+                              "anyOf": [
+                                {
+                                  "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "expiresAtUnixMs": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                            },
+                            "settlementUsdPrice": {
+                              "type": "object",
+                              "properties": {
+                                "mint": {
+                                  "type": "string",
+                                  "const": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+                                },
+                                "usdPrice": {
+                                  "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/price/properties/usdPrice"
+                                },
+                                "source": {
+                                  "type": "string"
+                                },
+                                "retrievedAtUnixMs": {
+                                  "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                                },
+                                "marketBlockId": {
+                                  "anyOf": [
+                                    {
+                                      "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "mint",
+                                "usdPrice",
+                                "source",
+                                "retrievedAtUnixMs",
+                                "marketBlockId"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "mint",
+                            "usdPrice",
+                            "quantityUnit",
+                            "source",
+                            "retrievedAtUnixMs",
+                            "marketBlockId",
+                            "expiresAtUnixMs",
+                            "settlementUsdPrice"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "balance": {
+                          "type": "object",
+                          "properties": {
+                            "amountAtomic": {
+                              "type": "string",
+                              "maxLength": 20,
+                              "pattern": "^(0|[1-9][0-9]*)$"
+                            },
+                            "observedSlot": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                            },
+                            "observedAtUnixMs": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                            }
+                          },
+                          "required": [
+                            "amountAtomic",
+                            "observedSlot",
+                            "observedAtUnixMs"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "multiplier": {
+                          "type": "object",
+                          "properties": {
+                            "source": {
+                              "type": "string",
+                              "enum": [
+                                "identity",
+                                "token-2022-scaled-ui-current",
+                                "token-2022-scaled-ui-scheduled"
+                              ]
+                            },
+                            "value": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/price/properties/usdPrice"
+                            },
+                            "currentValue": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                            },
+                            "scheduledValue": {
+                              "anyOf": [
+                                {
+                                  "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "scheduledEffectiveTimestampUnixSeconds": {
+                              "anyOf": [
+                                {
+                                  "type": "integer",
+                                  "minimum": -9007199254740,
+                                  "maximum": 9007199254740
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "effectiveTimestampUnixSeconds": {
+                              "anyOf": [
+                                {
+                                  "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "nextValue": {
+                              "anyOf": [
+                                {
+                                  "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/value"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "nextEffectiveTimestampUnixSeconds": {
+                              "anyOf": [
+                                {
+                                  "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/multiplier/properties/scheduledEffectiveTimestampUnixSeconds/anyOf/0"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "observedSlot": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                            },
+                            "observedAtUnixMs": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintObservedSlot"
+                            },
+                            "mintStateDigest": {
+                              "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/mintStateDigest"
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "value",
+                            "currentValue",
+                            "scheduledValue",
+                            "scheduledEffectiveTimestampUnixSeconds",
+                            "effectiveTimestampUnixSeconds",
+                            "nextValue",
+                            "nextEffectiveTimestampUnixSeconds",
+                            "observedSlot",
+                            "observedAtUnixMs",
+                            "mintStateDigest"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "namespace",
+                        "semantics",
+                        "requestedValueUsd",
+                        "selectedReferenceValueUsd",
+                        "rounding",
+                        "amountAtomic",
+                        "rawDecimalAmount",
+                        "displayAmount",
+                        "amountModel",
+                        "mint",
+                        "tokenProgram",
+                        "assetDecimals",
+                        "mintStateDigest",
+                        "mintObservedSlot",
+                        "mintObservedAtUnixMs",
+                        "preparedAtUnixMs",
+                        "price",
+                        "balance",
+                        "multiplier"
+                      ],
+                      "additionalProperties": false
                     },
                     "requestedShareQuantity": {
                       "anyOf": [
@@ -13052,9 +14608,7 @@
                             "type": "object",
                             "properties": {
                               "amountAtomic": {
-                                "type": "string",
-                                "maxLength": 20,
-                                "pattern": "^(0|[1-9][0-9]*)$"
+                                "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/balance/properties/amountAtomic"
                               },
                               "mint": {
                                 "$ref": "#/properties/items/items/properties/assetMint/anyOf/1"
@@ -13535,7 +15089,7 @@
                 "confirmationSlot": {
                   "anyOf": [
                     {
-                      "$ref": "#/properties/items/items/properties/tradeSummary/properties/feeSummary/properties/routeFees/items/properties/amountAtomic"
+                      "$ref": "#/properties/items/items/properties/tradeSummary/properties/usdValue/properties/balance/properties/amountAtomic"
                     },
                     {
                       "type": "null"
@@ -13737,7 +15291,7 @@
       ],
       "_meta": {
         "ui": {
-          "resourceUri": "ui://dexter/governed-history-f862492a",
+          "resourceUri": "ui://dexter/governed-history-8c7aab67",
           "csp": {
             "resourceDomains": [
               "https://dexter.cash"
@@ -13753,8 +15307,8 @@
             "model"
           ]
         },
-        "ui/resourceUri": "ui://dexter/governed-history-f862492a",
-        "openai/outputTemplate": "ui://dexter/governed-history-f862492a",
+        "ui/resourceUri": "ui://dexter/governed-history-8c7aab67",
+        "openai/outputTemplate": "ui://dexter/governed-history-8c7aab67",
         "openai/resultCanProduceWidget": true,
         "openai/widgetDomain": "https://dexter.cash",
         "openai/widgetPrefersBorder": false,

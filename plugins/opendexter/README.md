@@ -5,7 +5,7 @@ MCP at `https://open.dexter.cash/mcp`. This is one combined plugin: the current
 owner app binding, the remote MCP dependency, and the hosted workflow skills
 ship together.
 
-Version `0.6.6` uses the hosted contract recorded with this plugin. Native MCP OAuth completes
+Version `0.6.7` uses the hosted contract recorded with this plugin. Native MCP OAuth completes
 before tool discovery. The authenticated server registers fourteen tools: thirteen model-callable
 tools for Indexter discovery, native MCP discovery, x402 access and purchases, Dexter Wallet reads,
 and governed asset actions, plus app-only `indexter_discover` for UI
@@ -64,8 +64,17 @@ client.
   Natural-language stock Buy or Sell uses the user's exact human
   `companyQuery`. Stock Buy accepts either a USDC `amountAtomic` budget or a
   human decimal `shareQuantity` minimum that may overfill slightly, with an
-  optional `maximumSpendAtomic` ceiling. Stock Sell accepts direct token
-  `amountAtomic`, never `shareQuantity`. Send remains visible for compatibility
+  optional `maximumSpendAtomic` ceiling. For Sell, use exactly one of
+  `valueUsd`, a positive human decimal such as `"1"`, and direct token
+  `amountAtomic`. `valueUsd` is the USD market value to sell at preparation,
+  used as an approximate reference. Dexter rounds the token input down using
+  the latest reported USD price and checks the selected reference value
+  against the current sale quote. The total difference must fit the existing
+  price-impact limit, including fees already reflected in expected proceeds.
+  The executable quote supplies expected and minimum USDC proceeds; the
+  receipt supplies actual proceeds. Stock Sell uses `companyQuery`; non-stock Sell
+  uses the canonical `assetId`. Sell never accepts `shareQuantity`.
+  Send remains visible for compatibility
   and history, but the current runtime refuses it before creating an executable
   intent. Enrollment, extension, and owner escalation remain outside model
   calls.

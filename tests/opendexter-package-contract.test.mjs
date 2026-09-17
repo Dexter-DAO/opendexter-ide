@@ -680,8 +680,8 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(contract.contractId, "opendexter-hosted-full-descriptor-v2");
   assert.deepEqual(contract.source, {
     repository: "https://github.com/Dexter-DAO/dexter-mcp",
-    commit: "015f0b2b85244f9837ad16c780d3e4d7dfd32fee",
-    tree: "d49831efd81aff25853e98d43b4f60040e0fde5b",
+    commit: "f79fdd0512eb9f0b798a22f0634aa7e50f5ab728",
+    tree: "36e85827252683d4ea5f8d86a98df3fbd9c55946",
     descriptorPath: "release/open-tool-descriptors.json",
     descriptorMaterializerPath: "scripts/materialize-open-tool-descriptors.mjs",
     toolContractPath: "lib/open-tool-contracts.mjs",
@@ -690,11 +690,11 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(contract.sourceContracts.schemaVersion, 3);
   assert.equal(
     contract.sourceContracts.integratedApiRelease.commit,
-    "58cf412db8d1487cb8fa4ee3319fee121410aaef",
+    "0138a4a87916f0bf27f128c30e7c88f365864b2a",
   );
   assert.equal(
     contract.sourceContracts.facilitator.commit,
-    "bee9792417bf23cf28c600138b3cbcc0475f682f",
+    "09158b98f8a918c501543191b19362e22d86c6bc",
   );
   assert.equal(contract.mcp.url, "https://open.dexter.cash/mcp");
   assert.equal(contract.mcp.manifestVersion, "0.5.0");
@@ -845,7 +845,7 @@ test("ChatGPT and Codex share one skill-bearing app and MCP package", async () =
   const mcpBinding = await readJson(mcpBindingPath);
   const marketplace = await readJson(codexMarketplacePath);
   assert.equal(manifest.name, "opendexter");
-  assert.equal(manifest.version, "0.6.6");
+  assert.equal(manifest.version, "0.6.7");
   assert.equal(manifest.skills, "./skills/");
   assert.equal(manifest.apps, "./.app.json");
   assert.equal(manifest.mcpServers, "./.mcp.json");
@@ -879,7 +879,7 @@ test("Claude package is self-contained and uses the hosted remote MCP", async ()
   const mcp = await readJson(resolve(claudeRoot, ".mcp.json"));
   const marketplace = await readJson(claudeMarketplacePath);
   assert.equal(manifest.name, "opendexter");
-  assert.equal(manifest.version, "2.1.6");
+  assert.equal(manifest.version, "2.1.7");
   assert.deepEqual(mcp, {
     mcpServers: {
       opendexter: {
@@ -1255,6 +1255,34 @@ test("both formats preserve current Indexter and governed-stock semantics", asyn
       assert.match(text, /(?:does not accept|never accepts) `shareQuantity`/i);
     }
   }
+});
+
+test("both formats explain dollar Sell sizing, quote proceeds, and raw input compatibility", async () => {
+  for (const root of [codexRoot, claudeRoot]) {
+    for (const relativePath of [
+      "README.md",
+      "skills/opendexter/SKILL.md",
+      "skills/opendexter/references/routing-and-safety.md",
+    ]) {
+      const text = (await readFile(resolve(root, relativePath), "utf8")).replace(/\s+/g, " ");
+      assert.match(text, /positive human decimal/);
+      assert.match(text, /USD market value (?:to sell )?at preparation/);
+      assert.match(text, /latest reported USD price/);
+      assert.match(text, /executable quote supplies expected and minimum USDC proceeds/i);
+      assert.match(text, /(?:approximate until the receipt|receipt supplies actual proceeds)/);
+      assert.match(text, /Use exactly one of `valueUsd`[\s\S]{0,65}(?:and|,) (?:direct token )?`amountAtomic`/i);
+      assert.match(text, /(?:non-stock Sell accepts[\s\S]{0,25}|non-stock Sell uses the )canonical `assetId`/i);
+      assert.match(text, /Stock Sell[\s\S]{0,100}`companyQuery`/i);
+      assert.match(text, /direct token `amountAtomic`/);
+      assert.match(text, /Sell (?:does not accept|never accepts) `shareQuantity`/);
+      if (relativePath !== "README.md") {
+        assert.match(text, /"sell \$1 of NVIDIA" uses `companyQuery: "NVIDIA"` and `valueUsd: "1"`/);
+        assert.match(text, /server-certified decimals/);
+      }
+    }
+  }
+  const local = await readFile(resolve(repoRoot, "packages/mcp/skills/opendexter/SKILL.md"), "utf8");
+  assert.doesNotMatch(local, /valueUsd|dexter_prepare_asset_action/);
 });
 
 test("both package auth references preserve the three distinct OAuth identities", async () => {
