@@ -108,10 +108,18 @@ Use `appliedConstraints` and `appliedOrdering` to explain the applied filters an
    use `maximumSpendAtomic` without `shareQuantity`.
 4. Stock `shareQuantity` is an underlying-share-equivalent minimum-receive
    target and may overfill slightly. Confirm an at-least target before Prepare
-   when the user asks for an exact or no-more-than share count. Stock Sell uses
-   `companyQuery` plus direct token `amountAtomic` with server-certified
-   decimals and never accepts `shareQuantity`. Non-stock Sell and Send use
-   `assetId` plus `amountAtomic`; Send has no memo. The exact Prepare result is
+   when the user asks for an exact or no-more-than share count.
+   For Sell, "sell $1 of NVIDIA" uses `companyQuery: "NVIDIA"` and
+   `valueUsd: "1"`, a positive human decimal USD market value at preparation.
+   Dexter sizes the token input from the latest reported USD price. The
+   executable quote supplies expected and minimum USDC proceeds; net USDC
+   proceeds are approximate until the receipt. Non-stock Sell accepts
+   `valueUsd` with the canonical `assetId`.
+   Stock Sell also accepts `companyQuery` plus direct token `amountAtomic`
+   with server-certified decimals. Use exactly one of `valueUsd` and
+   `amountAtomic`; Sell never accepts `shareQuantity`.
+   For non-stock Sell and Send with raw token input, use `assetId` plus
+   `amountAtomic`. Send has no memo. The exact Prepare result is
    the authority on current runtime capability.
 5. Successfully prepared, covered reusable-mandate requests may proceed to
    `dexter_execute_asset_action`. Missing, insufficient, or unavailable

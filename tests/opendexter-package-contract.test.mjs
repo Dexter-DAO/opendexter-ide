@@ -1257,6 +1257,34 @@ test("both formats preserve current Indexter and governed-stock semantics", asyn
   }
 });
 
+test("both formats explain dollar Sell sizing, quote proceeds, and raw input compatibility", async () => {
+  for (const root of [codexRoot, claudeRoot]) {
+    for (const relativePath of [
+      "README.md",
+      "skills/opendexter/SKILL.md",
+      "skills/opendexter/references/routing-and-safety.md",
+    ]) {
+      const text = (await readFile(resolve(root, relativePath), "utf8")).replace(/\s+/g, " ");
+      assert.match(text, /positive human decimal/);
+      assert.match(text, /USD market value (?:to sell )?at preparation/);
+      assert.match(text, /latest reported USD price/);
+      assert.match(text, /executable quote supplies expected and minimum USDC proceeds/i);
+      assert.match(text, /(?:approximate until the receipt|receipt supplies actual proceeds)/);
+      assert.match(text, /Use exactly one of `valueUsd`[\s\S]{0,65}(?:and|,) (?:direct token )?`amountAtomic`/i);
+      assert.match(text, /(?:non-stock Sell accepts[\s\S]{0,25}|non-stock Sell uses the )canonical `assetId`/i);
+      assert.match(text, /Stock Sell[\s\S]{0,100}`companyQuery`/i);
+      assert.match(text, /direct token `amountAtomic`/);
+      assert.match(text, /Sell (?:does not accept|never accepts) `shareQuantity`/);
+      if (relativePath !== "README.md") {
+        assert.match(text, /"sell \$1 of NVIDIA" uses `companyQuery: "NVIDIA"` and `valueUsd: "1"`/);
+        assert.match(text, /server-certified decimals/);
+      }
+    }
+  }
+  const local = await readFile(resolve(repoRoot, "packages/mcp/skills/opendexter/SKILL.md"), "utf8");
+  assert.doesNotMatch(local, /valueUsd|dexter_prepare_asset_action/);
+});
+
 test("both package auth references preserve the three distinct OAuth identities", async () => {
   for (const root of [codexRoot, claudeRoot]) {
     const auth = await readFile(
