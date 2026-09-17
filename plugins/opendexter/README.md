@@ -66,10 +66,13 @@ client.
   human decimal `shareQuantity` minimum that may overfill slightly, with an
   optional `maximumSpendAtomic` ceiling. For Sell, use exactly one of
   `valueUsd`, a positive human decimal such as `"1"`, and direct token
-  `amountAtomic`. `valueUsd` is the USD market value to sell at preparation;
-  Dexter sizes the token input from the latest reported USD price. The
-  executable quote supplies expected and minimum USDC proceeds; the receipt
-  supplies actual proceeds. Stock Sell uses `companyQuery`; non-stock Sell
+  `amountAtomic`. `valueUsd` is the USD market value to sell at preparation,
+  used as an approximate reference. Dexter rounds the token input down using
+  the latest reported USD price and checks the selected reference value
+  against the current sale quote. The total difference must fit the existing
+  price-impact limit, including fees already reflected in expected proceeds.
+  The executable quote supplies expected and minimum USDC proceeds; the
+  receipt supplies actual proceeds. Stock Sell uses `companyQuery`; non-stock Sell
   uses the canonical `assetId`. Sell never accepts `shareQuantity`.
   Send remains visible for compatibility
   and history, but the current runtime refuses it before creating an executable

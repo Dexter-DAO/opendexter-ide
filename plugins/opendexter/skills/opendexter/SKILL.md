@@ -262,10 +262,14 @@ Use `appliedConstraints` and `appliedOrdering` to explain the applied filters an
    or no-more-than share count, disclose the possible overfill and ask whether
    an at-least target is acceptable before Prepare.
    For Sell, "sell $1 of NVIDIA" uses `companyQuery: "NVIDIA"` and
-   `valueUsd: "1"`. This is the USD market value to sell at preparation.
-   Keep it as a positive human decimal; Dexter sizes the token input from the
-   latest reported USD price. The executable quote supplies expected and
-   minimum USDC proceeds. Net USDC proceeds are approximate until the receipt.
+   `valueUsd: "1"`. This is the USD market value to sell at preparation,
+   used as an approximate reference. Keep it as a positive human decimal;
+   Dexter rounds the token input down using the latest reported USD price
+   and checks the selected reference value against the current sale quote.
+   The total difference must fit the existing price-impact limit, including
+   fees already reflected in expected proceeds. The executable quote supplies
+   expected and minimum USDC proceeds. Net USDC proceeds are approximate
+   until the receipt.
    Non-stock Sell accepts `valueUsd` with the canonical `assetId`.
    For token-input Stock Sell, pass `companyQuery` plus direct token
    `amountAtomic` using server-certified decimals. Use exactly one of

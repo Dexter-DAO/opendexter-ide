@@ -111,8 +111,11 @@ Use `appliedConstraints` and `appliedOrdering` to explain the applied filters an
    when the user asks for an exact or no-more-than share count.
    For Sell, "sell $1 of NVIDIA" uses `companyQuery: "NVIDIA"` and
    `valueUsd: "1"`, a positive human decimal USD market value at preparation.
-   Dexter sizes the token input from the latest reported USD price. The
-   executable quote supplies expected and minimum USDC proceeds; net USDC
+   It is an approximate reference. Dexter rounds the token input down using
+   the latest reported USD price and checks the selected reference value
+   against the current sale quote. The total difference must fit the existing
+   price-impact limit, including fees already reflected in expected proceeds.
+   The executable quote supplies expected and minimum USDC proceeds; net USDC
    proceeds are approximate until the receipt. Non-stock Sell accepts
    `valueUsd` with the canonical `assetId`.
    Stock Sell also accepts `companyQuery` plus direct token `amountAtomic`
