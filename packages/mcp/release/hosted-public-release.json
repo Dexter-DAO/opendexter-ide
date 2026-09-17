@@ -7,10 +7,10 @@
   },
   "release": {
     "repository": "https://github.com/Dexter-DAO/dexter-mcp",
-    "commit": "f0bfd2260624deab35e7a2fe983c3e6c40557939",
-    "tree": "ee83518da308baf3af5194011da3b64257dd238a",
-    "artifactManifestSha256": "30b9687c087684bd8f51c3ea178e3e9b0a0f3a1aace7172bfd185f1268c3106a",
-    "descriptorSha256": "3d405b1526388ea3c9d4867695538cd48ab3798ab1790323a2ab5ac1c40851c0",
+    "commit": "015f0b2b85244f9837ad16c780d3e4d7dfd32fee",
+    "tree": "d49831efd81aff25853e98d43b4f60040e0fde5b",
+    "artifactManifestSha256": "dcdc4dd8986f44dc0b1d121ad096495dfd2962acde342894a85ac1c6c805e5d0",
+    "descriptorSha256": "9495aac891ba47fd0567394a885a26711d12fd919d94abc523cc0e1d2301f5db",
     "packageVersion": "0.5.0"
   },
   "source": {
@@ -23,7 +23,7 @@
     "node": "v22.19.0",
     "npm": "10.9.3",
     "packageLockSha256": "309cb4d57e428899e44604f007fa4d41d76b81557ed8c0ab2331df254d861df8",
-    "sourceArchiveSha256": "52188ab95c8b35b9127a4304b43a35ff59bd9a4fe4f6b621012939e0e4cf4fa7"
+    "sourceArchiveSha256": "43a58320f9ab40e59cae869b8fb74a5bef2c7644bbbe5bb81c73c3382d6aab92"
   },
   "publicDescriptor": {
     "schemaVersion": 2,

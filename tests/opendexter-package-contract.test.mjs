@@ -680,8 +680,8 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(contract.contractId, "opendexter-hosted-full-descriptor-v2");
   assert.deepEqual(contract.source, {
     repository: "https://github.com/Dexter-DAO/dexter-mcp",
-    commit: "f0bfd2260624deab35e7a2fe983c3e6c40557939",
-    tree: "ee83518da308baf3af5194011da3b64257dd238a",
+    commit: "015f0b2b85244f9837ad16c780d3e4d7dfd32fee",
+    tree: "d49831efd81aff25853e98d43b4f60040e0fde5b",
     descriptorPath: "release/open-tool-descriptors.json",
     descriptorMaterializerPath: "scripts/materialize-open-tool-descriptors.mjs",
     toolContractPath: "lib/open-tool-contracts.mjs",
@@ -690,7 +690,7 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(contract.sourceContracts.schemaVersion, 3);
   assert.equal(
     contract.sourceContracts.integratedApiRelease.commit,
-    "b9a278ab13e9baa91cca210bdc237c942045097b",
+    "58cf412db8d1487cb8fa4ee3319fee121410aaef",
   );
   assert.equal(
     contract.sourceContracts.facilitator.commit,

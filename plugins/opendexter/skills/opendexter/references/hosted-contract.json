@@ -3,8 +3,8 @@
   "contractId": "opendexter-hosted-full-descriptor-v2",
   "source": {
     "repository": "https://github.com/Dexter-DAO/dexter-mcp",
-    "commit": "f0bfd2260624deab35e7a2fe983c3e6c40557939",
-    "tree": "ee83518da308baf3af5194011da3b64257dd238a",
+    "commit": "015f0b2b85244f9837ad16c780d3e4d7dfd32fee",
+    "tree": "d49831efd81aff25853e98d43b4f60040e0fde5b",
     "descriptorPath": "release/open-tool-descriptors.json",
     "descriptorMaterializerPath": "scripts/materialize-open-tool-descriptors.mjs",
     "toolContractPath": "lib/open-tool-contracts.mjs",
@@ -25,15 +25,15 @@
     },
     "integratedApiRelease": {
       "repository": "https://github.com/Dexter-DAO/dexter-api",
-      "commit": "b9a278ab13e9baa91cca210bdc237c942045097b",
-      "tree": "c8139f896ce7f0e776f3da5443cb0d4d858629f0",
-      "governedContractCommit": "b9a278ab13e9baa91cca210bdc237c942045097b",
-      "governedContractTree": "c8139f896ce7f0e776f3da5443cb0d4d858629f0"
+      "commit": "58cf412db8d1487cb8fa4ee3319fee121410aaef",
+      "tree": "05b6186b75202a9f6f0f88dfe7d38f9d7ed6cb9a",
+      "governedContractCommit": "64dc058fdc9b6929fd34d0eb48a39ef5edb87ec3",
+      "governedContractTree": "1ab982e4f8b32ce6a7318ac960c064f0521afc5f"
     },
     "portfolioProjection": {
       "repository": "https://github.com/Dexter-DAO/dexter-api",
-      "commit": "b9a278ab13e9baa91cca210bdc237c942045097b",
-      "tree": "c8139f896ce7f0e776f3da5443cb0d4d858629f0",
+      "commit": "58cf412db8d1487cb8fa4ee3319fee121410aaef",
+      "tree": "05b6186b75202a9f6f0f88dfe7d38f9d7ed6cb9a",
       "sourcePaths": [
         "src/portfolio/approvedActionTargets.ts",
         "src/routes/passkeyMcpBinding.ts",
@@ -89,8 +89,8 @@
     "node": "v22.19.0",
     "npm": "10.9.3",
     "packageLockSha256": "309cb4d57e428899e44604f007fa4d41d76b81557ed8c0ab2331df254d861df8",
-    "sourceArchiveSha256": "52188ab95c8b35b9127a4304b43a35ff59bd9a4fe4f6b621012939e0e4cf4fa7",
-    "descriptorSha256": "3d405b1526388ea3c9d4867695538cd48ab3798ab1790323a2ab5ac1c40851c0"
+    "sourceArchiveSha256": "43a58320f9ab40e59cae869b8fb74a5bef2c7644bbbe5bb81c73c3382d6aab92",
+    "descriptorSha256": "9495aac891ba47fd0567394a885a26711d12fd919d94abc523cc0e1d2301f5db"
   },
   "mcp": {
     "url": "https://open.dexter.cash/mcp",
