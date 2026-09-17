@@ -68,9 +68,9 @@ function invocation() {
   return {
     config: releaseConfig,
     repository: releaseConfig.repository,
-    ref: "refs/tags/opendexter-v1.24.0-rc.1",
+    ref: "refs/tags/opendexter-v1.24.0",
     refType: "tag",
-    refName: "opendexter-v1.24.0-rc.1",
+    refName: "opendexter-v1.24.0",
     sha: "a".repeat(40),
     eventName: "push",
     tagObjectSha: "a".repeat(40),
@@ -79,8 +79,8 @@ function invocation() {
     containerImage: releaseConfig.runner.containerImage,
     packageManifest: {
       name: "@dexterai/opendexter",
-      version: "1.24.0-rc.1",
-      publishConfig: { tag: "next" },
+      version: "1.24.0",
+      publishConfig: { tag: "latest" },
     },
     hostedContract: hostedContract(),
   };
@@ -94,7 +94,7 @@ function packageBundle() {
   mkdirSync(resolve(content, "assets/widgets"), { recursive: true });
   writeFileSync(resolve(content, "package.json"), `${JSON.stringify({
     name: "@dexterai/opendexter",
-    version: "1.24.0-rc.1",
+    version: "1.24.0",
     files: ["dist", "assets"],
     bin: { opendexter: "dist/index.js" },
   })}\n`);
@@ -111,7 +111,7 @@ function packageBundle() {
   }
   const bundle = resolve(root, "bundle");
   mkdirSync(bundle);
-  const tarball = resolve(bundle, "dexterai-opendexter-1.24.0-rc.1.tgz");
+  const tarball = resolve(bundle, "dexterai-opendexter-1.24.0.tgz");
   execFileSync("tar", ["-czf", tarball, "package"], {
     cwd: resolve(root, "content"),
   });
@@ -142,7 +142,7 @@ function packageBundle() {
       ],
       exactTarballInstall: {
         package: "@dexterai/opendexter",
-        version: "1.24.0-rc.1",
+        version: "1.24.0",
         ignoredScripts: true,
         cliHelpVerified: true,
       },
@@ -153,7 +153,7 @@ function packageBundle() {
     provenance: {
       repository: "https://github.com/Dexter-DAO/opendexter-ide",
       workflowPath: ".github/workflows/publish-opendexter.yml",
-      ref: "refs/tags/opendexter-v1.24.0-rc.1",
+      ref: "refs/tags/opendexter-v1.24.0",
       predicateType: "https://slsa.dev/provenance/v1",
     },
   };
@@ -204,7 +204,7 @@ describe("repeatable GitHub npm release", () => {
     expect(policy).not.toHaveProperty("evidence");
     expect(policy).not.toHaveProperty("sourceRead");
     expect(policy.publisher.environment).toBe("opendexter-npm-production");
-    expect(policy.package.distTag).toBe("next");
+    expect(policy.package.distTag).toBe("latest");
     const hostile = structuredClone(policy);
     hostile.publisher.workflowPath = ".github/workflows/other.yml";
     expect(() => validateHostedReleaseConfig(hostile)).toThrow(/publisher policy/);
@@ -218,16 +218,16 @@ describe("repeatable GitHub npm release", () => {
   it("binds tag, version, image, and one accepted public hosted release", () => {
     const valid = invocation();
     expect(validateReleaseInvocation(valid)).toMatchObject({
-      releaseTag: "opendexter-v1.24.0-rc.1",
+      releaseTag: "opendexter-v1.24.0",
       commit: "a".repeat(40),
-      package: { version: "1.24.0-rc.1", distTag: "next" },
+      package: { version: "1.24.0", distTag: "latest" },
     });
     for (const mutate of [
       (value: any) => { value.refType = "branch"; },
       (value: any) => { value.refName = "opendexter-v1.23.1"; },
       (value: any) => { value.sha = "c".repeat(40); },
       (value: any) => { value.tagCommitSha = "c".repeat(40); },
-      (value: any) => { value.packageManifest.publishConfig.tag = "latest"; },
+      (value: any) => { value.packageManifest.publishConfig.tag = "next"; },
       (value: any) => { value.hostedContract.release.commit = "short"; },
     ]) {
       const hostile = structuredClone(valid);
@@ -268,9 +268,9 @@ describe("repeatable GitHub npm release", () => {
     const fixture = packageBundle();
     const environment = {
       GITHUB_REPOSITORY: "Dexter-DAO/opendexter-ide",
-      GITHUB_REF: "refs/tags/opendexter-v1.24.0-rc.1",
+      GITHUB_REF: "refs/tags/opendexter-v1.24.0",
       GITHUB_REF_TYPE: "tag",
-      GITHUB_REF_NAME: "opendexter-v1.24.0-rc.1",
+      GITHUB_REF_NAME: "opendexter-v1.24.0",
       GITHUB_EVENT_NAME: "push",
       GITHUB_SHA: "a".repeat(40),
       OPENDXTER_RELEASE_CONTAINER_IMAGE: config().runner.containerImage,
@@ -327,7 +327,7 @@ describe("repeatable GitHub npm release", () => {
       _type: "https://in-toto.io/Statement/v1",
       predicateType: "https://slsa.dev/provenance/v1",
       subject: [{
-        name: "pkg:npm/%40dexterai/opendexter@1.24.0-rc.1",
+        name: "pkg:npm/%40dexterai/opendexter@1.24.0",
         digest: { sha512: Buffer.from(integrity, "base64").toString("hex") },
       }],
       predicate: {
@@ -336,7 +336,7 @@ describe("repeatable GitHub npm release", () => {
             workflow: {
               repository: "https://github.com/Dexter-DAO/opendexter-ide",
               path: ".github/workflows/publish-opendexter.yml",
-              ref: "refs/tags/opendexter-v1.24.0-rc.1",
+              ref: "refs/tags/opendexter-v1.24.0",
             },
           },
         },
@@ -362,19 +362,19 @@ describe("repeatable GitHub npm release", () => {
     const fixture = packageBundle();
     const metadata = {
       name: "@dexterai/opendexter",
-      version: "1.24.0-rc.1",
+      version: "1.24.0",
       dist: {
         integrity: fixture.receipt.artifact.integrity,
         shasum: fixture.receipt.artifact.shasum,
       },
     };
-    const packument = { "dist-tags": { next: "1.24.0-rc.1" } };
+    const packument = { "dist-tags": { latest: "1.24.0" } };
     expect(validateRegistryIdentity({
       receipt: fixture.receipt,
       metadata,
       packument,
       requireDistTag: true,
-    })).toEqual({ currentDistTag: "1.24.0-rc.1" });
+    })).toEqual({ currentDistTag: "1.24.0" });
     expect(registryPublishDecision("same")).toBe(false);
     expect(registryPublishDecision("absent")).toBe(true);
     const hostile = structuredClone(metadata);
