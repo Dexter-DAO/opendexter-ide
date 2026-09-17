@@ -33,6 +33,10 @@ const EXPECTED_FACILITATOR_REPOSITORY =
   "https://github.com/Dexter-DAO/dexter-facilitator";
 const API_CONSUMER_FIXTURE_PATH =
   "tests/fixtures/governed-agent-reconcile-advanced-final-fa0701b6.json";
+const FACILITATOR_CONSUMER_FIXTURE_PATHS = Object.freeze([
+  "tests/fixtures/governed-agent-trade-api-facilitator-binding-v1.json",
+  "tests/fixtures/governed-agent-trade-api-facilitator-binding-vault-0434.json",
+]);
 const PORTFOLIO_PROJECTION_SOURCE_PATHS = Object.freeze([
   "src/portfolio/approvedActionTargets.ts",
   "src/routes/passkeyMcpBinding.ts",
@@ -210,10 +214,6 @@ function validateSourceContracts(sourceContracts) {
   }
   if (
     sourceContracts.api.consumerFixture.path !== API_CONSUMER_FIXTURE_PATH
-    || sourceContracts.integratedApiRelease.governedContractCommit
-      !== sourceContracts.api.commit
-    || sourceContracts.integratedApiRelease.governedContractTree
-      !== sourceContracts.api.tree
     || sourceContracts.portfolioProjection.commit
       !== sourceContracts.integratedApiRelease.commit
     || sourceContracts.portfolioProjection.tree
@@ -224,8 +224,9 @@ function validateSourceContracts(sourceContracts) {
       !== "tests/fixtures/opendexter-portfolio-v1-zero-holding-approved-action-targets.json"
     || sourceContracts.portfolioProjection.fixture.apiPath
       !== "tests/fixtures/opendexter-portfolio-v1-zero-holding-approved-action-targets.json"
-    || sourceContracts.facilitator.bindingFixture.consumerPath
-      !== "tests/fixtures/governed-agent-trade-api-facilitator-binding-v1.json"
+    || !FACILITATOR_CONSUMER_FIXTURE_PATHS.includes(
+      sourceContracts.facilitator.bindingFixture.consumerPath,
+    )
     || sourceContracts.facilitator.bindingFixture.apiPath
       !== "tests/fixtures/governed-agent-trade-api-facilitator-binding-v1.json"
     || sourceContracts.facilitator.bindingFixture.facilitatorPath
@@ -237,6 +238,10 @@ function validateSourceContracts(sourceContracts) {
   }
   for (const [label, source] of [
     ["API", sourceContracts.api],
+    ["governed API", {
+      commit: sourceContracts.integratedApiRelease.governedContractCommit,
+      tree: sourceContracts.integratedApiRelease.governedContractTree,
+    }],
     ["integrated API", sourceContracts.integratedApiRelease],
     ["portfolio projection", sourceContracts.portfolioProjection],
     ["facilitator", sourceContracts.facilitator],
@@ -244,6 +249,15 @@ function validateSourceContracts(sourceContracts) {
   ]) {
     requireHex(source.commit, 40, `sourceContracts ${label} commit`);
     requireHex(source.tree, 40, `sourceContracts ${label} tree`);
+  }
+  // The historical consumer fixture and reviewed implementation checkpoint
+  // are distinct revisions. Their provenance remains bound to canonical MCP
+  // source and its source-owned materializer; repeated commits must agree.
+  for (const source of [sourceContracts.api, sourceContracts.integratedApiRelease]) {
+    if (source.commit === sourceContracts.integratedApiRelease.governedContractCommit
+      && source.tree !== sourceContracts.integratedApiRelease.governedContractTree) {
+      fail("hosted descriptor governed API commit/tree identity is inconsistent");
+    }
   }
   requireHex(
     sourceContracts.api.consumerFixture.sha256,

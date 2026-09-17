@@ -48,8 +48,10 @@ Use the client action already surfaced for the configured MCP:
 - Codex CLI: `codex mcp login opendexter`.
 - Claude Code: `/mcp` or `claude mcp login opendexter`.
 
-Never relay a personalized MCP URL, pairing URL, enrollment link, bearer token,
-or one-time credential through the conversation.
+Use a returned hosted approval or enrollment URL only for its stated wallet
+action and retain the original task for continuation. Never relay a
+personalized MCP URL, bearer token or one-time credential, or substitute an
+approval URL for the configured connector.
 
 After initial native OAuth, reload tool discovery once. After resuming OAuth on
 an established connection, retry the same blocked tool once. If either still
