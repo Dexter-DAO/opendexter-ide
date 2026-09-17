@@ -107,6 +107,7 @@ export async function accessWithWalletProof(
     };
   }
 
+  const responseUrl = firstRes.url || params.url;
   const payload = await createSIWxPayload(
     {
       ...((siwxExtension as any).info || {}),
@@ -114,15 +115,17 @@ export async function accessWithWalletProof(
       type: selectedChain.type,
     },
     signer as any,
+    responseUrl,
   );
 
   const authHeader = encodeSIWxHeader(payload);
   const retryHeaders = new Headers(fetchOpts.headers as Record<string, string>);
   retryHeaders.set("SIGN-IN-WITH-X", authHeader);
 
-  const retryRes = await fetch(params.url, {
+  const retryRes = await fetch(responseUrl, {
     ...fetchOpts,
     headers: retryHeaders,
+    redirect: "error",
     signal: AbortSignal.timeout(15_000),
   });
 

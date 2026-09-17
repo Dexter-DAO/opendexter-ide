@@ -698,10 +698,10 @@ describe("exact package provenance", () => {
     const locked = rootLock.packages?.["packages/mcp"];
 
     const exactTrain = {
-      version: "1.24.0-rc.3",
+      version: "1.24.0",
       instructions: "2.4.2-rc.1",
       core: "1.5.2",
-      tools: "0.9.0-rc.2",
+      tools: "0.9.0",
     };
     expect({
       version: candidate.version,

@@ -24,7 +24,8 @@ const mocks = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("@dexterai/x402/client", () => ({
+vi.mock("@dexterai/x402/client", async (importOriginal) => ({
+  capturePaymentReceipt: (await importOriginal<typeof import("@dexterai/x402/client")>()).capturePaymentReceipt,
   payAndFetch: vi.fn(),
   detectStrategy: mocks.detectStrategy,
   buildV1PaymentHeader: mocks.buildV1PaymentHeader,
@@ -37,7 +38,10 @@ vi.mock("@dexterai/x402/client", () => ({
   fireImpressionBeacon: vi.fn(async () => {}),
 }));
 
+import { capturePaymentReceipt } from "@dexterai/x402/client";
+
 const injectedX402Client = {
+  capturePaymentReceipt,
   payAndFetch: vi.fn(),
   detectStrategy: mocks.detectStrategy,
   buildV1PaymentHeader: mocks.buildV1PaymentHeader,
@@ -183,7 +187,7 @@ describe("Direct Exact selected-offer execution", () => {
         headers: {
           "content-type": "application/json",
           "payment-response": Buffer.from(
-            JSON.stringify({ success: true, transaction: "DIRECT_TX" }),
+            JSON.stringify({ success: true, network: SELECTED.network, transaction: "DIRECT_TX" }),
           ).toString("base64"),
         },
       });
@@ -274,7 +278,7 @@ describe("Direct Exact selected-offer execution", () => {
         headers: {
           "content-type": "application/json",
           "payment-response": Buffer.from(
-            JSON.stringify({ transaction: "EVM_TRANSACTION" }),
+            JSON.stringify({ success: true, network: EVM_SELECTED.network, transaction: "EVM_TRANSACTION" }),
           ).toString("base64"),
         },
       });

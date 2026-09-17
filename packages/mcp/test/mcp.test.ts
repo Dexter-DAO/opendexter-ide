@@ -264,6 +264,8 @@ describe("siwx access flow", () => {
       "sign-in-with-x": {
         info: {
           ...ext.info,
+          domain: "example.com",
+          uri: "https://example.com/protected",
           nonce: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
           issuedAt: "2026-03-14T00:00:00.000Z",
           expirationTime: "2026-03-14T00:05:00.000Z",

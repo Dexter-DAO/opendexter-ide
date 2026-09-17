@@ -308,14 +308,26 @@ export async function evaluatePaymentRequirements(
 
 async function parseResponse(res: Response): Promise<unknown> {
   const contentType = res.headers.get("content-type") || "";
+  const text = await res.text();
   if (contentType.includes("json")) {
     try {
-      return await res.json();
-    } catch (error) {
-      return await res.text();
+      return JSON.parse(text);
+    } catch {
+      return text;
     }
   }
-  return await res.text();
+  return text;
+}
+
+async function readPaidResponseBody(res: Response): Promise<{
+  data?: unknown;
+  deliveryError?: string;
+}> {
+  try {
+    return { data: await parseResponse(res) };
+  } catch {
+    return { deliveryError: "seller_response_body_unavailable" };
+  }
 }
 
 function extractSettlement(res: Response): unknown {
@@ -575,6 +587,7 @@ async function paySelectedV2Offer({
     };
   }
 
+  let paymentDispatched = false;
   try {
     const accept = { ...selectedAccept };
     const rpcUrl = adapter.getDefaultRpcUrl(network);
@@ -616,18 +629,39 @@ async function paySelectedV2Offer({
       paidInit.body = requestInit.body;
     }
     onDispatch();
+    paymentDispatched = true;
     const timeout = setTimeout(() => controller.abort(), 120_000);
     try {
       const response = await externalFetch(url, paidInit);
       clearTimeout(timeout);
+      const paymentReceipt = x402Client.capturePaymentReceipt(response, {
+        network,
+        amountAtomic: amount,
+        assetDecimals: typeof (accept.extra as Record<string, unknown> | undefined)?.decimals === "number"
+          ? (accept.extra as { decimals: number }).decimals : undefined,
+      });
+      const txSignature = typeof paymentReceipt.transaction === "string"
+        ? paymentReceipt.transaction : undefined;
+      if (paymentReceipt.settlementStatus !== "settled") {
+        return {
+          ok: false as const,
+          reason: paymentReceipt.settlementStatus === "failed"
+            ? "settlement_failed" as const : "payment_unconfirmed" as const,
+          detail: "Recover or reconcile this same payment before another purchase.",
+          response,
+          paymentReceipt,
+          txSignature,
+          paymentDispatched: true,
+        };
+      }
       if (!response.ok) {
         return {
           ok: false as const,
-          reason:
-            response.status === 402
-              ? ("merchant_rejected" as const)
-              : ("settlement_failed" as const),
+          reason: "delivery_failed" as const,
           detail: await responseFailureDetail(response),
+          response,
+          paymentReceipt,
+          txSignature,
           paymentDispatched: true,
         };
       }
@@ -637,7 +671,8 @@ async function paySelectedV2Offer({
         response,
         amountPaid: amount,
         network: networkRef,
-        txSignature: paymentResponseTransaction(response),
+        txSignature,
+        paymentReceipt,
         paymentDispatched: true,
       };
     } catch (error) {
@@ -674,9 +709,9 @@ async function paySelectedV2Offer({
   } catch (error) {
     return {
       ok: false as const,
-      reason: "error" as const,
+      reason: paymentDispatched ? "payment_unconfirmed" as const : "error" as const,
       detail: error instanceof Error ? error.message : String(error),
-      paymentDispatched: false,
+      paymentDispatched,
     };
   }
 }
@@ -1513,7 +1548,49 @@ export async function x402Fetch(
         );
       }
 
+      const reportedReceipt = (payResult as {
+        paymentReceipt?: import("@dexterai/x402/client").PaymentReceipt;
+      }).paymentReceipt;
+      const settledAmount = payResult.ok && payResult.paid
+        ? payResult.amountPaid
+        : reportedReceipt?.settlementStatus === "settled" ? reportedReceipt.amountAtomic : undefined;
+      if (settledAmount !== undefined && runtime.recordSpend) {
+        const network = payResult.ok && payResult.paid
+          ? payResult.network?.caip2 ?? payResult.network?.bare ?? ""
+          : reportedReceipt?.network ?? "";
+        // This hook measures USDC. Merchant-supplied decimals cannot alter
+        // the known chain denomination used by the rolling spending limit.
+        const decimals = network === "eip155:56" || network === "bsc" ? 18 : 6;
+        const paidAtomic = Number(settledAmount);
+        const paidUsdc = Number.isFinite(paidAtomic) && paidAtomic > 0
+          ? paidAtomic / Math.pow(10, decimals)
+          : (policyCheck.priceUsdc ?? 0);
+        // A settled payment counts even when delivery or body reading fails.
+        if (paidUsdc > 0) {
+          try { runtime.recordSpend(paidUsdc, params.url); } catch {}
+        }
+      }
+
       if (!payResult.ok) {
+        const evidence = payResult as {
+          paymentReceipt?: import("@dexterai/x402/client").PaymentReceipt;
+          txSignature?: string;
+          response?: Response;
+        };
+        const details = {
+          ...evidence.paymentReceipt,
+          ...(evidence.txSignature ? { transaction: evidence.txSignature } : {}),
+        };
+        if (evidence.paymentReceipt?.settlementStatus === "settled") {
+          return withTab({
+            status: evidence.response?.status ?? 502,
+            error: "Payment settled, but the seller did not deliver a successful result. Recover this same purchase; do not pay again.",
+            ...(evidence.response ? await readPaidResponseBody(evidence.response) : {}),
+            payment: { dispatched: true, settled: true, retrySafe: false, details },
+            retryable: false,
+            requirements: selectedRequirements,
+          });
+        }
         // `payment_unconfirmed` is NOT a plain payment failure: the payment
         // authorization was already sent to the merchant and MAY have settled
         // on-chain — the merchant just never answered in time. Surfacing it as
@@ -1524,20 +1601,15 @@ export async function x402Fetch(
           return withTab({
             status: 402,
             error:
-              "Payment unconfirmed — the payment was sent and may have " +
-              "settled on-chain, but the merchant did not respond in time. " +
-              "DO NOT retry this call: a retry can pay a second time. " +
-              "Check the wallet / chain for a settled transaction before " +
-              "deciding what to do." +
+              "Payment was sent, but settlement is unconfirmed. " +
+              "Recover or reconcile this same purchase; a new payment could charge twice." +
               (payResult.detail ? ` (${payResult.detail})` : ""),
-            payment: { settled: "unconfirmed", retrySafe: false },
+            payment: { dispatched: true, settled: "unconfirmed", retrySafe: false, details },
+            retryable: false,
             requirements: selectedRequirements,
           });
         }
-        // A typed, expected failure — never a thrown error. SIW-X endpoints
-        // surface here too (the v1/v2 strategies don't recognise an
-        // identity-only challenge as payable). These reasons all mean no
-        // money moved (or the merchant rejected the payload) — retry-safe.
+        // A merchant failure after dispatch does not prove that no money moved.
         const dispatchProof = (
           payResult as { paymentDispatched?: boolean }
         ).paymentDispatched;
@@ -1557,7 +1629,7 @@ export async function x402Fetch(
           }`,
           ...(dispatchedFailure
             ? {
-                payment: { settled: "unconfirmed", retrySafe: false },
+                payment: { settled: "unconfirmed", retrySafe: false, details },
                 retryable: false,
               }
             : {
@@ -1609,7 +1681,7 @@ export async function x402Fetch(
       }
 
       const paidRes: Response = payResult.response;
-      const data = await parseResponse(paidRes);
+      const body = await readPaidResponseBody(paidRes);
       // payAndFetch reports settlement on the PayResult itself (amountPaid,
       // network, txSignature) — authoritative. Fall back to the response's
       // PAYMENT-RESPONSE header for any extra receipt detail.
@@ -1622,6 +1694,17 @@ export async function x402Fetch(
           ? (headerSettlement as Record<string, unknown>)
           : {}),
       };
+      if (body.deliveryError) {
+        return withTab({
+          status: 502,
+          error: "Payment settled, but the seller response could not be read. Recover this same purchase; do not pay again.",
+          deliveryError: body.deliveryError,
+          payment: { dispatched: true, settled: true, retrySafe: false, details: settlement },
+          retryable: false,
+          requirements: selectedRequirements,
+        });
+      }
+      const data = body.data;
 
       const { getSponsoredRecommendations, fireImpressionBeacon } = await import(
         "@dexterai/x402/client"
@@ -1637,28 +1720,6 @@ export async function x402Fetch(
       }
       if (sponsoredRecs) {
         fireImpressionBeacon(paidRes).catch(() => {});
-      }
-
-      // payResult.ok === true means payAndFetch completed settlement.
-      // Record the witnessed spend so the rolling budget sees it next call.
-      // amountPaid is authoritative (atomic units from the PayResult); fall
-      // back to the policy-check price if the SDK did not surface it.
-      //
-      // Per-chain decimals: BSC USDC is 18, every other supported chain is 6.
-      // Hardcoding /1e6 would have silently under-reported a $5 BSC spend as
-      // $0.000000000000005, also breaking the rolling-budget check. Inline
-      // lookup keeps the fix self-contained in this tool — when more chains
-      // join the family, add them here too.
-      if (runtime.recordSpend) {
-        const paidAtomic = Number(payResult.amountPaid);
-        const network = payResult.network?.caip2 ?? payResult.network?.bare ?? "";
-        const decimals = network === "eip155:56" || network === "bsc" ? 18 : 6;
-        const paidUsdc = Number.isFinite(paidAtomic) && paidAtomic > 0
-          ? paidAtomic / Math.pow(10, decimals)
-          : (policyCheck.priceUsdc ?? 0);
-        if (paidUsdc > 0) {
-          try { runtime.recordSpend(paidUsdc, params.url); } catch {}
-        }
       }
 
       const result: Record<string, unknown> = {
