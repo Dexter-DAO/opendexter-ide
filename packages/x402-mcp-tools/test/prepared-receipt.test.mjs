@@ -11,9 +11,14 @@ const accept = {
   maxTimeoutSeconds: 60, extra: { decimals: 6 },
 };
 
-async function purchase(t, receipt, status = 200, body = '{"answer":42}', offer = accept) {
+async function purchase(t, receipt, status = 200, body = '{"answer":42}', offer = accept, challengeOptions = {}) {
   let signatures = 0;
   let dispatched = 0;
+  let walletCreations = 0;
+  let probes = 0;
+  let balanceReads = 0;
+  let dispatchMarks = 0;
+  let extensions = challengeOptions.extensions;
   const completions = [];
   const spending = [];
   const signer = {
@@ -22,7 +27,7 @@ async function purchase(t, receipt, status = 200, body = '{"answer":42}', offer 
   };
   const wallet = {
     getInfo: () => ({}),
-    getAvailableUsdc: async () => 10,
+    getAvailableUsdc: async () => { balanceReads++; return 10; },
     getAllBalances: async () => ({ totalUsdc: 10, chains: {} }),
     getPaymentSigners: () => ({ evmPrivateKey: 'offline-signer-test-seam' }),
     getEvmSigner: () => signer,
@@ -45,8 +50,13 @@ async function purchase(t, receipt, status = 200, body = '{"answer":42}', offer 
         ? receipt : Buffer.from(JSON.stringify(receipt)).toString('base64');
       return new Response(body, { status, headers });
     }
-    const required = { x402Version: 2, resource: { url }, accepts: [offer] };
-    return new Response(JSON.stringify(required), { status: 402, headers: {
+    probes++;
+    const required = { x402Version: 2, resource: { url }, accepts: [offer], extensions };
+    const challengeBody = challengeOptions.headerOnly ? {} : {
+      ...required,
+      ...(challengeOptions.bodyExtensions ? { extensions: challengeOptions.bodyExtensions } : {}),
+    };
+    return new Response(JSON.stringify(challengeBody), { status: 402, headers: {
       'content-type': 'application/json', 'PAYMENT-REQUIRED': Buffer.from(JSON.stringify(required)).toString('base64'),
     } });
   };
@@ -60,20 +70,98 @@ async function purchase(t, receipt, status = 200, body = '{"answer":42}', offer 
       headers: { 'content-type': 'application/json' },
     });
   });
-  let prior;
+  let prior = challengeOptions.priorAttempt;
   const runtime = {
     maxAmountUsdc: 5, maxAmountAtomic: '10000', explicitExternalFetch: fetch,
-    x402Client: { ...sdk, createEvmKeypairWallet: async () => signer },
+    x402Client: { ...sdk, createEvmKeypairWallet: async () => { walletCreations++; return signer; } },
     recordSpend: (amount, target) => spending.push({ amount, target }),
     purchaseAttempts: {
       begin: () => prior ? { acquired: false, ...prior } : { acquired: true },
-      markDispatching: () => {},
+      markDispatching: () => { dispatchMarks++; },
       complete: (...args) => { completions.push(args); prior = { state: args[1], receipt: args[2] }; },
     },
   };
   const result = await x402Fetch({ url, method: 'GET', purchase: prepared }, wallet, runtime);
+  if (challengeOptions.replayExtensions) extensions = challengeOptions.replayExtensions;
   const replay = await x402Fetch({ url, method: 'GET', purchase: prepared }, wallet, runtime);
-  return { result, replay, signatures, dispatched, completions, spending };
+  return { result, replay, signatures, dispatched, completions, spending,
+    walletCreations, probes, balanceReads, dispatchMarks };
+}
+
+const requiredIdentifier = { 'payment-identifier': { info: { required: true } } };
+
+for (const [name, options] of [
+  ['matching body and header', {}],
+  ['header-only challenge', { headerOnly: true }],
+  ['required header with optional body', { bodyExtensions: { 'payment-identifier': { info: { required: false } } } }],
+]) {
+  test(`prepared exact refuses required payment identifiers from ${name} before wallet creation`, async t => {
+    const f = await purchase(t, { success: true, network: accept.network, transaction: 'must-not-pay' },
+      200, '{}', accept, { ...options, extensions: requiredIdentifier });
+    assert.equal(f.result.error, 'unsupported_required_payment_identifier');
+    assert.equal(f.result.phase, 'pre_dispatch');
+    assert.equal(f.result.payment.dispatched, false);
+    assert.equal(f.result.purchaseReceipt.dispatch, 'not_dispatched');
+    assert.equal(f.walletCreations, 0);
+    assert.equal(f.balanceReads, 0);
+    assert.equal(f.signatures, 0);
+    assert.equal(f.dispatchMarks, 0);
+    assert.equal(f.dispatched, 0);
+    assert.equal(f.probes, 1);
+    assert.deepEqual(f.spending, []);
+    assert.deepEqual(f.replay.purchaseReceipt, f.result.purchaseReceipt);
+  });
+}
+
+for (const [name, extensions] of [
+  ['optional identifier', { 'payment-identifier': { info: { required: false } } }],
+  ['identifier with no requirement', { 'payment-identifier': { info: {} } }],
+  ['non-boolean requirement', { 'payment-identifier': { info: { required: 'true' } } }],
+  ['unrelated extension', { 'other-extension': { info: { required: true } } }],
+]) {
+  test(`prepared exact retains ${name} and recovers the saved receipt before a changed challenge`, async t => {
+    const f = await purchase(t, { success: true, network: accept.network, transaction: 'allowed-payment' },
+      200, '{"answer":42}', accept, { extensions, replayExtensions: requiredIdentifier });
+    assert.equal(f.result.payment.settled, true);
+    assert.deepEqual(f.result.data, { answer: 42 });
+    assert.equal(f.signatures, 1);
+    assert.equal(f.dispatched, 1);
+    assert.equal(f.probes, 1);
+    assert.equal(f.walletCreations, 1);
+    assert.equal(f.dispatchMarks, 1);
+    assert.deepEqual(f.replay.purchaseReceipt, f.result.purchaseReceipt);
+    assert.deepEqual(f.spending, [{ amount: 0.01, target: url }]);
+  });
+}
+
+test('unconfirmed prepared payment retains its saved receipt when the seller later requires an identifier', async t => {
+  const f = await purchase(t, { success: false, network: accept.network, transaction: 'pending-payment', errorReason: 'settlement_pending' },
+    200, '{}', accept, { replayExtensions: requiredIdentifier });
+  assert.equal(f.result.payment.settled, 'unconfirmed');
+  assert.equal(f.result.purchaseReceipt.retry, 'reconcile_only');
+  assert.deepEqual(f.replay.purchaseReceipt, f.result.purchaseReceipt);
+  assert.equal(f.probes, 1);
+  assert.equal(f.walletCreations, 1);
+  assert.equal(f.signatures, 1);
+  assert.equal(f.dispatched, 1);
+  assert.deepEqual(f.spending, []);
+});
+
+for (const state of ['claimed', 'dispatching', 'reconciliation_required']) {
+  test(`saved ${state} attempt stays observation-only before a required-identifier challenge`, async t => {
+    const f = await purchase(t, null, 200, '{}', accept,
+      { extensions: requiredIdentifier, priorAttempt: { state } });
+    assert.equal(f.result.error, 'prepared_purchase_requires_reconciliation');
+    assert.equal(f.result.purchaseReceipt.retry, 'reconcile_only');
+    assert.equal(f.probes, 0);
+    assert.equal(f.walletCreations, 0);
+    assert.equal(f.balanceReads, 0);
+    assert.equal(f.signatures, 0);
+    assert.equal(f.dispatchMarks, 0);
+    assert.equal(f.dispatched, 0);
+    assert.deepEqual(f.completions, []);
+    assert.deepEqual(f.spending, []);
+  });
 }
 
 test('actual SDK prepared purchase accepts matching settlement and preserves one saved receipt', async t => {

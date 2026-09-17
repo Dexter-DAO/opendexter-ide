@@ -459,6 +459,15 @@ function parse402(body: unknown, paymentRequiredHeader: string | null = null): {
   };
 }
 
+function requiresPaymentIdentifier(extensions: unknown): boolean {
+  if (!extensions || typeof extensions !== "object" || Array.isArray(extensions)) return false;
+  const identifier = (extensions as Record<string, unknown>)["payment-identifier"];
+  if (!identifier || typeof identifier !== "object" || Array.isArray(identifier)) return false;
+  const info = (identifier as Record<string, unknown>).info;
+  return Boolean(info && typeof info === "object" && !Array.isArray(info)
+    && (info as Record<string, unknown>).required === true);
+}
+
 interface RuntimeFetchOpts {
   /** Per-call spend cap in USDC — no single paid call may exceed this. */
   maxAmountUsdc: number;
@@ -1363,6 +1372,28 @@ export async function x402Fetch(
   // Mode 1: Wallet auto-pay
   if (wallet) {
     try {
+      const x402Client = runtime.x402Client ?? defaultX402Client;
+      const preparedStrategy = validatedPurchase?.mode === "direct_exact" && paymentChallengeResponse
+        ? await x402Client.detectStrategy(paymentChallengeResponse.clone())
+        : null;
+      const preparedChallenge = preparedStrategy && paymentChallengeResponse
+        ? await preparedStrategy.parseChallenge(paymentChallengeResponse.clone())
+        : null;
+      // Direct Exact calls the adapter directly, so it must apply the SDK
+      // strategy's required-extension refusal before creating a wallet.
+      // Existing attempts have already returned through the saved-receipt path.
+      if (preparedChallenge?.x402Version === 2 && requiresPaymentIdentifier(preparedChallenge.extensions)) {
+        return withTab({
+          status: 402,
+          mode: "payment_capability_unsupported",
+          phase: "pre_dispatch",
+          retryable: false,
+          error: "unsupported_required_payment_identifier",
+          message: "This seller requires a payment identifier that this client cannot provide.",
+          payment: { dispatched: false, settled: false },
+          requirements: selectedRequirements,
+        });
+      }
       const policyCheck = await evaluatePaymentRequirements(
         wallet,
         selectedRequirements,
@@ -1408,7 +1439,6 @@ export async function x402Fetch(
       // Direct Exact calls use a route-pinned adapter: v1 consumes one
       // filtered parsed option; v2 builds the selected raw accept directly
       // and never performs the SDK's network-only second probe.
-      const x402Client = runtime.x402Client ?? defaultX402Client;
       const {
         payAndFetch,
         createKeypairWallet,
@@ -1452,12 +1482,8 @@ export async function x402Fetch(
             payment: { dispatched: false, settled: false },
           });
         }
-        const strategy = await x402Client.detectStrategy(
-          paymentChallengeResponse.clone(),
-        );
-        const challenge = strategy
-          ? await strategy.parseChallenge(paymentChallengeResponse.clone())
-          : null;
+        const strategy = preparedStrategy;
+        const challenge = preparedChallenge;
         const selected = validatedPurchase.route.sellerOffer;
         const selectedOption = challenge?.options[selectedAcceptIndex];
         const selectedOptionMatches = selectedOption
