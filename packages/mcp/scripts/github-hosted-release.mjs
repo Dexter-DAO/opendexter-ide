@@ -1038,7 +1038,8 @@ async function commandRegistry(values) {
     fail("--mode must be preflight or reconcile");
   }
   const requireDistTag = values["require-dist-tag"] === "true";
-  const attempts = mode === "reconcile" ? 15 : 1;
+  // npm may accept an upload before its registry metadata and provenance are visible.
+  const attempts = mode === "reconcile" ? 40 : 1;
   let state;
   let lastError;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
@@ -1050,7 +1051,7 @@ async function commandRegistry(values) {
       lastError = error;
       if (mode === "preflight") throw error;
     }
-    await new Promise((resolvePromise) => setTimeout(resolvePromise, 4_000));
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, 15_000));
   }
   if (!state || (mode === "reconcile" && state.state !== "same")) {
     throw lastError ?? new Error("registry reconciliation timed out");
