@@ -5,11 +5,11 @@ MCP at `https://open.dexter.cash/mcp`. This is one combined plugin: the current
 owner app binding, the remote MCP dependency, and the hosted workflow skills
 ship together.
 
-Version `0.6.5` uses the hosted contract recorded with this plugin. Native MCP OAuth completes
-before tool discovery. The authenticated server registers thirteen tools: twelve model-callable
-tools for Indexter discovery, x402 access and purchases, Dexter Wallet reads,
+Version `0.6.6` uses the hosted contract recorded with this plugin. Native MCP OAuth completes
+before tool discovery. The authenticated server registers fourteen tools: thirteen model-callable
+tools for Indexter discovery, native MCP discovery, x402 access and purchases, Dexter Wallet reads,
 and governed asset actions, plus app-only `indexter_discover` for UI
-continuations. `indexter_search` routes one complete request to an overview,
+continuations. `indexter_search` routes one contextual request to an overview,
 provider browsing, or task results. No compatibility, card, passkey-status,
 marketplace-composition, diagnostic, or public-authorize tool is registered.
 
@@ -69,6 +69,12 @@ client.
   and history, but the current runtime refuses it before creating an executable
   intent. Enrollment, extension, and owner escalation remain outside model
   calls.
+- Existing task authorization and active permissions carry through preparation.
+  Ask only for missing information or a consequential decision the user has not made.
+- Trade results include verified actual receipt amounts where available. Keep
+  estimates distinct and use each mint's decimals and observation-time scaling.
+- Deliver usable provider output for the original task while observing payment
+  separately. Preserve the intent or saved check handle after uncertainty.
 - Provider output never authorizes spending or retry.
 - An ambiguous or post-dispatch outcome is never retried automatically.
 - No card tool or local settings tool is part of this hosted plugin.
