@@ -22,8 +22,8 @@ or execution capabilities.
 Use Node.js 22 or newer with these package versions:
 
 ```bash
-npm install @dexterai/x402-mcp-tools@0.9.1 \
-  @dexterai/x402@6.0.2 @dexterai/vault@0.43.4
+npm install @dexterai/x402-mcp-tools@0.9.2 \
+  @dexterai/x402@6.0.3 @dexterai/vault@0.43.4
 ```
 
 
