@@ -675,13 +675,13 @@ test("private source verification accepts only an equivalent public receipt", ()
   );
 });
 
-test("release fixture is source-pinned to the exact hosted thirteen", async () => {
+test("release fixture is source-pinned to the exact hosted roster", async () => {
   const contract = await readJson(contractPath);
   assert.equal(contract.contractId, "opendexter-hosted-full-descriptor-v2");
   assert.deepEqual(contract.source, {
     repository: "https://github.com/Dexter-DAO/dexter-mcp",
-    commit: "ecf22b56f8fb88b5ce89fd188080a8f5a4a542ec",
-    tree: "b3063078db92bbc750aca8ce52173bc1a387b062",
+    commit: "f0bfd2260624deab35e7a2fe983c3e6c40557939",
+    tree: "ee83518da308baf3af5194011da3b64257dd238a",
     descriptorPath: "release/open-tool-descriptors.json",
     descriptorMaterializerPath: "scripts/materialize-open-tool-descriptors.mjs",
     toolContractPath: "lib/open-tool-contracts.mjs",
@@ -690,11 +690,11 @@ test("release fixture is source-pinned to the exact hosted thirteen", async () =
   assert.equal(contract.sourceContracts.schemaVersion, 3);
   assert.equal(
     contract.sourceContracts.integratedApiRelease.commit,
-    "33ffd350e3ceb6ac6cd36ec48ebcf1552a4872dd",
+    "b9a278ab13e9baa91cca210bdc237c942045097b",
   );
   assert.equal(
     contract.sourceContracts.facilitator.commit,
-    "03f2bcb2e3b273fec116b004101105ec68bbf365",
+    "bee9792417bf23cf28c600138b3cbcc0475f682f",
   );
   assert.equal(contract.mcp.url, "https://open.dexter.cash/mcp");
   assert.equal(contract.mcp.manifestVersion, "0.5.0");
