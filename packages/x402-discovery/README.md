@@ -2,7 +2,7 @@
 
 `@dexterai/x402-discovery` is the descriptive install alias for `@dexterai/opendexter`.
 Version `1.1.0` requires Node.js 22 or newer and uses
-`@dexterai/opendexter@1.24.0`.
+`@dexterai/opendexter@1.24.1`.
 
 Use it when you want the package name itself to tell developers exactly what it does:
 
