@@ -77,7 +77,7 @@ function run(command, args, options = {}) {
 }
 
 function git(root, args, options = {}) {
-  return run("git", ["--no-replace-objects", "-C", root, ...args], options);
+  return run("git", ["--no-replace-objects", "-c", `safe.directory=${realpathSync(root)}`, "-C", root, ...args], options);
 }
 
 function readJson(path) {
@@ -663,6 +663,12 @@ export function createTreePureArchive({
 }) {
   const objectRepository = resolve(disposableRoot, "objects.git");
   const environment = sterileGitEnvironment(cleanEnvironment, disposableRoot);
+  const sourceGitDirectory = realpathSync(git(root, ["rev-parse", "--absolute-git-dir"], {
+    env: environment,
+  }));
+  // Local transport clears inherited Git config before upload-pack. Scope trust
+  // to this source's Git directory in that subprocess too.
+  const sourceTrust = `'${`safe.directory=${sourceGitDirectory}`.replaceAll("'", "'\\''")}'`;
   run("git", ["init", "--bare", "--quiet", objectRepository], {
     cwd: disposableRoot,
     env: environment,
@@ -671,6 +677,7 @@ export function createTreePureArchive({
     "--no-replace-objects",
     `--git-dir=${objectRepository}`,
     "fetch",
+    `--upload-pack=/usr/bin/git --no-replace-objects -c ${sourceTrust} upload-pack`,
     "--no-tags",
     "--quiet",
     root,

@@ -1,15 +1,66 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { afterEach, test } from 'node:test';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { main, selectPackage, verifyBundle } from './publish-companion-packages.mjs';
 
 const roots = [];
+const repositoryRoot = fileURLToPath(new URL('..', import.meta.url));
 const hash = (path, kind = 'sha256', encoding = 'hex') => createHash(kind).update(readFileSync(path)).digest(encoding);
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }); });
+
+for (const [workflow, job, paths] of [
+  ['publish-companion-packages.yml', 'build', ['']],
+  ['publish-companion-packages.yml', 'publish', ['']],
+  ['publish-opendexter.yml', 'build', ['/ide', '/mcp']],
+  ['publish-opendexter.yml', 'publish', ['/ide']],
+]) {
+  test(`${workflow} ${job} trusts only its exact checkouts before Git consumers`, () => {
+    const yaml = readFileSync(resolve(repositoryRoot, '.github/workflows', workflow), 'utf8');
+    const section = yaml.split(`\n  ${job}:\n`)[1].split(/\n  [a-z]+:\n/)[0];
+    const commands = [...section.matchAll(/^        run: (git config --global --add safe\.directory "([^"]+)")$/gm)];
+    assert.deepEqual(commands.map((match) => match[2]), paths.map((path) => `$GITHUB_WORKSPACE${path}`));
+    for (const [index, match] of commands.entries()) {
+      const consumer = paths[index] === '/mcp'
+        ? section.indexOf('node packages/mcp/scripts/github-hosted-release.mjs build')
+        : section.search(/git -c credential\.helper= fetch|node [^\n]*\.mjs/);
+      assert.ok(consumer > match.index, 'checkout trust must precede the first Git consumer');
+    }
+
+    const root = mkdtempSync(resolve(tmpdir(), 'companion-checkout-trust-'));
+    roots.push(root);
+    const workspace = resolve(root, 'workspace');
+    const unrelated = resolve(root, 'unrelated');
+    const env = { PATH: process.env.PATH, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: resolve(root, 'gitconfig'),
+      GIT_CONFIG_SYSTEM: '/dev/null', GITHUB_WORKSPACE: workspace };
+    for (const directory of [...paths.map((path) => workspace + path), unrelated]) {
+      mkdirSync(directory, { recursive: true });
+      execFileSync('git', ['init', '--quiet', directory], { env });
+    }
+    // Git's own ownership test hook reproduces the container failure without
+    // changing file ownership or touching the operator's Git configuration.
+    const foreignOwner = { ...env, GIT_TEST_ASSUME_DIFFERENT_OWNER: 'true' };
+    const probe = (cwd) => spawnSync('git', ['rev-parse', '--show-toplevel'], { cwd, env: foreignOwner, encoding: 'utf8' });
+    for (const path of paths) {
+      const before = probe(workspace + path);
+      assert.equal(before.status, 128);
+      assert.match(before.stderr, /dubious ownership/);
+    }
+    for (const match of commands) execFileSync('sh', ['-eu', '-c', match[1]], { env });
+    for (const path of paths) {
+      const after = probe(workspace + path);
+      assert.equal(after.status, 0, after.stderr);
+      assert.equal(after.stdout.trim(), workspace + path);
+    }
+    assert.equal(probe(unrelated).status, 128, 'unrelated checkouts must remain untrusted');
+    assert.deepEqual(execFileSync('git', ['config', '--global', '--get-all', 'safe.directory'], { env, encoding: 'utf8' })
+      .trim().split('\n'), paths.map((path) => workspace + path));
+  });
+}
 
 function fixture() {
   const root = mkdtempSync(resolve(tmpdir(), 'companion-release-test-'));

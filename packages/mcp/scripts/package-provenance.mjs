@@ -86,7 +86,7 @@ function run(command, args, options = {}) {
 }
 
 function git(root, args, options = {}) {
-  return run("git", ["--no-replace-objects", "-C", root, ...args], options);
+  return run("git", ["--no-replace-objects", "-c", `safe.directory=${realpathSync(root)}`, "-C", root, ...args], options);
 }
 
 function canonicalGithubRepository(value) {
