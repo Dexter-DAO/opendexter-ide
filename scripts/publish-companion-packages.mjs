@@ -146,7 +146,8 @@ export async function main([command, directory, tarballSha, receiptSha]) {
   const { receipt, tarball } = verifyBundle(bundle, tarballSha, receiptSha);
   if (command === 'verify') { output({ tarball, dist_tag: receipt.context.package.distTag }); return; }
   if (!['preflight', 'reconcile'].includes(command)) fail('unsupported command');
-  const attempts = command === 'reconcile' ? 12 : 1;
+  // npm may accept an upload before its registry metadata and provenance are visible.
+  const attempts = command === 'reconcile' ? 40 : 1;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
       const state = await registryState(receipt, command === 'reconcile');
@@ -157,7 +158,7 @@ export async function main([command, directory, tarballSha, receiptSha]) {
       fail('published version is not visible yet');
     } catch (error) {
       if (attempt === attempts - 1) throw error;
-      await new Promise((done) => setTimeout(done, 3000));
+      await new Promise((done) => setTimeout(done, 15_000));
     }
   }
 }
