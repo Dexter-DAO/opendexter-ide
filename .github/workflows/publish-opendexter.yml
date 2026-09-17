@@ -44,6 +44,9 @@ jobs:
           persist-credentials: false
           show-progress: false
 
+      - name: Trust the exact package checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE/ide"
+
       - name: Fetch canonical main for ancestry verification
         run: |
           set -eu
@@ -67,6 +70,9 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           show-progress: false
+
+      - name: Trust the exact hosted MCP checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE/mcp"
 
       - name: Test, build, pack once, and fresh-install the tarball
         id: build
@@ -114,6 +120,9 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
           show-progress: false
+
+      - name: Trust the exact verifier checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE/ide"
 
       - name: Download the build job artifact by deterministic name
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0

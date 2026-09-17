@@ -14,7 +14,7 @@ const expectedRuntime = {
   "@dexterai/vault": "0.43.4",
   "@dexterai/x402": "6.0.2",
   "@dexterai/x402-core": "1.5.2",
-  "@dexterai/x402-mcp-tools": "0.9.0",
+  "@dexterai/x402-mcp-tools": "0.9.1",
   "@modelcontextprotocol/ext-apps": "1.7.5",
   "@modelcontextprotocol/sdk": "1.30.0",
   "@solana/spl-token": "0.4.15",

@@ -126,7 +126,7 @@ function run(command, args, options = {}) {
 }
 
 function git(root, args) {
-  return run("/usr/bin/git", ["--no-replace-objects", "-C", root, ...args], {
+  return run("/usr/bin/git", ["--no-replace-objects", "-c", `safe.directory=${realpathSync(root)}`, "-C", root, ...args], {
     env: {
       PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
       HOME: process.env.HOME,

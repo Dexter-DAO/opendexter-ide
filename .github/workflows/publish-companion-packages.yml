@@ -31,6 +31,8 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           show-progress: false
+      - name: Trust the exact container checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Fetch main for source ancestry verification
         run: git -c credential.helper= fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
       - name: Test tag and artifact checks
@@ -69,6 +71,8 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
           show-progress: false
+      - name: Trust the exact container checkout
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
           name: ${{ needs.build.outputs.artifact_name }}

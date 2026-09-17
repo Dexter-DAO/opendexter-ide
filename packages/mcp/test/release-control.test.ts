@@ -6,6 +6,7 @@ import {
   mkdtempSync,
   readFileSync,
   realpathSync,
+  renameSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -26,6 +27,7 @@ import {
   reviewedNpm,
   reviewedReleaseEnvironment,
   reviewedSourceArchiveDigest,
+  createReviewedSourceArchive,
   validateAttestationShape,
   verifyAttestation,
   verifyRegistryMetadata,
@@ -386,6 +388,78 @@ describe("exact package provenance", () => {
     });
   });
 
+  it("reads the selected checkout despite container ownership while retaining source checks", () => {
+    const repository = committedRepository({ "tracked.txt": "reviewed\n" });
+    const environment = {
+      ...reviewedReleaseEnvironment(),
+      GIT_TEST_ASSUME_DIFFERENT_OWNER: "true",
+    };
+    const direct = spawnSync("git", ["-C", repository.root, "rev-parse", "HEAD"], {
+      env: environment, encoding: "utf8",
+    });
+    expect(direct.status).toBe(128);
+    expect(direct.stderr).toContain("dubious ownership");
+    const options = {
+      environment,
+      advertisedRefs: `${repository.commit}\trefs/heads/release`,
+    };
+    expect(repositoryIdentity(repository.root, options)).toMatchObject({
+      commit: repository.commit, tree: repository.tree, clean: true,
+    });
+    expect(environment.GIT_CONFIG_GLOBAL).toBe("/dev/null");
+    expect(() => repositoryIdentity(repository.root, {
+      ...options, advertisedRefs: `${"f".repeat(40)}\trefs/heads/release`,
+    })).toThrow(/does not advertise HEAD/);
+    writeFileSync(resolve(repository.root, "tracked.txt"), "changed\n");
+    expect(() => repositoryIdentity(repository.root, options)).toThrow(/not clean/);
+    // Command-scoped trust must not make later unrelated Git calls trusted.
+    expect(spawnSync("git", ["-C", repository.root, "rev-parse", "HEAD"], {
+      env: environment,
+    }).status).toBe(128);
+  });
+
+  it("copies exact source through local upload-pack with foreign checkout ownership", () => {
+    const repository = committedRepository({ "tracked.txt": "reviewed\n" });
+    const quotedRoot = `${repository.root} 'quoted $path'`;
+    renameSync(repository.root, quotedRoot);
+    temporaryRoots.push(quotedRoot);
+    repository.root = quotedRoot;
+    const disposableRoot = mkdtempSync(resolve(tmpdir(), "opendexter-owner-archive-"));
+    temporaryRoots.push(disposableRoot);
+    const objectRepository = resolve(disposableRoot, "objects.git");
+    execFileSync("git", ["init", "--bare", "--quiet", objectRepository]);
+    const environment = {
+      ...reviewedReleaseEnvironment(),
+      GIT_TEST_ASSUME_DIFFERENT_OWNER: "true",
+      // Exempt only the newly created object store from the simulated foreign
+      // ownership. The source checkout must gain its own command-scoped trust.
+      GIT_CONFIG_COUNT: "1",
+      GIT_CONFIG_KEY_0: "safe.directory",
+      GIT_CONFIG_VALUE_0: objectRepository,
+    };
+    const before = spawnSync("git", [
+      "--no-replace-objects", `--git-dir=${objectRepository}`, "fetch", "--no-tags",
+      repository.root, `${repository.commit}:refs/opendexter/source`,
+    ], { env: environment, encoding: "utf8" });
+    expect(before.status).not.toBe(0);
+    expect(before.stderr).toContain("dubious ownership");
+    const output = resolve(disposableRoot, "source.tar");
+    expect(createReviewedSourceArchive({
+      root: repository.root, commit: repository.commit, tree: repository.tree,
+      output, disposableRoot, environment,
+    })).toMatch(/^[a-f0-9]{64}$/);
+    expect(execFileSync("tar", ["-xOf", output, "tracked.txt"], { encoding: "utf8" }))
+      .toBe("reviewed\n");
+    expect(() => createReviewedSourceArchive({
+      root: repository.root, commit: repository.commit, tree: "f".repeat(40),
+      output: resolve(disposableRoot, "wrong-tree.tar"), disposableRoot, environment,
+    })).toThrow(/sterile object copy differs/);
+    expect(() => createReviewedSourceArchive({
+      root: repository.root, commit: "f".repeat(40), tree: repository.tree,
+      output: resolve(disposableRoot, "wrong-commit.tar"), disposableRoot, environment,
+    })).toThrow();
+  });
+
   it("ignores caller Git URL rewrites for canonical remote advertisement", () => {
     const root = mkdtempSync(resolve(tmpdir(), "opendexter-release-redirect-"));
     temporaryRoots.push(root);
@@ -701,7 +775,7 @@ describe("exact package provenance", () => {
       version: "1.24.0",
       instructions: "2.4.2-rc.1",
       core: "1.5.2",
-      tools: "0.9.0",
+      tools: "0.9.1",
     };
     expect({
       version: candidate.version,
