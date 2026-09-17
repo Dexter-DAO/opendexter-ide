@@ -1,0 +1,109 @@
+name: Publish OpenDexter companion package
+
+on:
+  push:
+    tags:
+      - "x402-mcp-tools-v*"
+      - "x402-discovery-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opendexter-companion-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Test and pack the tagged companion
+    runs-on: ubuntu-24.04
+    container:
+      image: node:22.19.0-bookworm@sha256:f2bf1588ef7e8dd183d9e4cb4330a0d952204b7348ead42afb1aab11f9c4911b
+    outputs:
+      artifact_name: ${{ steps.build.outputs.artifact_name }}
+      tarball_sha256: ${{ steps.build.outputs.tarball_sha256 }}
+      receipt_sha256: ${{ steps.build.outputs.receipt_sha256 }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+          show-progress: false
+      - name: Fetch main for source ancestry verification
+        run: git -c credential.helper= fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+      - name: Test tag and artifact checks
+        run: node --test scripts/publish-companion-packages.test.mjs
+      - name: Verify source, test, pack once, and fresh-install
+        id: build
+        run: node scripts/publish-companion-packages.mjs build "$RUNNER_TEMP/companion-package"
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: ${{ steps.build.outputs.artifact_name }}
+          path: ${{ runner.temp }}/companion-package
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          overwrite: false
+          include-hidden-files: false
+
+  publish:
+    name: Approve and publish the existing tarball with OIDC
+    needs: build
+    runs-on: ubuntu-24.04
+    environment: opendexter-npm-production
+    container:
+      image: node:22.19.0-bookworm@sha256:f2bf1588ef7e8dd183d9e4cb4330a0d952204b7348ead42afb1aab11f9c4911b
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OPENDXTER_RELEASE_ENVIRONMENT: opendexter-npm-production
+      NPM_CONFIG_USERCONFIG: /dev/null
+      NPM_CONFIG_GLOBALCONFIG: /dev/null.opendexter-companion-release
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 1
+          persist-credentials: false
+          show-progress: false
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+          path: ${{ runner.temp }}/companion-package
+      - name: Verify the exact built tarball and receipt
+        id: package
+        env:
+          TARBALL_SHA: ${{ needs.build.outputs.tarball_sha256 }}
+          RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha256 }}
+        run: node scripts/publish-companion-packages.mjs verify "$RUNNER_TEMP/companion-package" "$TARBALL_SHA" "$RECEIPT_SHA"
+      - name: Reuse only an identical published version
+        id: registry
+        env:
+          TARBALL_SHA: ${{ needs.build.outputs.tarball_sha256 }}
+          RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha256 }}
+        run: node scripts/publish-companion-packages.mjs preflight "$RUNNER_TEMP/companion-package" "$TARBALL_SHA" "$RECEIPT_SHA"
+      - name: Prepare the existing pinned npm OIDC publisher
+        if: steps.registry.outputs.should_publish == 'true'
+        id: publisher
+        run: node packages/mcp/scripts/github-hosted-release.mjs publisher-npm --output "$RUNNER_TEMP/companion-npm-publisher" --github-output "$GITHUB_OUTPUT"
+      - name: Publish without rebuilding or package scripts
+        if: steps.registry.outputs.should_publish == 'true'
+        env:
+          NPM_CLI: ${{ steps.publisher.outputs.npm_cli }}
+          TARBALL: ${{ steps.package.outputs.tarball }}
+          DIST_TAG: ${{ steps.package.outputs.dist_tag }}
+        run: |
+          set -eu
+          test -n "$ACTIONS_ID_TOKEN_REQUEST_URL"
+          test -n "$ACTIONS_ID_TOKEN_REQUEST_TOKEN"
+          test -z "${NODE_AUTH_TOKEN:-}"
+          test -z "${NPM_TOKEN:-}"
+          node "$NPM_CLI" publish "$TARBALL" --ignore-scripts --provenance --access public --registry https://registry.npmjs.org/ --strict-ssl=true --tag "$DIST_TAG"
+      - name: Verify registry bytes, tag, and GitHub provenance
+        env:
+          TARBALL_SHA: ${{ needs.build.outputs.tarball_sha256 }}
+          RECEIPT_SHA: ${{ needs.build.outputs.receipt_sha256 }}
+        run: node scripts/publish-companion-packages.mjs reconcile "$RUNNER_TEMP/companion-package" "$TARBALL_SHA" "$RECEIPT_SHA"

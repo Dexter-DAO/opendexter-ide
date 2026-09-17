@@ -263,7 +263,7 @@ describe("docs resources", () => {
 
   it("documents the pinned same-intent CLI status recovery command", () => {
     expect(packageReadme).toContain(
-      "npx @dexterai/opendexter@1.24.0-rc.3 status",
+      "npx @dexterai/opendexter@1.24.0 status",
     );
     expect(packageReadme).toContain("--intent-id \"<same-opaque-intent-id>\"");
     expect(packageReadme).toContain("`noRetry`");

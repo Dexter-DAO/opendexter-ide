@@ -11,16 +11,16 @@ const expectedRuntime = {
   "@clack/prompts": "1.7.0",
   "@dexterai/dextercard": "0.5.0",
   "@dexterai/mcp-instructions": "2.4.2-rc.1",
-  "@dexterai/vault": "0.43.3-rc.1",
-  "@dexterai/x402": "6.0.0-rc.4",
+  "@dexterai/vault": "0.43.4",
+  "@dexterai/x402": "6.0.2",
   "@dexterai/x402-core": "1.5.2",
-  "@dexterai/x402-mcp-tools": "0.9.0-rc.2",
+  "@dexterai/x402-mcp-tools": "0.9.0",
   "@modelcontextprotocol/ext-apps": "1.7.5",
   "@modelcontextprotocol/sdk": "1.30.0",
   "@solana/spl-token": "0.4.15",
   "@solana/web3.js": "1.98.4",
-  "@x402/core": "2.19.0",
-  "@x402/extensions": "2.19.0",
+  "@x402/core": "2.26.0",
+  "@x402/extensions": "2.26.0",
   bs58: "6.0.0",
   chalk: "5.6.2",
   ethers: "6.17.0",
@@ -74,7 +74,7 @@ describe("published OpenDexter dependency graph", () => {
     expect(publishRefusal).toContain("publish-opendexter.yml");
     expect(pkg.publishConfig).toEqual({
       access: "public",
-      tag: "next",
+      tag: "latest",
       provenance: true,
     });
   });
