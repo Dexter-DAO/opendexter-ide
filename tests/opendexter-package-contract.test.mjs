@@ -917,14 +917,14 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   assert.equal(pkg.dependencies["@dexterai/x402-core"], "1.5.2");
   assert.equal(pkg.dependencies["@dexterai/vault"], "0.43.4");
   assert.equal(pkg.dependencies["@dexterai/mcp-instructions"], "2.4.2-rc.1");
-  assert.equal(pkg.dependencies["@dexterai/x402"], "6.0.1");
+  assert.equal(pkg.dependencies["@dexterai/x402"], "6.0.2");
   assert.equal(pkg.dependencies["@dexterai/x402-mcp-tools"], "0.9.0");
   assert.equal(pkg.publishConfig.tag, "latest");
   assert.equal(instructionsPkg.version, "2.4.2-rc.1");
   assert.equal(toolsPkg.version, "0.9.0");
   assert.equal(toolsPkg.engines.node, ">=22");
   assert.equal(toolsPkg.dependencies["@dexterai/vault"], "0.43.4");
-  assert.equal(toolsPkg.dependencies["@dexterai/x402"], "6.0.1");
+  assert.equal(toolsPkg.dependencies["@dexterai/x402"], "6.0.2");
   assert.equal(toolsPkg.dependencies["@dexterai/x402-core"], "1.5.2");
   assert.equal(toolsPkg.publishConfig.tag, undefined);
   assert.equal(discoveryPkg.version, "1.1.0");

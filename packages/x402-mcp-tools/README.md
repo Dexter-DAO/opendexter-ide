@@ -23,7 +23,7 @@ Use Node.js 22 or newer with these package versions:
 
 ```bash
 npm install @dexterai/x402-mcp-tools@0.9.0 \
-  @dexterai/x402@6.0.1 @dexterai/vault@0.43.4
+  @dexterai/x402@6.0.2 @dexterai/vault@0.43.4
 ```
 
 

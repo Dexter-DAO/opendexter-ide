@@ -12,7 +12,7 @@ const expectedRuntime = {
   "@dexterai/dextercard": "0.5.0",
   "@dexterai/mcp-instructions": "2.4.2-rc.1",
   "@dexterai/vault": "0.43.4",
-  "@dexterai/x402": "6.0.1",
+  "@dexterai/x402": "6.0.2",
   "@dexterai/x402-core": "1.5.2",
   "@dexterai/x402-mcp-tools": "0.9.0",
   "@modelcontextprotocol/ext-apps": "1.7.5",
