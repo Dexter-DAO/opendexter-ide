@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import originalSevenTools from "./fixtures/hosted-proxy-seven-tools.json";
 
 vi.mock("../src/wallet/index.js", () => ({
   loadOrCreateWallet: vi.fn(async () => null),
@@ -70,7 +71,9 @@ describe("local MCP tool registration", () => {
       "x402_access",
       "x402_wallet",
       "dexter_portfolio",
+      "dexter_report_work",
     ]);
+    expect(result.tools.slice(0, 7)).toEqual(originalSevenTools);
     const fetchSchema = result.tools.find(
       ({ name }) => name === "x402_fetch",
     )!.inputSchema as {

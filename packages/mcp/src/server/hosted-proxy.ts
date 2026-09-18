@@ -1,6 +1,13 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { McpServer, type RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { toJsonSchemaCompat } from "@modelcontextprotocol/sdk/server/zod-json-schema-compat.js";
+import { ListToolsRequestSchema, type CallToolResult, type Tool } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import {
+  AGENT_WORK_REPORT_TOOL_NAME,
+  AGENT_WORK_REPORT_INPUT_SCHEMA,
+  AGENT_WORK_REPORT_OUTPUT_SCHEMA,
+  AGENT_WORK_REPORT_REGISTRATION_OUTPUT_SCHEMA,
+} from "./agent-work-report-contract.js";
 import {
   attachRuntimeAuthorityStatus,
   callHostedRuntimeTool,
@@ -19,6 +26,7 @@ export const HOSTED_PROXY_TOOL_ROSTER = [
   "x402_access",
   "x402_wallet",
   "dexter_portfolio",
+  AGENT_WORK_REPORT_TOOL_NAME,
 ] as const satisfies readonly HostedRuntimeToolName[];
 
 /** Exact operating contract for this proxy; the legacy shared rendering still
@@ -34,6 +42,8 @@ x402_fetch accepts only that intentId and a separately approved maxAmountAtomic 
 x402_status accepts the same intentId and is the read-only recovery path after an ambiguous or completed x402_fetch. Reconcile status before deciding whether any retry is appropriate.
 
 x402_access is a separate anonymous legacy wallet-proof operation. Every call starts one fresh hosted access context: it is not Dexter OAuth, not the governed payment wallet, and does not preserve continuity across calls. This proxy never accepts, exposes, or persists access session credentials. A non-GET x402_access can cause seller-side effects and requires separate explicit authorization for that exact one-call request before it is sent. x402_wallet reads the hosted wallet and runtimeAuthority evidence. dexter_portfolio reads the session-bound governed asset inventory; portfolio value is not spendable cash.
+
+dexter_report_work saves the connected agent's own work statement using its stored OAuth connection. Report actual changes in work state with a short plain-text summary; idle may omit the summary. Keep private data and credentials out of summaries. Preserve operationId and identical content after an uncertain response, and follow the hosted recovery fields before sending another request. A deliberate update uses a new operationId and the current revision. Reconnecting preserves recovery only when the hosted connection still identifies the same registered agent. Financial outcomes remain in their transaction receipts.
 
 # Authority truth
 
@@ -75,10 +85,41 @@ function errorResult(error: unknown): CallToolResult {
   };
 }
 
+function reportErrorResult(error: unknown, operationId: string): CallToolResult {
+  const message = error instanceof Error ? error.message : String(error);
+  const configurationUnavailable = /^(connect_required_for_hosted_|connected_session_expired_reconnect_required)/.test(message);
+  const connectionRejected = message.startsWith("connected_session_rejected_no_automatic_retry");
+  const structuredContent = AGENT_WORK_REPORT_OUTPUT_SCHEMA.parse({
+    namespace: "opendexter-agent-work-report-local-error/v1",
+    code: configurationUnavailable ? "configuration_unavailable" : "transport_failed",
+    operationId,
+    retryable: !configurationUnavailable,
+    retryWithSameOperationOnly: true,
+    retryAfterMs: null,
+  });
+  return {
+    isError: true,
+    structuredContent,
+    content: [{
+      type: "text",
+      text: configurationUnavailable || connectionRejected
+        ? "Restore the same registered agent's OpenDexter connection, then recover this report with the same operationId and identical content."
+        : "The work report response did not arrive. Recover it with the same operationId and identical content.",
+    }],
+    _meta: { "dexter/agentWorkReportRequest": { operationId } },
+  };
+}
+
 export function registerHostedProxyTools(
   server: McpServer,
   opts: HostedProxyOptions = {},
 ): void {
+  const registered = new Map<string, RegisteredTool>();
+  const registerTool: McpServer["registerTool"] = (name, config, handler) => {
+    const tool = server.registerTool(name, config, handler);
+    registered.set(name, tool);
+    return tool;
+  };
   const callTool = opts.callTool ?? ((toolName, args, retryRejectedBearer) =>
     callHostedRuntimeTool({
       toolName,
@@ -98,11 +139,13 @@ export function registerHostedProxyTools(
         ? sanitizeLegacyAccessResult(result)
         : result;
     } catch (error) {
-      return errorResult(error);
+      return toolName === AGENT_WORK_REPORT_TOOL_NAME
+        ? reportErrorResult(error, args.operationId as string)
+        : errorResult(error);
     }
   };
 
-  server.registerTool(
+  registerTool(
     "x402_search",
     {
       description: "Search the canonical hosted x402 marketplace.",
@@ -119,7 +162,7 @@ export function registerHostedProxyTools(
     (args) => call("x402_search", args),
   );
 
-  server.registerTool(
+  registerTool(
     "x402_check",
     {
       description:
@@ -136,7 +179,7 @@ export function registerHostedProxyTools(
     (args) => call("x402_check", args, (args.method ?? "GET") === "GET"),
   );
 
-  server.registerTool(
+  registerTool(
     "x402_fetch",
     {
       description:
@@ -152,7 +195,7 @@ export function registerHostedProxyTools(
     (args) => call("x402_fetch", args, false),
   );
 
-  server.registerTool(
+  registerTool(
     "x402_status",
     {
       description:
@@ -165,7 +208,7 @@ export function registerHostedProxyTools(
     (args) => call("x402_status", args),
   );
 
-  server.registerTool(
+  registerTool(
     "x402_access",
     {
       description:
@@ -183,7 +226,7 @@ export function registerHostedProxyTools(
     (args) => call("x402_access", args, false),
   );
 
-  server.registerTool(
+  registerTool(
     "x402_wallet",
     {
       description:
@@ -214,7 +257,7 @@ export function registerHostedProxyTools(
     },
   );
 
-  server.registerTool(
+  registerTool(
     "dexter_portfolio",
     {
       description: "Read the governed portfolio bound to the connected hosted principal.",
@@ -223,4 +266,46 @@ export function registerHostedProxyTools(
     },
     () => call("dexter_portfolio", {}),
   );
+
+  registerTool(
+    AGENT_WORK_REPORT_TOOL_NAME,
+    {
+      description: "Save the connected agent's own work statement. Report changes in work state; financial outcomes remain in their transaction receipts.",
+      inputSchema: AGENT_WORK_REPORT_INPUT_SCHEMA,
+      outputSchema: AGENT_WORK_REPORT_REGISTRATION_OUTPUT_SCHEMA,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    },
+    (args) => call(AGENT_WORK_REPORT_TOOL_NAME, args, false),
+  );
+
+  // SDK 1.30's default list normalizer drops union schemas. Keep the public
+  // registration handles and materialize their schemas without normalization.
+  server.server.setRequestHandler(ListToolsRequestSchema, () => ({
+    tools: [...registered].filter(([, tool]) => tool.enabled).map(([name, tool]): Tool => ({
+      name,
+      title: tool.title,
+      description: tool.description,
+      inputSchema: {
+        type: "object",
+        ...toJsonSchemaCompat(tool.inputSchema!, { strictUnions: true, pipeStrategy: "input" }),
+      },
+      ...(tool.outputSchema ? {
+        outputSchema: {
+          type: "object" as const,
+          ...toJsonSchemaCompat(
+            name === AGENT_WORK_REPORT_TOOL_NAME ? AGENT_WORK_REPORT_OUTPUT_SCHEMA : tool.outputSchema,
+            { strictUnions: true, pipeStrategy: "output" },
+          ),
+        },
+      } : {}),
+      annotations: tool.annotations,
+      execution: tool.execution,
+      _meta: tool._meta,
+    })),
+  }));
 }
