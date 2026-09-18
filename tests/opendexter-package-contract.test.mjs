@@ -60,6 +60,9 @@ const HOSTED_TOOLS = Object.freeze([
   "dexter_wallet_history",
 ]);
 
+// The pinned f79 fixture remains historical; hosted guidance follows the served roster.
+const GUIDE_MODEL_TOOLS = Object.freeze([...HOSTED_TOOLS, "dexter_report_work"]);
+
 const ANONYMOUS_TOOLS = Object.freeze([]);
 
 const OAUTH_PROMOTED_TOOLS = HOSTED_TOOLS;
@@ -1123,8 +1126,8 @@ test("both formats expose only the three hosted-contract skills", async () => {
       resolve(root, "skills/opendexter/SKILL.md"),
       "utf8",
     );
-    assert.deepEqual(namedTools(umbrella), [...HOSTED_TOOLS, "indexter_discover"].sort());
-    for (const tool of HOSTED_TOOLS) {
+    assert.deepEqual(namedTools(umbrella), [...GUIDE_MODEL_TOOLS, "indexter_discover"].sort());
+    for (const tool of GUIDE_MODEL_TOOLS) {
       assert.match(umbrella, new RegExp(`\\\`${tool}\\\``));
     }
     assert.doesNotMatch(
@@ -1185,7 +1188,7 @@ test("one canonical hosted skill generates ChatGPT, Codex, and Claude guidance",
   assert.match(stdout, /hosted skill parity ok \(5 files\)/);
 });
 
-test("both formats route one OAuth-required thirteen-tool roster", async () => {
+test("both formats guide the OAuth-required fifteen-tool hosted roster", async () => {
   for (const root of [codexRoot, claudeRoot]) {
     const umbrella = await readFile(
       resolve(root, "skills/opendexter/SKILL.md"),
@@ -1195,10 +1198,33 @@ test("both formats route one OAuth-required thirteen-tool roster", async () => {
       resolve(root, "skills/opendexter/references/routing-and-safety.md"),
       "utf8",
     );
-    assert.deepEqual(namedTools(umbrella), [...HOSTED_TOOLS, "indexter_discover"].sort());
-    assert.deepEqual(namedTools(routing), [...HOSTED_TOOLS, "indexter_discover"].sort());
+    assert.deepEqual(namedTools(umbrella), [...GUIDE_MODEL_TOOLS, "indexter_discover"].sort());
+    assert.deepEqual(namedTools(routing), [...GUIDE_MODEL_TOOLS, "indexter_discover"].sort());
     assert.match(umbrella, /OAuth must complete[\s\S]*Every hosted\s+tool/i);
-    assert.match(routing, /OAuth is required[\s\S]*registers fourteen tools/i);
+    assert.match(routing, /OAuth is required[\s\S]*registers fifteen tools/i);
+    const readme = await readFile(resolve(root, "README.md"), "utf8");
+    assert.match(readme, /registers fifteen tools: fourteen model-callable/i);
+    assert.match(readme, /CLI `1\.24\.1`[\s\S]*does not (?:include reporting|expose `dexter_report_work`)/);
+    assert.match(readme, /SKILL\.md#report-current-work/);
+    for (const text of [umbrella, routing, readme]) {
+      assert.match(text, /current turn's callable tools/);
+      assert.match(text, /same `operationId` and\s+identical fields/);
+      assert.match(text, /revision conflict/);
+    }
+    for (const text of [umbrella, routing]) {
+      assert.match(text, /`observedAt` and `expiresAt`/);
+      assert.match(text, /original timestamps/);
+      assert.match(text, /`currentReport` and\s+`currentRevision`/);
+      assert.match(text, /returned `currentRevision` as `expectedRevision`/);
+    }
+    const reportSection = umbrella.split("## Report current work\n")[1]?.split("\n## ")[0];
+    assert.ok(reportSection, "work-report guidance is present");
+    const example = JSON.parse(reportSection.match(/```json\n([\s\S]*?)\n```/)[1]);
+    assert.match(example.operationId, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    assert.deepEqual(Object.keys(example).sort(), ["expectedRevision", "operationId", "state", "summary"]);
+    assert.equal(example.expectedRevision, 0);
+    assert.equal(example.state, "working");
+    assert.equal(example.summary, "Reviewing the deployment logs");
     assert.doesNotMatch(umbrella, /anonymous roster|OAuth adds exactly seven/i);
     assert.doesNotMatch(routing, /five entry tools|OAuth adds exactly seven/i);
     assert.match(routing, /Buy[\s\S]*USDC input[\s\S]*6-decimal base units/i);

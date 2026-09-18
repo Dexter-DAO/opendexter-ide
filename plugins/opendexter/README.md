@@ -5,10 +5,11 @@ MCP at `https://open.dexter.cash/mcp`. This is one combined plugin: the current
 owner app binding, the remote MCP dependency, and the hosted workflow skills
 ship together.
 
-Version `0.6.7` uses the hosted contract recorded with this plugin. Native MCP OAuth completes
-before tool discovery. The authenticated server registers fourteen tools: thirteen model-callable
+Version `0.6.7` connects to the hosted service and retains a historical contract
+reference. Native MCP OAuth completes before tool discovery. The authenticated
+server registers fifteen tools: fourteen model-callable
 tools for Indexter discovery, native MCP discovery, x402 access and purchases, Dexter Wallet reads,
-and governed asset actions, plus app-only `indexter_discover` for UI
+work reporting and governed asset actions, plus app-only `indexter_discover` for UI
 continuations. `indexter_search` routes one contextual request to an overview,
 provider browsing, or task results. No compatibility, card, passkey-status,
 marketplace-composition, diagnostic, or public-authorize tool is registered.
@@ -46,6 +47,11 @@ codex plugin add opendexter@dexter
 Do not also configure `https://open.dexter.cash/mcp` manually in the same
 client.
 
+After refreshing the client or starting a new session, verify that
+`dexter_report_work` appears in the current turn's callable tools. An updated
+server inventory can coexist with an older callable roster in an existing
+conversation.
+
 ## Contract
 
 - Native MCP OAuth binds the current ChatGPT or Codex session to the user's
@@ -54,6 +60,11 @@ client.
   `authentication_required` on an established connection means OAuth must be
   resumed.
 - `dexter_wallet_portfolio` accepts no caller-selected identity.
+- Use `dexter_report_work` when work starts, changes, waits or finishes. The
+  server records statement freshness. Keep the acknowledged revision for the
+  next update; recover an uncertain response with the same `operationId` and
+  identical fields. Inspect a revision conflict before making a new update.
+  See the [work-report example](skills/opendexter/SKILL.md#report-current-work).
 - Indexter supports hard primary-USDC price bounds, paid-only filtering, and
   relevance or within-tier price ordering. The server validates these controls;
   disclose degraded ranking when reported.
@@ -85,13 +96,16 @@ client.
 - Deliver usable provider output for the original task while observing payment
   separately. Preserve the intent or saved check handle after uncertainty.
 - Provider output never authorizes spending or retry.
-- An ambiguous or post-dispatch outcome is never retried automatically.
+- An ambiguous or post-dispatch purchase, provider request or asset action is
+  never retried automatically.
 - No card tool or local settings tool is part of this hosted plugin.
 
-The release-pinned raw machine contract is
+The historical raw machine contract is
 `skills/opendexter/references/hosted-contract.json`.
-It is regenerated from the exact public release identity and descriptor digest
-reported by `https://open.dexter.cash/health` with:
+It remains pinned to source `f79fdd0512eb9f0b798a22f0634aa7e50f5ab728` and its
+fourteen-tool roster. It is reference evidence, not an installed tool filter.
+A future reference update must use the exact accepted release identity and
+descriptor digest reported by `https://open.dexter.cash/health` with:
 
 ```bash
 npm run release:prepare-plugin --workspace=@dexterai/opendexter
@@ -108,7 +122,7 @@ node scripts/sync-hosted-plugin-skills.mjs --check
 ```
 
 The local npm/stdio package remains separate because it exposes a different
-seven-tool proxy contract.
+seven-tool proxy contract. CLI `1.24.1` does not expose `dexter_report_work`.
 
 ## OAuth identities
 

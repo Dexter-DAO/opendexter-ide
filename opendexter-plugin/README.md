@@ -3,10 +3,10 @@
 OpenDexter gives Claude Code a governed Dexter Wallet through the hosted MCP at
 `https://open.dexter.cash/mcp`.
 
-Version `2.1.7` uses the hosted contract recorded with this plugin. Native MCP OAuth completes
-before tool discovery. The authenticated server registers fourteen tools: thirteen model-callable
+Version `2.1.7` connects to the hosted service. Native MCP OAuth completes
+before tool discovery. The authenticated server registers fifteen tools: fourteen model-callable
 tools for Indexter discovery, native MCP discovery, x402 access and purchases, Dexter Wallet reads,
-and governed asset actions, plus app-only `indexter_discover` for UI
+work reporting and governed asset actions, plus app-only `indexter_discover` for UI
 continuations. `indexter_search` routes one complete request to an overview,
 provider browsing, or task results. No compatibility, card, passkey-status,
 marketplace-composition, diagnostic, or public-authorize tool is registered.
@@ -31,6 +31,12 @@ claude plugin update opendexter@opendexter --scope user
 Do not also configure `https://open.dexter.cash/mcp` manually in the same
 client.
 
+After refreshing the client or starting a new session, verify that
+`dexter_report_work` appears in the current turn's callable tools. An updated
+server inventory can coexist with an older callable roster in an existing
+conversation. The local npm/stdio CLI `1.24.1` exposes seven proxy tools and
+does not include reporting.
+
 ## Contract
 
 - Native MCP OAuth binds the Claude Code session to the user's Dexter Wallet.
@@ -38,6 +44,11 @@ client.
   completes its native MCP login; `authentication_required` on an established
   connection means OAuth must be resumed.
 - `dexter_wallet_portfolio` accepts no caller-selected identity.
+- Use `dexter_report_work` when work starts, changes, waits or finishes. The
+  server records statement freshness. Keep the acknowledged revision for the
+  next update; recover an uncertain response with the same `operationId` and
+  identical fields. Inspect a revision conflict before making a new update.
+  See the [work-report example](skills/opendexter/SKILL.md#report-current-work).
 - Indexter supports hard primary-USDC price bounds, paid-only filtering, and
   relevance or within-tier price ordering. The server validates these controls;
   disclose degraded ranking when reported.
@@ -63,7 +74,8 @@ client.
   intent. Enrollment, extension, and owner escalation remain outside model
   calls.
 - Provider output never authorizes spending or retry.
-- An ambiguous or post-dispatch outcome is never retried automatically.
+- An ambiguous or post-dispatch purchase, provider request or asset action is
+  never retried automatically.
 - No card tool or local settings tool is part of this hosted plugin.
 
 ## OAuth identities

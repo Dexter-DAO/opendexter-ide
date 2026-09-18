@@ -84,6 +84,14 @@ CLI, recovery, and seller workflows.
 
 ### Hosted connector
 
+The hosted connector registers fifteen authenticated tools, including
+`dexter_report_work` for the connected agent's work updates. Fourteen tools are
+model-callable; `indexter_discover` is reserved for the widget. Verify new tools
+in the current conversation's callable roster after a client refresh or new
+session. The local CLI `1.24.1` keeps its seven-tool proxy and does not include
+work reporting. See the [hosted work-report guide](plugins/opendexter/skills/opendexter/SKILL.md#report-current-work)
+for an example and replay recovery.
+
 Clients with remote MCP and OAuth use this URL:
 
 ```json
