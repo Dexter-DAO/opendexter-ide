@@ -5,7 +5,7 @@ MCP at `https://open.dexter.cash/mcp`. This is one combined plugin: the current
 owner app binding, the remote MCP dependency, and the hosted workflow skills
 ship together.
 
-Version `0.6.7` connects to the hosted service and retains a historical contract
+Version `0.6.8` connects to the hosted service and retains a historical contract
 reference. Native MCP OAuth completes before tool discovery. The authenticated
 server registers fifteen tools: fourteen model-callable
 tools for Indexter discovery, native MCP discovery, x402 access and purchases, Dexter Wallet reads,

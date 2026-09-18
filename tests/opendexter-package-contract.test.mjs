@@ -848,7 +848,7 @@ test("ChatGPT and Codex share one skill-bearing app and MCP package", async () =
   const mcpBinding = await readJson(mcpBindingPath);
   const marketplace = await readJson(codexMarketplacePath);
   assert.equal(manifest.name, "opendexter");
-  assert.equal(manifest.version, "0.6.7");
+  assert.equal(manifest.version, "0.6.8");
   assert.equal(manifest.skills, "./skills/");
   assert.equal(manifest.apps, "./.app.json");
   assert.equal(manifest.mcpServers, "./.mcp.json");
@@ -882,7 +882,7 @@ test("Claude package is self-contained and uses the hosted remote MCP", async ()
   const mcp = await readJson(resolve(claudeRoot, ".mcp.json"));
   const marketplace = await readJson(claudeMarketplacePath);
   assert.equal(manifest.name, "opendexter");
-  assert.equal(manifest.version, "2.1.7");
+  assert.equal(manifest.version, "2.1.8");
   assert.deepEqual(mcp, {
     mcpServers: {
       opendexter: {
@@ -912,7 +912,7 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   const mcp = await readJson(resolve(repoRoot, "mcp.json"));
   assert.equal(workspace.packageManager, "npm@10.9.3");
   assert.equal(workspace.engines.node, ">=22");
-  assert.equal(pkg.version, "1.24.1");
+  assert.equal(pkg.version, "1.25.0");
   assert.equal(pkg.engines.node, ">=22");
   assert.equal(pkg.dependencies["@modelcontextprotocol/sdk"], "1.30.0");
   assert.equal(pkg.dependencies["@modelcontextprotocol/ext-apps"], "1.7.5");
@@ -930,18 +930,18 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   assert.equal(toolsPkg.dependencies["@dexterai/x402"], "6.0.3");
   assert.equal(toolsPkg.dependencies["@dexterai/x402-core"], "1.5.2");
   assert.equal(toolsPkg.publishConfig.tag, undefined);
-  assert.equal(discoveryPkg.version, "1.1.0");
+  assert.equal(discoveryPkg.version, "1.2.0");
   assert.equal(discoveryPkg.engines.node, ">=22");
   assert.equal(
     discoveryPkg.dependencies["@dexterai/opendexter"],
-    "1.24.1",
+    "1.25.0",
   );
   assert.equal(discoveryPkg.publishConfig.tag, "latest");
   assert.deepEqual(mcp, {
     mcpServers: {
       opendexter: {
         command: "npx",
-        args: ["-y", "@dexterai/opendexter@1.24.1"],
+        args: ["-y", "@dexterai/opendexter@1.25.0"],
       },
     },
   });
