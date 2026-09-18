@@ -1,8 +1,8 @@
 # @dexterai/x402-discovery
 
 `@dexterai/x402-discovery` is the descriptive install alias for `@dexterai/opendexter`.
-Version `1.1.0` requires Node.js 22 or newer and uses
-`@dexterai/opendexter@1.24.1`.
+The release candidate `1.2.0` requires Node.js 22 or newer and uses
+`@dexterai/opendexter@1.25.0`.
 
 Use it when you want the package name itself to tell developers exactly what it does:
 
@@ -13,7 +13,7 @@ Use it when you want the package name itself to tell developers exactly what it 
 ## Install
 
 ```bash
-npx @dexterai/x402-discovery@1.1.0 install
+npx @dexterai/x402-discovery@1.2.0 install
 ```
 
 ## Manual MCP config
@@ -23,7 +23,7 @@ npx @dexterai/x402-discovery@1.1.0 install
   "mcpServers": {
     "opendexter": {
       "command": "npx",
-      "args": ["-y", "@dexterai/x402-discovery@1.1.0"]
+      "args": ["-y", "@dexterai/x402-discovery@1.2.0"]
     }
   }
 }

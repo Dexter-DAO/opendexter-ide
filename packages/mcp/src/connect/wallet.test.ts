@@ -519,6 +519,92 @@ describe("connect/wallet — governed runtime authority", () => {
     expect(callHosted).toHaveBeenCalledTimes(1);
   });
 
+  it.each([undefined, true, false])("never auth-retries a work report with retry override %s", async (retryRejectedBearer) => {
+    seedSession();
+    const callHosted = vi.fn(async () => { throw authError(); });
+    const fetchImpl = vi.fn();
+    await expect(callHostedRuntimeTool({
+      toolName: "dexter_report_work",
+      arguments: { operationId: "219f981c-9215-4141-84f2-d89ffe9cbece", state: "idle" },
+      dataDir: dir, retryRejectedBearer, callHosted, fetchImpl,
+    })).rejects.toThrow(/no_automatic_retry.*original operationId and identical content/);
+    expect(callHosted).toHaveBeenCalledTimes(1);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("refreshes an expired report bearer before its one dispatch", async () => {
+    seedSession({ expiresAt: 0 });
+    const args = { operationId: "219f981c-9215-4141-84f2-d89ffe9cbece", state: "idle" };
+    const fetchImpl = tokenFetch(200, {
+      access_token: "at.refreshed.sig", refresh_token: "dlt_rotated", expires_in: 3600,
+    });
+    const callHosted = vi.fn(async () => ({ content: [{ type: "text" as const, text: "Hosted report acknowledgment" }] }));
+    await callHostedRuntimeTool({
+      toolName: "dexter_report_work", arguments: args, dataDir: dir,
+      callHosted, fetchImpl: fetchImpl as typeof fetch,
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(callHosted).toHaveBeenCalledExactlyOnceWith("at.refreshed.sig", "dexter_report_work", args);
+    expect(fetchImpl.mock.invocationCallOrder[0]).toBeLessThan(callHosted.mock.invocationCallOrder[0]);
+  });
+
+  it("uses fresh MCP sessions and lets the hosted agent binding decide report recovery", async () => {
+    const operationId = "219f981c-9215-4141-84f2-d89ffe9cbece";
+    const args = { operationId, expectedRevision: 0, state: "idle", summary: null };
+    const sessions = new Map<string, string>();
+    const dispatched: { session: string; bearer: string; args: unknown }[] = [];
+    let sameAgentCalls = 0;
+    // The fixture models the API's durable agent key. The client forwards the
+    // request and never assigns identity or manufactures a replay locally.
+    const fetchImpl: typeof fetch = vi.fn(async (_url, init) => {
+      if (init?.method === "GET") return new Response(null, { status: 405 });
+      const request = JSON.parse(String(init?.body));
+      const headers = new Headers(init?.headers);
+      const bearer = headers.get("authorization")!;
+      if (request.method === "initialize") {
+        const session = `report-session-${sessions.size + 1}`;
+        sessions.set(session, bearer);
+        return new Response(JSON.stringify({ jsonrpc: "2.0", id: request.id, result: {
+          protocolVersion: request.params.protocolVersion, capabilities: { tools: {} },
+          serverInfo: { name: "hosted-binding-fixture", version: "1" },
+        } }), { headers: { "content-type": "application/json", "mcp-session-id": session } });
+      }
+      if (request.method === "notifications/initialized") return new Response(null, { status: 202 });
+      expect(request.method).toBe("tools/call");
+      expect(request.params.name).toBe("dexter_report_work");
+      const session = headers.get("mcp-session-id")!;
+      expect(sessions.get(session)).toBe(bearer);
+      dispatched.push({ session, bearer, args: request.params.arguments });
+      const sameAgent = bearer === "Bearer at.original.sig" || bearer === "Bearer at.same-agent-new-token.sig";
+      const body = sameAgent ? {
+        namespace: "dexter-agent-work-report-ack/v1", operationId, replayed: sameAgentCalls++ > 0,
+        report: { reportId: operationId, revision: 1, state: "idle", summary: null, source: "agent_report",
+          observedAt: "2026-09-18T12:00:00.000Z", expiresAt: "2026-09-18T12:05:00.000Z" },
+      } : {
+        namespace: "dexter-agent-work-report-error/v1", operationId, code: "agent_work_identity_invalid",
+        retryable: false, retryWithSameOperationOnly: false, currentRevision: null, currentReport: null,
+      };
+      return new Response(JSON.stringify({ jsonrpc: "2.0", id: request.id, result: {
+        isError: !sameAgent, structuredContent: body,
+        content: [{ type: "text", text: sameAgent ? "Original report recovered." : "This connection cannot report for that agent." }],
+      } }), { headers: { "content-type": "application/json" } });
+    });
+    const send = () => callHostedRuntimeTool({
+      toolName: "dexter_report_work", arguments: args, dataDir: dir,
+      serverUrl: "https://hosted.example.invalid/mcp", fetchImpl,
+    });
+    seedSession();
+    expect((await send()).structuredContent).toMatchObject({ replayed: false });
+    seedSession({ accessToken: "at.same-agent-new-token.sig" });
+    expect((await send()).structuredContent).toMatchObject({ replayed: true, report: { revision: 1 } });
+    seedSession({ accessToken: "at.another-agent.sig" });
+    const refused = await send();
+    expect(refused.isError).toBe(true);
+    expect(refused.structuredContent).toMatchObject({ code: "agent_work_identity_invalid" });
+    expect(new Set(dispatched.map(({ session }) => session)).size).toBe(3);
+    expect(dispatched.map(({ args: forwarded }) => forwarded)).toEqual([args, args, args]);
+  });
+
   it("rejects disconnected fetch before dispatch even when a legacy signer env name exists", async () => {
     vi.stubEnv("DEXTER_PRIVATE_KEY", "legacy-material-must-not-be-read");
     const callHosted = vi.fn();
@@ -537,6 +623,7 @@ describe("connect/wallet — governed runtime authority", () => {
       "x402_status",
       "x402_wallet",
       "dexter_portfolio",
+      "dexter_report_work",
     ] as const) {
       await expect(callHostedRuntimeTool({
         toolName,
@@ -776,7 +863,7 @@ describe("connect/wallet — governed runtime authority", () => {
     expect(callHosted).not.toHaveBeenCalled();
   });
 
-  it.each(["x402_fetch", "x402_status", "x402_wallet", "dexter_portfolio"] as const)(
+  it.each(["x402_fetch", "x402_status", "x402_wallet", "dexter_portfolio", "dexter_report_work"] as const)(
     "fails an expired unrefreshable %s before dispatch",
     async (toolName) => {
       seedSession({ expiresAt: NOW - 1 });

@@ -23,10 +23,22 @@ x402-protocol:
   `/utils` exports.
 - `@dexterai/opendexter` is different: it is a local proxy to the hosted
   governed runtime and is configured with
-  `npx @dexterai/opendexter@1.24.1 setup` followed by `opendexter connect`.
-- The OpenDexter MCP roster is exactly `x402_search`, `x402_check`,
-  `x402_fetch`, `x402_status`, `x402_access`, `x402_wallet`, and
-  `dexter_portfolio`.
+  `npx @dexterai/opendexter@1.25.0 setup` followed by `opendexter connect`.
+- Current source registers eight OpenDexter MCP tools before connection:
+  `x402_search`, `x402_check`, `x402_fetch`, `x402_status`, `x402_access`,
+  `x402_wallet`, `dexter_portfolio`, and `dexter_report_work`. Published
+  `1.24.1` exposes the first seven.
+- `dexter_report_work` records meaningful work updates using the stored OAuth
+  bearer bound to the same agent. Reporting needs no spending grant or funding.
+  After rejection or possible dispatch, the proxy does not refresh authentication
+  and resend the report automatically. Keep private data, credentials and control
+  characters out of summaries. Server-assigned
+  `observedAt` and `expiresAt` describe statement freshness.
+- An uncertain report response keeps the same `operationId` and identical
+  fields for recovery. On a revision conflict, inspect `currentReport` and
+  `currentRevision`; a deliberate update uses a new `operationId` and that
+  `currentRevision` as `expectedRevision`. Financial outcomes retain their own
+  receipts.
 - A connected check returns one opaque `intentId`. Execute at most once with
   that `intentId` and the separately approved `maxAmountAtomic` ceiling.
 - Reconcile uncertainty through `x402_status`. Never retry `x402_fetch` after

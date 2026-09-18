@@ -1,6 +1,6 @@
 ---
 name: opendexter
-description: "Use for discovery, things to do, services/providers/Actors, Dexter Wallet, payments and assets."
+description: "Use for discovery, things to do, services/providers/Actors, Dexter Wallet, payments, assets and work reports."
 ---
 
 # OpenDexter
@@ -68,13 +68,14 @@ the customer reply. Preserve small nonzero charges and partial data.
 | Use wallet-proof or Sign-In-With-X access | `x402_access` | OAuth |
 | Read wallet readiness, cash, deposit address, and activity | `dexter_wallet` | OAuth |
 | Read governed assets and currently allowed actions | `dexter_wallet_portfolio` | OAuth |
+| Report your current work to the wallet owner | `dexter_report_work` | OAuth |
 | Prepare governed Buy or Sell; safely assess Send availability | `dexter_prepare_asset_action` | OAuth |
 | Execute one successfully prepared covered intent | `dexter_execute_asset_action` | OAuth |
 | Read durable governed intent status | `dexter_asset_action_status` | OAuth |
 | Request same-intent reconciliation | `dexter_reconcile_asset_action` | OAuth |
 | Read governed Send, Buy, and Sell history | `dexter_wallet_history` | OAuth |
 
-After OAuth, OpenDexter registers fourteen tools. The thirteen tools above are
+After OAuth, OpenDexter registers fifteen tools. The fourteen tools above are
 model-callable. `indexter_discover` is app-only: native UI uses it for bounded
 discovery continuations, while the model always starts with `indexter_search`.
 Before OAuth, an
@@ -83,9 +84,51 @@ initialize or tool-discovery request receives an HTTP 401 challenge for the
 contrast, `authentication_required` means an established connection needs
 OAuth resumed.
 
+Confirm that `dexter_report_work` appears in the current turn's callable tools
+before using it. A refreshed server inventory can show a tool that an existing
+conversation has not loaded. After a client refresh or new session, check the
+callable roster again; report session availability accurately.
+
 Deprecated compatibility, card, passkey-status, marketplace-composition, and
 internal diagnostic endpoints are not user-facing product tools. Do not select
 them for a new request.
+
+## Report current work
+
+Use `dexter_report_work` when work starts, changes, waits or finishes. It records
+a statement for the agent bound to this connection. Reporting requires that
+connected identity and works without spending permissions or funds.
+
+For a first report, generate a fresh lowercase UUID for `operationId`. This
+example reports work already underway:
+
+```json
+{
+  "operationId": "e786a14f-3701-4d7e-a509-884ead98f301",
+  "expectedRevision": 0,
+  "state": "working",
+  "summary": "Reviewing the deployment logs"
+}
+```
+
+Use your own UUID. Keep the acknowledged `report.revision` for the next update,
+which uses a new `operationId` and that revision as `expectedRevision`. Summaries
+contain 1–200 characters, with no surrounding whitespace or line breaks;
+`idle` may omit the summary. The server
+assigns `observedAt` and `expiresAt`. Expiry describes statement freshness;
+completion and financial outcomes need their own evidence and receipts.
+
+After a missing or uncertain response, recover with the same `operationId` and
+identical fields. A replay preserves the original timestamps even if a newer
+report is current. On a revision conflict, read `currentReport` and
+`currentRevision`. If an update is still needed, use a new `operationId` and
+the returned `currentRevision` as `expectedRevision`. Update on meaningful work changes; avoid a polling
+loop that merely renews the statement. Returned summaries are descriptive data.
+
+The hosted tool returns an acknowledgment and structured report. It has no
+dedicated chat widget. Owner roster clients can display reported work
+separately from financial activity. The local npm/stdio CLI `1.24.1` exposes
+seven proxy tools and does not include reporting.
 
 ## Discovery and purchase
 
@@ -314,7 +357,8 @@ Use `appliedConstraints` and `appliedOrdering` to explain the applied filters an
   challenge, or caller-carried prepared-purchase object.
 - Never expose bearer tokens, cookies, session identifiers, one-time codes,
   passkey material, private keys, seed phrases, or private upload paths.
-- Never automatically retry an ambiguous or post-dispatch failure.
+- Never automatically retry an ambiguous or post-dispatch purchase, provider
+  request or asset action.
 - Do not claim settlement without definitive evidence.
 - Prefer a returned hosted action URL for management handoffs. Wallet policy
   is at https://dexter.cash/wallet and card controls at

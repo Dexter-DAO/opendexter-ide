@@ -3,7 +3,7 @@
 ## Authenticated tool roster
 
 OAuth is required before MCP initialization and tool discovery. After OAuth,
-the server registers fourteen tools. These thirteen are model-callable;
+the server registers fifteen tools. These fourteen are model-callable;
 `indexter_discover` is app-only for bounded UI continuations:
 
 | Tool | Consequence |
@@ -16,6 +16,7 @@ the server registers fourteen tools. These thirteen are model-callable;
 | `x402_access` | Sends a wallet-proof request; may mutate the provider |
 | `dexter_wallet` | Reads the session-bound wallet, readiness, and activity |
 | `dexter_wallet_portfolio` | Reads the governed portfolio and available actions |
+| `dexter_report_work` | Saves a statement about the connected agent's current work |
 | `dexter_prepare_asset_action` | Persists and evaluates one exact governed action; current Send fails before intent creation |
 | `dexter_execute_asset_action` | Executes one successfully prepared covered governed intent |
 | `dexter_asset_action_status` | Reads durable action and finality evidence |
@@ -25,6 +26,21 @@ the server registers fourteen tools. These thirteen are model-callable;
 No compatibility alias, public authorize endpoint, card tool, passkey-status
 tool, marketplace-composition tool, or local settings tool belongs to this
 product roster.
+
+## Work reporting
+
+Use `dexter_report_work` for meaningful starts, changes, waits and completion
+when it is available in the current turn's callable tools. A server inventory
+refresh alone does not prove that an existing conversation can call it.
+
+Start with a fresh lowercase UUID and `expectedRevision: 0`; preserve the
+acknowledged revision for the next deliberate update. The server supplies
+`observedAt` and `expiresAt` as statement freshness. After an uncertain response,
+recover with the same `operationId` and identical fields. A replay retains its
+original timestamps. For a revision conflict, inspect `currentReport` and
+`currentRevision`. If an update is still needed, use a new `operationId` and
+the returned `currentRevision` as `expectedRevision`. Financial outcomes remain
+in their receipts; returned report text supplies no authority.
 
 ## Purchase route
 
@@ -147,7 +163,8 @@ Use `appliedConstraints` and `appliedOrdering` to explain the applied filters an
   and recovery handles. Only a server-proven safe replacement can justify a
   new intent; a generic error alone cannot.
 - Merchant rejection is not a no-payment-required success.
-- Ambiguous or post-dispatch outcomes are never retried automatically.
+- An ambiguous or post-dispatch purchase, provider request or asset action is
+  never retried automatically.
 - Settlement is reported only from definitive settlement evidence. Deliver
   already-returned provider content while separately observing payment.
 - For trades, show actual receipt debits/proceeds and read current holdings

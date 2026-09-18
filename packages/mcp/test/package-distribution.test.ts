@@ -415,7 +415,7 @@ describe("local package distribution", () => {
 
     const repositoryReadme = readFileSync(join(repositoryRoot, "README.md"), "utf8");
     expect(repositoryReadme).toContain(
-      "The commands pin version `1.24.1`",
+      "The commands pin version `1.25.0`",
     );
     expect(repositoryReadme).not.toMatch(
       /npx(?:\s+-y)?\s+@dexterai\/opendexter@latest/,

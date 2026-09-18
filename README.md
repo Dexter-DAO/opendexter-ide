@@ -42,10 +42,10 @@ create or select a second payment wallet.
 
 ### Local: start in one command
 
-The commands pin version `1.24.1` so your clients use the same release.
+The commands pin version `1.25.0`, the release candidate prepared here.
 
 ```bash
-npx @dexterai/opendexter@1.24.1 setup
+npx @dexterai/opendexter@1.25.0 setup
 ```
 
 `setup` detects supported AI clients, configures the clients it can edit safely,
@@ -54,7 +54,7 @@ first search. It does not create, import, or enable a payment wallet. To target
 one client:
 
 ```bash
-npx @dexterai/opendexter@1.24.1 install --client cursor
+npx @dexterai/opendexter@1.25.0 install --client cursor
 ```
 
 Use `claude-code`, `codex`, `vscode`, `windsurf`, or `gemini-cli` in place of
@@ -62,7 +62,7 @@ Use `claude-code`, `codex`, `vscode`, `windsurf`, or `gemini-cli` in place of
 connection directly:
 
 ```bash
-claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.24.1
+claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.0
 ```
 
 This local installer never adds the repository's hosted Claude Code plugin.
@@ -73,7 +73,7 @@ For a manual stdio MCP configuration in another client:
   "mcpServers": {
     "opendexter": {
       "command": "npx",
-      "args": ["-y", "@dexterai/opendexter@1.24.1"]
+      "args": ["-y", "@dexterai/opendexter@1.25.0"]
     }
   }
 }
@@ -83,6 +83,14 @@ See the [local package guide](./packages/mcp/README.md) for authority, client,
 CLI, recovery, and seller workflows.
 
 ### Hosted connector
+
+The hosted connector registers fifteen authenticated tools, including
+`dexter_report_work` for the connected agent's work updates. Fourteen tools are
+model-callable; `indexter_discover` is reserved for the widget. Verify new tools
+in the current conversation's callable roster after a client refresh or new
+session. The local CLI `1.24.1` keeps its seven-tool proxy and does not include
+work reporting. See the [hosted work-report guide](plugins/opendexter/skills/opendexter/SKILL.md#report-current-work)
+for an example and replay recovery.
 
 Clients with remote MCP and OAuth use this URL:
 
@@ -145,7 +153,7 @@ namespacing has been separately proven. `--registration-name` chooses the name
 of that one registration; it does not bypass an existing hosted or local
 OpenDexter registration. The installer never silently renames or overwrites one.
 
-Run `npx @dexterai/opendexter@1.24.1 doctor` for a read-only report. Doctor
+Run `npx @dexterai/opendexter@1.25.0 doctor` for a read-only report. Doctor
 does not create a wallet, read balances, edit client configuration, or pay.
 
 ## From request to result
@@ -176,7 +184,9 @@ safe.
 
 ## Product tool surfaces
 
-The local proxy exposes exactly these seven model-facing tools:
+The current source candidate defines these eight local proxy tools. Published
+CLI `1.24.1` exposes the first seven; reporting awaits a reviewed package
+release and a client using that release.
 
 | Tool | What it does | Consequential? |
 |---|---|---|
@@ -187,6 +197,13 @@ The local proxy exposes exactly these seven model-facing tools:
 | `x402_access` | Starts one fresh anonymous legacy SIWX wallet-proof context, separate from Dexter OAuth and governed payment authority, with no cross-call continuity | A non-GET request can mutate seller state; it requires separate request approval |
 | `x402_wallet` | Reads the connected wallet and exact authority evidence | No |
 | `dexter_portfolio` | Reads the governed portfolio bound to the same principal | No |
+| `dexter_report_work` | Saves the connected agent's current work statement | Yes; updates the statement without moving funds |
+
+Use reporting for meaningful work changes. Keep private data out of summaries,
+and preserve the operation ID and identical content after an uncertain response.
+The [local reporting guide](./packages/mcp/skills/opendexter/SKILL.md#report-current-work)
+explains server-observed freshness and revision recovery. Check the current
+conversation's callable tools before using the source candidate's added tool.
 
 Every account-bound call uses the authenticated Dexter Wallet session. The
 local package never swaps to a wallet file or environment key when hosted
@@ -200,9 +217,9 @@ Run the device flow, approve with the wallet passkey, and then inspect the live
 authority projection:
 
 ```bash
-npx @dexterai/opendexter@1.24.1 connect
-npx @dexterai/opendexter@1.24.1 connect status
-npx @dexterai/opendexter@1.24.1 wallet
+npx @dexterai/opendexter@1.25.0 connect
+npx @dexterai/opendexter@1.25.0 connect status
+npx @dexterai/opendexter@1.25.0 wallet
 ```
 
 The OAuth request uses the exact `vault` scope. The returned access token can
@@ -226,7 +243,7 @@ connection and authority boundary.
 - **Build an x402 client or server:** use
   [`@dexterai/x402`](https://www.npmjs.com/package/@dexterai/x402).
 - **Prepare a compatible service for discovery:** run
-  `npx @dexterai/opendexter@1.24.1 audition https://your-service.example`.
+  `npx @dexterai/opendexter@1.25.0 audition https://your-service.example`.
   Audition performs real paid test calls, so use a testable endpoint and fund
   only the amount you intend those tests to spend.
 - **Inspect the protocol:** read the [x402 specification](https://x402.org).

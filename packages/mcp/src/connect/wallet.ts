@@ -51,7 +51,8 @@ export type HostedRuntimeToolName =
   | "x402_status"
   | "x402_access"
   | "x402_wallet"
-  | "dexter_portfolio";
+  | "dexter_portfolio"
+  | "dexter_report_work";
 
 /**
  * The subset of the hosted `x402_wallet` structuredContent we read. Kept loose
@@ -571,9 +572,9 @@ export interface HostedRuntimeCallOpts {
   onDispatch?: () => void;
   /**
    * May disable rejected-bearer retry for a caller with stricter semantics.
-   * It cannot enable retry for x402_fetch or a non-GET check/access: those are
-   * centrally one-dispatch because an auth-looking failure is not proof that
-   * no charge or mutation occurred.
+   * It cannot enable retry for x402_fetch, dexter_report_work, or a non-GET
+   * check/access: those are centrally one-dispatch because an auth-looking
+   * failure is not proof that no charge or mutation occurred.
    */
   retryRejectedBearer?: boolean;
   /** Test seam for the one hosted MCP call. */
@@ -625,7 +626,7 @@ function isUsableStoredSession(session: VaultSession | null): session is VaultSe
  * surface. Check uses OAuth when it is currently available, otherwise it
  * degrades to one anonymous call. This path never reads or creates wallet.json.
  * A rejected bearer is retried only for explicitly retry-safe reads and never
- * for fetch or a non-GET seller request.
+ * for fetch, work reporting, or a non-GET seller request.
  */
 export async function callHostedRuntimeTool(
   opts: HostedRuntimeCallOpts,
@@ -681,6 +682,7 @@ export async function callHostedRuntimeTool(
 
   const retrySafeByContract =
     opts.toolName !== "x402_fetch"
+    && opts.toolName !== "dexter_report_work"
     && (
       opts.toolName !== "x402_check"
       || !("method" in args)
@@ -692,7 +694,9 @@ export async function callHostedRuntimeTool(
     if (!session || !isAuthError(error)) throw error;
     if (opts.retryRejectedBearer === false || !retrySafeByContract) {
       throw new Error(
-        "connected_session_rejected_no_automatic_retry; reconnect and reconcile the same intent before any retry",
+        opts.toolName === "dexter_report_work"
+          ? "connected_session_rejected_no_automatic_retry; restore the same agent connection and preserve the original operationId and identical content"
+          : "connected_session_rejected_no_automatic_retry; reconnect and reconcile the same intent before any retry",
       );
     }
     session = await refreshAndPersistSession(session, opts);

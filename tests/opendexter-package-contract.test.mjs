@@ -53,12 +53,15 @@ const HOSTED_TOOLS = Object.freeze([
   "x402_access",
   "dexter_wallet",
   "dexter_wallet_portfolio",
+  "dexter_report_work",
   "dexter_prepare_asset_action",
   "dexter_execute_asset_action",
   "dexter_asset_action_status",
   "dexter_reconcile_asset_action",
   "dexter_wallet_history",
 ]);
+
+const GUIDE_MODEL_TOOLS = HOSTED_TOOLS;
 
 const ANONYMOUS_TOOLS = Object.freeze([]);
 
@@ -82,6 +85,7 @@ const EXPECTED_SCHEMES = Object.freeze({
   x402_access: ["oauth2:vault"],
   dexter_wallet: ["oauth2:vault"],
   dexter_wallet_portfolio: ["oauth2:vault"],
+  dexter_report_work: ["oauth2:vault"],
   dexter_prepare_asset_action: ["oauth2:vault"],
   dexter_execute_asset_action: ["oauth2:vault"],
   dexter_asset_action_status: ["oauth2:vault"],
@@ -680,8 +684,8 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(contract.contractId, "opendexter-hosted-full-descriptor-v2");
   assert.deepEqual(contract.source, {
     repository: "https://github.com/Dexter-DAO/dexter-mcp",
-    commit: "f79fdd0512eb9f0b798a22f0634aa7e50f5ab728",
-    tree: "36e85827252683d4ea5f8d86a98df3fbd9c55946",
+    commit: "b54207532710fb0771d73eaa8f014fc16512d574",
+    tree: "d8aa2ed5d30bdc38d244f3e414dfaadd2e6d3aae",
     descriptorPath: "release/open-tool-descriptors.json",
     descriptorMaterializerPath: "scripts/materialize-open-tool-descriptors.mjs",
     toolContractPath: "lib/open-tool-contracts.mjs",
@@ -690,7 +694,7 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(contract.sourceContracts.schemaVersion, 3);
   assert.equal(
     contract.sourceContracts.integratedApiRelease.commit,
-    "0138a4a87916f0bf27f128c30e7c88f365864b2a",
+    "fef1be7e83e1900374f2bc2d8405967ccf4d24bc",
   );
   assert.equal(
     contract.sourceContracts.facilitator.commit,
@@ -845,7 +849,7 @@ test("ChatGPT and Codex share one skill-bearing app and MCP package", async () =
   const mcpBinding = await readJson(mcpBindingPath);
   const marketplace = await readJson(codexMarketplacePath);
   assert.equal(manifest.name, "opendexter");
-  assert.equal(manifest.version, "0.6.7");
+  assert.equal(manifest.version, "0.6.8");
   assert.equal(manifest.skills, "./skills/");
   assert.equal(manifest.apps, "./.app.json");
   assert.equal(manifest.mcpServers, "./.mcp.json");
@@ -879,7 +883,7 @@ test("Claude package is self-contained and uses the hosted remote MCP", async ()
   const mcp = await readJson(resolve(claudeRoot, ".mcp.json"));
   const marketplace = await readJson(claudeMarketplacePath);
   assert.equal(manifest.name, "opendexter");
-  assert.equal(manifest.version, "2.1.7");
+  assert.equal(manifest.version, "2.1.8");
   assert.deepEqual(mcp, {
     mcpServers: {
       opendexter: {
@@ -909,7 +913,7 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   const mcp = await readJson(resolve(repoRoot, "mcp.json"));
   assert.equal(workspace.packageManager, "npm@10.9.3");
   assert.equal(workspace.engines.node, ">=22");
-  assert.equal(pkg.version, "1.24.1");
+  assert.equal(pkg.version, "1.25.0");
   assert.equal(pkg.engines.node, ">=22");
   assert.equal(pkg.dependencies["@modelcontextprotocol/sdk"], "1.30.0");
   assert.equal(pkg.dependencies["@modelcontextprotocol/ext-apps"], "1.7.5");
@@ -927,18 +931,18 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   assert.equal(toolsPkg.dependencies["@dexterai/x402"], "6.0.3");
   assert.equal(toolsPkg.dependencies["@dexterai/x402-core"], "1.5.2");
   assert.equal(toolsPkg.publishConfig.tag, undefined);
-  assert.equal(discoveryPkg.version, "1.1.0");
+  assert.equal(discoveryPkg.version, "1.2.0");
   assert.equal(discoveryPkg.engines.node, ">=22");
   assert.equal(
     discoveryPkg.dependencies["@dexterai/opendexter"],
-    "1.24.1",
+    "1.25.0",
   );
   assert.equal(discoveryPkg.publishConfig.tag, "latest");
   assert.deepEqual(mcp, {
     mcpServers: {
       opendexter: {
         command: "npx",
-        args: ["-y", "@dexterai/opendexter@1.24.1"],
+        args: ["-y", "@dexterai/opendexter@1.25.0"],
       },
     },
   });
@@ -1123,8 +1127,8 @@ test("both formats expose only the three hosted-contract skills", async () => {
       resolve(root, "skills/opendexter/SKILL.md"),
       "utf8",
     );
-    assert.deepEqual(namedTools(umbrella), [...HOSTED_TOOLS, "indexter_discover"].sort());
-    for (const tool of HOSTED_TOOLS) {
+    assert.deepEqual(namedTools(umbrella), [...GUIDE_MODEL_TOOLS, "indexter_discover"].sort());
+    for (const tool of GUIDE_MODEL_TOOLS) {
       assert.match(umbrella, new RegExp(`\\\`${tool}\\\``));
     }
     assert.doesNotMatch(
@@ -1185,7 +1189,7 @@ test("one canonical hosted skill generates ChatGPT, Codex, and Claude guidance",
   assert.match(stdout, /hosted skill parity ok \(5 files\)/);
 });
 
-test("both formats route one OAuth-required thirteen-tool roster", async () => {
+test("both formats guide the OAuth-required fifteen-tool hosted roster", async () => {
   for (const root of [codexRoot, claudeRoot]) {
     const umbrella = await readFile(
       resolve(root, "skills/opendexter/SKILL.md"),
@@ -1195,10 +1199,33 @@ test("both formats route one OAuth-required thirteen-tool roster", async () => {
       resolve(root, "skills/opendexter/references/routing-and-safety.md"),
       "utf8",
     );
-    assert.deepEqual(namedTools(umbrella), [...HOSTED_TOOLS, "indexter_discover"].sort());
-    assert.deepEqual(namedTools(routing), [...HOSTED_TOOLS, "indexter_discover"].sort());
+    assert.deepEqual(namedTools(umbrella), [...GUIDE_MODEL_TOOLS, "indexter_discover"].sort());
+    assert.deepEqual(namedTools(routing), [...GUIDE_MODEL_TOOLS, "indexter_discover"].sort());
     assert.match(umbrella, /OAuth must complete[\s\S]*Every hosted\s+tool/i);
-    assert.match(routing, /OAuth is required[\s\S]*registers fourteen tools/i);
+    assert.match(routing, /OAuth is required[\s\S]*registers fifteen tools/i);
+    const readme = await readFile(resolve(root, "README.md"), "utf8");
+    assert.match(readme, /registers fifteen tools: fourteen model-callable/i);
+    assert.match(readme, /CLI `1\.24\.1`[\s\S]*does not (?:include reporting|expose `dexter_report_work`)/);
+    assert.match(readme, /SKILL\.md#report-current-work/);
+    for (const text of [umbrella, routing, readme]) {
+      assert.match(text, /current turn's callable tools/);
+      assert.match(text, /same `operationId` and\s+identical fields/);
+      assert.match(text, /revision conflict/);
+    }
+    for (const text of [umbrella, routing]) {
+      assert.match(text, /`observedAt` and `expiresAt`/);
+      assert.match(text, /original timestamps/);
+      assert.match(text, /`currentReport` and\s+`currentRevision`/);
+      assert.match(text, /returned `currentRevision` as `expectedRevision`/);
+    }
+    const reportSection = umbrella.split("## Report current work\n")[1]?.split("\n## ")[0];
+    assert.ok(reportSection, "work-report guidance is present");
+    const example = JSON.parse(reportSection.match(/```json\n([\s\S]*?)\n```/)[1]);
+    assert.match(example.operationId, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    assert.deepEqual(Object.keys(example).sort(), ["expectedRevision", "operationId", "state", "summary"]);
+    assert.equal(example.expectedRevision, 0);
+    assert.equal(example.state, "working");
+    assert.equal(example.summary, "Reviewing the deployment logs");
     assert.doesNotMatch(umbrella, /anonymous roster|OAuth adds exactly seven/i);
     assert.doesNotMatch(routing, /five entry tools|OAuth adds exactly seven/i);
     assert.match(routing, /Buy[\s\S]*USDC input[\s\S]*6-decimal base units/i);

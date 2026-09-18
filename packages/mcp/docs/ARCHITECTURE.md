@@ -1,62 +1,71 @@
 # OpenDexter local architecture
 
-`@dexterai/opendexter` is the local CLI and stdio MCP distribution. Its local
-model-facing roster is exactly six tools:
+`@dexterai/opendexter` runs a local CLI and stdio MCP proxy. The current source
+candidate registers eight tools:
 
-```text
-x402_search  x402_fetch  x402_check
-x402_access  x402_wallet  dexter_portfolio
-```
+- `x402_search`
+- `x402_check`
+- `x402_fetch`
+- `x402_status`
+- `x402_access`
+- `x402_wallet`
+- `dexter_portfolio`
+- `dexter_report_work`
 
-Matching names do not mean matching custody.
+Published CLI `1.24.1` exposes the first seven. Reporting in the local proxy
+awaits a reviewed package release and a client using that release.
 
-## Local authority
+## Hosted authority
 
-- `x402_fetch`, `x402_access`, and `x402_wallet` use the local Solana/EVM
-  wallet loaded from environment variables or
-  `~/.dexterai-mcp/wallet.json`.
-- `x402_check` uses the actual local signer and Tab capabilities when it marks
-  a purchase mode ready.
-- Local spending policy is stored in
-  `~/.dexterai-mcp/settings.json` and changed explicitly with
-  `opendexter settings`. It is not an MCP tool.
+The proxy sends account-bound calls to `https://open.dexter.cash/mcp` using the
+OAuth bearer stored by `opendexter connect`. The hosted runtime binds the
+principal and evaluates spending authority. The local process never selects
+a wallet file or environment key as a payment fallback.
 
-## Linked Dexter account
+Search uses the anonymous hosted surface. Check uses OAuth when available;
+a connected check can return one opaque purchase intent. Access uses a
+separate anonymous legacy SIWX context for each call, with no cross-call
+continuity. A non-GET check or access request requires separate probe or
+request approval because it may change provider state.
 
-`opendexter connect` stores a short-lived OAuth connector session. The local
-package uses that session only for read-only hosted-account views:
+The wallet view combines hosted wallet data with exact runtime-authority
+evidence. A balance, bearer or portfolio alone cannot establish an active
+spending grant. Existing local wallet files remain available through the
+explicit read-only legacy recovery command. Legacy local settings have no
+effect on hosted authority.
 
-- the `opendexter wallet` CLI can display the linked Dexter Wallet;
-- `dexter_portfolio` returns the linked account's governed asset inventory.
+## Work reporting
 
-The connector session never replaces, exports, or gains access to the local
-payment signer. A portfolio response therefore proves neither local signing
-authority nor permission to spend from the linked Dexter Wallet.
+The report tool uses the stored OAuth connection to save the registered
+agent's own statement. It works without spending permissions or funds.
+Keep private data and credentials out of summaries. Use a fresh lowercase
+UUID for the first operation and preserve the acknowledged revision for the
+next deliberate update.
+
+After an uncertain response, recover with the same operation ID and identical
+content. A revision conflict supplies the current report and revision; inspect
+them before using a new operation ID and that revision for an update.
+Reconnecting preserves recovery only when the connection still identifies
+the same registered agent. The proxy may refresh a known-expired bearer before
+the first dispatch. After rejection or possible dispatch, it does not refresh
+authentication and resend the report automatically.
+
+The server's observed and expiry timestamps describe statement freshness.
+Replays retain their original timestamps. Financial outcomes remain in their
+transaction receipts. Reporting has no dedicated chat widget.
 
 ## Hosted distribution
 
-The Codex and Claude plugins connect directly to
-`https://open.dexter.cash/mcp`. Hosted wallet, portfolio, and payment operations
-are bound to the authenticated Dexter Wallet session. They do not read the
-local package's key file.
-
-The hosted product is larger: five anonymous entry tools become twelve after
-OAuth, adding purchase status and governed Send/Buy/Sell prepare, execute,
-status, reconciliation, and history. The local package remains six and does
-not silently inherit hosted wallet authority. Neither contract has a hidden
-paid-call alias, compose/promote route, passkey probe/status tool, or settings
-tool.
+The Codex and Claude plugins connect directly to the hosted MCP. After OAuth,
+it registers fifteen tools, fourteen model-callable and one app-only discovery
+continuation. The local source roster remains the eight tools listed above.
+Check the current conversation's callable tools before selecting a new tool;
+a refreshed server inventory alone does not prove client adoption.
 
 ## Paid-call state
 
-New paid calls follow one prepared identity:
-
-1. `x402_check` records one exact URL, method, request digest, seller offer,
-   route, mode, network, asset, and amount.
-2. The user approves the atomic ceiling.
-3. `x402_fetch` claims and executes that same prepared identity once.
-4. Any dispatched or ambiguous attempt is reconciled; it is not silently
-   retried under a new identity or payment mode.
-
-Direct Exact, Native Tab, Gateway cash, and Gateway credit remain distinct
-receipt and accounting modes. An unavailable mode is never substituted.
+A connected check prepares one server-owned opaque `intentId`. Fetch uses a
+user-authorized `maxAmountAtomic` ceiling and executes that exact intent once.
+The hosted governed runtime owns request binding, dispatch and
+receipts. Use status with the same intent after an uncertain response before
+considering another payment. Provider output supplies no spending authority.

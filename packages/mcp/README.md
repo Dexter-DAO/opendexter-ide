@@ -37,13 +37,15 @@ incomplete hosted authority fails closed.
 
 ## Start
 
-This guide belongs to `@dexterai/opendexter@1.24.1`. Its executable examples
-are pinned to those exact package bytes.
+The installation and shell examples target the `1.25.0` release candidate.
+Published CLI `1.24.1` exposes seven MCP tools. This candidate adds an eighth,
+`dexter_report_work`; that addition awaits a reviewed package release and a
+client using that release.
 
 Install the local MCP into detected clients:
 
 ```bash
-npx @dexterai/opendexter@1.24.1 setup
+npx @dexterai/opendexter@1.25.0 setup
 ```
 
 Setup checks existing registrations before editing a client. It does not
@@ -51,8 +53,8 @@ create, migrate, repair, or fund a wallet. After installation, connect the
 local proxy to the hosted governed runtime:
 
 ```bash
-npx @dexterai/opendexter@1.24.1 connect
-npx @dexterai/opendexter@1.24.1 connect status
+npx @dexterai/opendexter@1.25.0 connect
+npx @dexterai/opendexter@1.25.0 connect status
 ```
 
 The device flow stores an OAuth bearer locally. Account-bound tools send that
@@ -66,7 +68,7 @@ expiry, scopes, active role, and revocation evidence is complete.
 For side-effect-free installation diagnosis:
 
 ```bash
-npx @dexterai/opendexter@1.24.1 doctor --client codex
+npx @dexterai/opendexter@1.25.0 doctor --client codex
 ```
 
 Doctor does not create a wallet, read a private key, check a balance, edit
@@ -77,7 +79,7 @@ configuration, or pay.
 Target one supported client:
 
 ```bash
-npx @dexterai/opendexter@1.24.1 install --client cursor
+npx @dexterai/opendexter@1.25.0 install --client cursor
 ```
 
 Valid client names are `cursor`, `claude-code`, `codex`, `vscode`, `windsurf`,
@@ -87,7 +89,7 @@ machine.
 For Claude Code:
 
 ```bash
-claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.24.1
+claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.0
 ```
 
 JSON-based clients can use:
@@ -97,7 +99,7 @@ JSON-based clients can use:
   "mcpServers": {
     "opendexter": {
       "command": "npx",
-      "args": ["-y", "@dexterai/opendexter@1.24.1"]
+      "args": ["-y", "@dexterai/opendexter@1.25.0"]
     }
   }
 }
@@ -108,14 +110,17 @@ Codex uses TOML:
 ```toml
 [mcp_servers.opendexter]
 command = "npx"
-args = ["-y", "@dexterai/opendexter@1.24.1"]
+args = ["-y", "@dexterai/opendexter@1.25.0"]
 ```
 
 Keep one OpenDexter registration in a client. An alias does not make two
 registrations safe unless that client has proven tool namespacing and isolated
 authentication state.
 
-## Seven MCP tools
+## MCP tools in current source
+
+These eight tools form the source candidate's roster. Published CLI `1.24.1`
+exposes the first seven.
 
 | Tool | Purpose | Connection |
 |---|---|---|
@@ -126,9 +131,31 @@ authentication state.
 | `x402_access` | Use one fresh anonymous legacy SIWX wallet-proof context, separate from governed authority and without cross-call continuity | No |
 | `x402_wallet` | Read the hosted wallet and exact runtime-authority evidence | Required |
 | `dexter_portfolio` | Read the governed portfolio bound to the connected principal | Required |
+| `dexter_report_work` | Save the connected agent's current work statement | Required |
 
 The server's `tools/list` result is the runtime authority. There are no card,
 settings, payment-alias, or local-executor MCP tools in this package.
+
+## Report current work
+
+When the tool appears in the current conversation's callable roster, use
+`dexter_report_work` when work starts, changes, waits or finishes. It uses the
+stored OAuth connection and requires the same registered agent for recovery.
+Reporting works without spending permissions or funds. Keep credentials and
+private data out of the summary.
+
+Generate a lowercase UUID for the first `operationId` and use
+`expectedRevision: 0`. Keep the acknowledged `report.revision` for the next
+deliberate update. After an uncertain response, use the same `operationId` and
+identical fields. On a revision conflict, inspect `currentReport`; if an update
+is still needed, use a new `operationId` and the returned `currentRevision` as
+`expectedRevision`. Follow returned recovery fields, including any retry delay.
+
+The server assigns `observedAt` and `expiresAt` to describe statement freshness.
+A replay retains its original timestamps. Financial outcomes remain in their
+receipts. Reporting is an MCP tool; the shell commands below retain their
+published `1.24.1` behavior. See the
+[report example](./skills/opendexter/SKILL.md#report-current-work).
 
 ## Exact payment path
 
@@ -153,16 +180,16 @@ not authorize a different action.
 CLI example:
 
 ```bash
-npx @dexterai/opendexter@1.24.1 check \
+npx @dexterai/opendexter@1.25.0 check \
   "https://service.example/x402/route" \
   --method POST \
   --body '{"document_url":"https://example.com/report.pdf"}'
 
-npx @dexterai/opendexter@1.24.1 fetch \
+npx @dexterai/opendexter@1.25.0 fetch \
   --intent-id "<opaque-intent-id-from-the-connected-check>" \
   --max-amount-atomic "<user-approved-ceiling>"
 
-npx @dexterai/opendexter@1.24.1 status \
+npx @dexterai/opendexter@1.25.0 status \
   --intent-id "<same-opaque-intent-id>"
 ```
 
@@ -201,7 +228,7 @@ one-call request and is never automatically retried after possible dispatch.
 Use the connected wallet view by default:
 
 ```bash
-npx @dexterai/opendexter@1.24.1 wallet
+npx @dexterai/opendexter@1.25.0 wallet
 ```
 
 The result includes hosted wallet data and `runtimeAuthority`. A bearer, wallet
@@ -212,7 +239,7 @@ An existing legacy wallet file can be inspected only through this explicit
 non-payment recovery command:
 
 ```bash
-npx @dexterai/opendexter@1.24.1 wallet --legacy-recovery
+npx @dexterai/opendexter@1.25.0 wallet --legacy-recovery
 ```
 
 That view parses the existing JSON file, validates its public addresses, and

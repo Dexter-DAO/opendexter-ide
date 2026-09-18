@@ -1,0 +1,208 @@
+[
+  {
+    "name": "x402_search",
+    "description": "Search the canonical hosted x402 marketplace.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1
+        },
+        "network": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "unverified": {
+          "type": "boolean"
+        },
+        "testnets": {
+          "type": "boolean"
+        },
+        "rerank": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "x402_check",
+    "description": "Probe exact x402 terms without paying. Non-GET probes can cause seller-side effects and require separate explicit probe authorization; connected checks return a server-owned purchase intent.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE"
+          ]
+        },
+        "body": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "x402_fetch",
+    "description": "Execute exactly one hosted, server-owned purchase intent under the connected governed authority.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "maxAmountAtomic": {
+          "type": "string",
+          "pattern": "^[1-9]\\d{0,19}$"
+        }
+      },
+      "required": [
+        "intentId",
+        "maxAmountAtomic"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "x402_status",
+    "description": "Read the exact server-owned purchase intent after an uncertain or completed fetch. This never dispatches payment.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "intentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "intentId"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "x402_access",
+    "description": "Use one fresh anonymous legacy wallet-proof context for an SIWX-protected resource. It is separate from Dexter OAuth and governed payment authority and has no cross-call continuity. Non-GET requests can cause seller-side effects and require separate explicit request authorization.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "POST",
+            "PUT",
+            "DELETE"
+          ]
+        },
+        "body": {
+          "type": "string"
+        },
+        "network": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "x402_wallet",
+    "description": "Read the connected hosted wallet and exact governed x402-authority evidence.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  },
+  {
+    "name": "dexter_portfolio",
+    "description": "Read the governed portfolio bound to the connected hosted principal.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    },
+    "execution": {
+      "taskSupport": "forbidden"
+    }
+  }
+]

@@ -5,6 +5,8 @@ alwaysApply: true
 
 x402-coding:
 
+- Current OpenDexter source registers eight tools before connection. Published
+  `1.24.1` exposes seven; `dexter_report_work` is the added source tool.
 - Keep the two execution models separate:
   - OpenDexter is a local proxy to a hosted governed runtime. It uses a stored
     OAuth bearer for account-bound tools and never uses a local signer or
@@ -26,6 +28,17 @@ x402-coding:
 - `x402_wallet` and `dexter_portfolio` are account-bound and require the
   connected bearer. A balance or portfolio does not prove active governed
   authority.
+- Use `dexter_report_work` for meaningful work updates with the stored OAuth
+  bearer bound to the same agent. Reporting needs no spending grant or funding.
+  After rejection or possible dispatch, the proxy does not refresh authentication
+  and resend the report automatically. Keep private data, credentials and control
+  characters out of summaries. Server-assigned
+  `observedAt` and `expiresAt` describe statement freshness.
+- After an uncertain report response, preserve the same `operationId` and
+  identical fields. On a revision conflict, inspect `currentReport` and
+  `currentRevision`; a deliberate update uses a new `operationId` and that
+  `currentRevision` as `expectedRevision`. Financial outcomes retain their own
+  receipts.
 - For a deliberately independent `@dexterai/x402` integration, import from
   subpaths, never from the root package:
   - `import { payAndFetch } from '@dexterai/x402/client'`
