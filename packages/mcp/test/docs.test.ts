@@ -77,6 +77,7 @@ const connectGuide = read("../../../docs/connect-your-wallet.md");
 const connectGuideHtml = read("../../../docs/connect-your-wallet.html");
 const releaseAcceptance = read("../../../docs/OPENDXTER-RELEASE-ACCEPTANCE.md");
 const packageReadme = read("../README.md");
+const architecture = read("../docs/ARCHITECTURE.md");
 const skill = read("../skills/opendexter/SKILL.md");
 const workflow = read("../assets/docs/workflow.md");
 const engineer = read("../agents/x402-engineer.md");
@@ -101,6 +102,7 @@ const AUTHORITATIVE_RUNTIME_GUIDANCE = [
   ["coding rule", stripFrontmatter(codingRule)],
   ["protocol rule", stripFrontmatter(protocolRule)],
   ["setup command", stripFrontmatter(setupCommand)],
+  ["architecture", architecture],
 ] as const;
 
 const CURRENT_PUBLIC_CONNECTION_GUIDANCE = [
@@ -148,11 +150,12 @@ describe("docs resources", () => {
   });
 
   it.each(AUTHORITATIVE_RUNTIME_GUIDANCE)(
-    "%s freezes the exact hosted-only seven-tool roster",
+    "%s freezes the eight-tool source roster and published package distinction",
     (_name, text) => {
       expect(namedTools(text)).toEqual(LOCAL_TOOLS);
       expect(LOCAL_TOOLS).toEqual([
         "dexter_portfolio",
+        "dexter_report_work",
         "x402_access",
         "x402_check",
         "x402_fetch",
@@ -160,6 +163,7 @@ describe("docs resources", () => {
         "x402_status",
         "x402_wallet",
       ]);
+      expect(text).toContain("1.24.1");
     },
   );
 
@@ -193,7 +197,12 @@ describe("docs resources", () => {
     }
   });
 
-  it("keeps the current release acceptance on the hosted opaque-intent contract", () => {
+  it("keeps current reporting preparation separate from historical release acceptance", () => {
+    const currentPreparation = releaseAcceptance.split("## Historical RC record")[0];
+    expect(currentPreparation).toMatch(/source defines eight tools/i);
+    expect(currentPreparation).toContain("dexter_report_work");
+    expect(currentPreparation).toMatch(/seven exposed by published CLI `1\.24\.1`/);
+    expect(currentPreparation).toMatch(/Source preparation does not establish a new npm publication/);
     expect(releaseAcceptance).toMatch(
       /`@dexterai\/opendexter@1\.24\.0-rc\.3` is a Node\.js 22 x402 V6 source\s+candidate/i,
     );
@@ -230,6 +239,19 @@ describe("docs resources", () => {
       expect(text).toMatch(/not a requested (?:OAuth )?scope/i);
       expect(text).not.toContain("vault dexter_surface");
     }
+    const reportSection = skill.split("## Report current work\n")[1]?.split("\n## ")[0];
+    expect(reportSection).toBeDefined();
+    expect(reportSection).toContain("same `operationId` and identical");
+    expect(reportSection).toContain("returned `currentRevision` as `expectedRevision`");
+    expect(reportSection).toContain("`observedAt` and");
+    expect(reportSection).toContain("`expiresAt`");
+    expect(reportSection).toMatch(/private data and credentials/);
+    expect(reportSection).toMatch(/Recovery after reconnecting requires the same registered agent/);
+    const example = JSON.parse(reportSection!.match(/```json\n([\s\S]*?)\n```/)![1]);
+    expect(Object.keys(example).sort()).toEqual(["expectedRevision", "operationId", "state", "summary"]);
+    expect(example.operationId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    expect(example.expectedRevision).toBe(0);
+    expect(example.state).toBe("working");
   });
 
   it("documents non-GET probe approval and one-dispatch retry behavior", () => {

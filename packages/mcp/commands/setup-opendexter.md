@@ -1,6 +1,6 @@
 ---
 name: setup-opendexter
-description: Configure the local OpenDexter proxy and verify its hosted-only seven-tool surface.
+description: Configure the local OpenDexter proxy and verify the installed tool roster.
 ---
 
 # Install OpenDexter MCP
@@ -40,10 +40,24 @@ separate authority evidence, not a requested OAuth scope. Status must report the
 limits, remaining capacity, expiry, scopes, active role, and revocation evidence
 before payment authority is treated as active.
 
-3. Verify `tools/list`. The exact roster is:
+3. Verify `tools/list`. Published `1.24.1` exposes seven tools:
 
 `x402_search`, `x402_check`, `x402_fetch`, `x402_status`, `x402_access`,
 `x402_wallet`, and `dexter_portfolio`.
+
+Current source registers these seven plus `dexter_report_work`, even before
+connection. When using current source, confirm that the client lists all eight.
+Use reporting for meaningful work updates with the stored OAuth bearer bound
+to the same agent; it needs no spending grant or funding. Keep private data,
+credentials and control characters out of summaries. Server-assigned
+`observedAt` and `expiresAt` describe statement freshness.
+
+After an uncertain report response, preserve the same `operationId` and
+identical fields. On a revision conflict, inspect `currentReport` and
+`currentRevision`; a deliberate update uses a new `operationId` and that
+`currentRevision` as `expectedRevision`. After rejection or possible dispatch,
+the proxy does not refresh authentication and resend the report automatically.
+Financial outcomes retain their own receipts.
 
 4. Test the anonymous non-paying path:
 

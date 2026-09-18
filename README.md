@@ -184,7 +184,9 @@ safe.
 
 ## Product tool surfaces
 
-The local proxy exposes exactly these seven model-facing tools:
+The current source candidate defines these eight local proxy tools. Published
+CLI `1.24.1` exposes the first seven; reporting awaits a reviewed package
+release and a client using that release.
 
 | Tool | What it does | Consequential? |
 |---|---|---|
@@ -195,6 +197,13 @@ The local proxy exposes exactly these seven model-facing tools:
 | `x402_access` | Starts one fresh anonymous legacy SIWX wallet-proof context, separate from Dexter OAuth and governed payment authority, with no cross-call continuity | A non-GET request can mutate seller state; it requires separate request approval |
 | `x402_wallet` | Reads the connected wallet and exact authority evidence | No |
 | `dexter_portfolio` | Reads the governed portfolio bound to the same principal | No |
+| `dexter_report_work` | Saves the connected agent's current work statement | Yes; updates the statement without moving funds |
+
+Use reporting for meaningful work changes. Keep private data out of summaries,
+and preserve the operation ID and identical content after an uncertain response.
+The [local reporting guide](./packages/mcp/skills/opendexter/SKILL.md#report-current-work)
+explains server-observed freshness and revision recovery. Check the current
+conversation's callable tools before using the source candidate's added tool.
 
 Every account-bound call uses the authenticated Dexter Wallet session. The
 local package never swaps to a wallet file or environment key when hosted

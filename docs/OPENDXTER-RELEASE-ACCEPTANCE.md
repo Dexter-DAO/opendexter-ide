@@ -1,5 +1,25 @@
 # OpenDexter release acceptance map
 
+## Current source preparation
+
+The current local proxy source defines eight tools, adding `dexter_report_work`
+to the seven exposed by published CLI `1.24.1`. The added tool uses the stored
+OAuth connection to save the agent's own work statement. Server timestamps
+describe freshness; uncertain responses preserve the same operation ID and
+identical content, and revision conflicts require a deliberate update using
+the returned current revision. Summaries must exclude private data and credentials.
+
+The hosted connector registers fifteen tools, fourteen of them model-callable.
+Source preparation does not establish a new npm publication or availability
+in an existing conversation. Package qualification and client discovery remain
+separate checks. Historical package versions and hosted receipts below retain
+their original identities.
+
+## Historical RC record
+
+The remaining sections record the earlier `1.24.0-rc.3` release preparation.
+Their counts, versions and receipts describe that historical candidate.
+
 Status: `@dexterai/opendexter@1.24.0-rc.3` is a Node.js 22 x402 V6 source
 candidate for `@dexterai/x402@6.0.0-rc.4`. Public prereleases through
 OpenDexter rc.2, MCP tools rc.1, and discovery rc.1 are immutable on npm under
