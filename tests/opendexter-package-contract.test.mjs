@@ -53,6 +53,7 @@ const HOSTED_TOOLS = Object.freeze([
   "x402_access",
   "dexter_wallet",
   "dexter_wallet_portfolio",
+  "dexter_report_work",
   "dexter_prepare_asset_action",
   "dexter_execute_asset_action",
   "dexter_asset_action_status",
@@ -60,8 +61,7 @@ const HOSTED_TOOLS = Object.freeze([
   "dexter_wallet_history",
 ]);
 
-// The pinned f79 fixture remains historical; hosted guidance follows the served roster.
-const GUIDE_MODEL_TOOLS = Object.freeze([...HOSTED_TOOLS, "dexter_report_work"]);
+const GUIDE_MODEL_TOOLS = HOSTED_TOOLS;
 
 const ANONYMOUS_TOOLS = Object.freeze([]);
 
@@ -85,6 +85,7 @@ const EXPECTED_SCHEMES = Object.freeze({
   x402_access: ["oauth2:vault"],
   dexter_wallet: ["oauth2:vault"],
   dexter_wallet_portfolio: ["oauth2:vault"],
+  dexter_report_work: ["oauth2:vault"],
   dexter_prepare_asset_action: ["oauth2:vault"],
   dexter_execute_asset_action: ["oauth2:vault"],
   dexter_asset_action_status: ["oauth2:vault"],
@@ -683,8 +684,8 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(contract.contractId, "opendexter-hosted-full-descriptor-v2");
   assert.deepEqual(contract.source, {
     repository: "https://github.com/Dexter-DAO/dexter-mcp",
-    commit: "f79fdd0512eb9f0b798a22f0634aa7e50f5ab728",
-    tree: "36e85827252683d4ea5f8d86a98df3fbd9c55946",
+    commit: "b54207532710fb0771d73eaa8f014fc16512d574",
+    tree: "d8aa2ed5d30bdc38d244f3e414dfaadd2e6d3aae",
     descriptorPath: "release/open-tool-descriptors.json",
     descriptorMaterializerPath: "scripts/materialize-open-tool-descriptors.mjs",
     toolContractPath: "lib/open-tool-contracts.mjs",
@@ -693,7 +694,7 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(contract.sourceContracts.schemaVersion, 3);
   assert.equal(
     contract.sourceContracts.integratedApiRelease.commit,
-    "0138a4a87916f0bf27f128c30e7c88f365864b2a",
+    "fef1be7e83e1900374f2bc2d8405967ccf4d24bc",
   );
   assert.equal(
     contract.sourceContracts.facilitator.commit,
