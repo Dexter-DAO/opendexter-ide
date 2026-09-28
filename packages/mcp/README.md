@@ -37,13 +37,13 @@ incomplete hosted authority fails closed.
 
 ## Start
 
-The installation and shell examples use version `1.25.1`. The package exposes
+The installation and shell examples use version `1.25.2`. The package exposes
 eight MCP tools, including `dexter_report_work`.
 
 Install the local MCP into detected clients:
 
 ```bash
-npx @dexterai/opendexter@1.25.1 setup
+npx @dexterai/opendexter@1.25.2 setup
 ```
 
 Setup checks existing registrations before editing a client. It does not
@@ -51,8 +51,8 @@ create, migrate, repair, or fund a wallet. After installation, connect the
 local proxy to the hosted governed runtime:
 
 ```bash
-npx @dexterai/opendexter@1.25.1 connect
-npx @dexterai/opendexter@1.25.1 connect status
+npx @dexterai/opendexter@1.25.2 connect
+npx @dexterai/opendexter@1.25.2 connect status
 ```
 
 The device flow stores an OAuth bearer locally. Account-bound tools send that
@@ -66,7 +66,7 @@ expiry, scopes, active role, and revocation evidence is complete.
 For side-effect-free installation diagnosis:
 
 ```bash
-npx @dexterai/opendexter@1.25.1 doctor --client codex
+npx @dexterai/opendexter@1.25.2 doctor --client codex
 ```
 
 Doctor does not create a wallet, read a private key, check a balance, edit
@@ -77,7 +77,7 @@ configuration, or pay.
 Target one supported client:
 
 ```bash
-npx @dexterai/opendexter@1.25.1 install --client cursor
+npx @dexterai/opendexter@1.25.2 install --client cursor
 ```
 
 Valid client names are `cursor`, `claude-code`, `codex`, `vscode`, `windsurf`,
@@ -87,7 +87,7 @@ machine.
 For Claude Code:
 
 ```bash
-claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.1
+claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.2
 ```
 
 JSON-based clients can use:
@@ -97,7 +97,7 @@ JSON-based clients can use:
   "mcpServers": {
     "opendexter": {
       "command": "npx",
-      "args": ["-y", "@dexterai/opendexter@1.25.1"]
+      "args": ["-y", "@dexterai/opendexter@1.25.2"]
     }
   }
 }
@@ -108,7 +108,7 @@ Codex uses TOML:
 ```toml
 [mcp_servers.opendexter]
 command = "npx"
-args = ["-y", "@dexterai/opendexter@1.25.1"]
+args = ["-y", "@dexterai/opendexter@1.25.2"]
 ```
 
 Keep one OpenDexter registration in a client. An alias does not make two
@@ -178,16 +178,16 @@ not authorize a different action.
 CLI example:
 
 ```bash
-npx @dexterai/opendexter@1.25.1 check \
+npx @dexterai/opendexter@1.25.2 check \
   "https://service.example/x402/route" \
   --method POST \
   --body '{"document_url":"https://example.com/report.pdf"}'
 
-npx @dexterai/opendexter@1.25.1 fetch \
+npx @dexterai/opendexter@1.25.2 fetch \
   --intent-id "<opaque-intent-id-from-the-connected-check>" \
   --max-amount-atomic "<user-approved-ceiling>"
 
-npx @dexterai/opendexter@1.25.1 status \
+npx @dexterai/opendexter@1.25.2 status \
   --intent-id "<same-opaque-intent-id>"
 ```
 
@@ -226,7 +226,7 @@ one-call request and is never automatically retried after possible dispatch.
 Use the connected wallet view by default:
 
 ```bash
-npx @dexterai/opendexter@1.25.1 wallet
+npx @dexterai/opendexter@1.25.2 wallet
 ```
 
 The result includes hosted wallet data and `runtimeAuthority`. A bearer, wallet
@@ -237,7 +237,7 @@ An existing legacy wallet file can be inspected only through this explicit
 non-payment recovery command:
 
 ```bash
-npx @dexterai/opendexter@1.25.1 wallet --legacy-recovery
+npx @dexterai/opendexter@1.25.2 wallet --legacy-recovery
 ```
 
 That view parses the existing JSON file, validates its public addresses, and

@@ -1,6 +1,6 @@
 {
   "name": "@dexterai/opendexter",
-  "version": "1.25.1",
+  "version": "1.25.2",
   "description": "Local proxy for OpenDexter's hosted governed x402 runtime: eight tools for OAuth-bound intents, status recovery, wallet authority, portfolio reads, and current work reports.",
   "type": "module",
   "main": "dist/index.js",
@@ -42,7 +42,7 @@
     "@dexterai/dextercard": "0.5.0",
     "@dexterai/mcp-instructions": "2.4.2-rc.1",
     "@dexterai/vault": "0.43.4",
-    "@dexterai/x402": "6.0.3",
+    "@dexterai/x402": "6.0.4",
     "@dexterai/x402-core": "1.5.2",
     "@dexterai/x402-mcp-tools": "0.9.2",
     "@modelcontextprotocol/ext-apps": "1.7.5",
