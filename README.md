@@ -42,7 +42,7 @@ create or select a second payment wallet.
 
 ### Local: start in one command
 
-The commands pin version `1.25.0`, the release candidate prepared here.
+The commands pin version `1.25.1`.
 
 ```bash
 npx @dexterai/opendexter@1.25.1 setup

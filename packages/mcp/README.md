@@ -37,10 +37,8 @@ incomplete hosted authority fails closed.
 
 ## Start
 
-The installation and shell examples target the `1.25.0` release candidate.
-Published CLI `1.24.1` exposes seven MCP tools. This candidate adds an eighth,
-`dexter_report_work`; that addition awaits a reviewed package release and a
-client using that release.
+The installation and shell examples use version `1.25.1`. The package exposes
+eight MCP tools, including `dexter_report_work`.
 
 Install the local MCP into detected clients:
 
