@@ -197,12 +197,18 @@ async function main() {
             type: "boolean",
             default: false,
             description: "Machine-readable output (for agents driving the audition)",
+          })
+          .option("verbose", {
+            type: "boolean",
+            default: false,
+            description: "Print request references and response metadata to stderr",
           }),
       async (args) => {
         const { cliAudition } = await import("./tools/audition.js");
         await cliAudition(args.url!, {
           json: args.json,
           dev: args.dev,
+          verbose: args.verbose,
         });
       },
     )

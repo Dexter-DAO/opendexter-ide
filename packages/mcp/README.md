@@ -37,15 +37,13 @@ incomplete hosted authority fails closed.
 
 ## Start
 
-The installation and shell examples target the `1.25.0` release candidate.
-Published CLI `1.24.1` exposes seven MCP tools. This candidate adds an eighth,
-`dexter_report_work`; that addition awaits a reviewed package release and a
-client using that release.
+The installation and shell examples use version `1.25.1`. The package exposes
+eight MCP tools, including `dexter_report_work`.
 
 Install the local MCP into detected clients:
 
 ```bash
-npx @dexterai/opendexter@1.25.0 setup
+npx @dexterai/opendexter@1.25.1 setup
 ```
 
 Setup checks existing registrations before editing a client. It does not
@@ -53,8 +51,8 @@ create, migrate, repair, or fund a wallet. After installation, connect the
 local proxy to the hosted governed runtime:
 
 ```bash
-npx @dexterai/opendexter@1.25.0 connect
-npx @dexterai/opendexter@1.25.0 connect status
+npx @dexterai/opendexter@1.25.1 connect
+npx @dexterai/opendexter@1.25.1 connect status
 ```
 
 The device flow stores an OAuth bearer locally. Account-bound tools send that
@@ -68,7 +66,7 @@ expiry, scopes, active role, and revocation evidence is complete.
 For side-effect-free installation diagnosis:
 
 ```bash
-npx @dexterai/opendexter@1.25.0 doctor --client codex
+npx @dexterai/opendexter@1.25.1 doctor --client codex
 ```
 
 Doctor does not create a wallet, read a private key, check a balance, edit
@@ -79,7 +77,7 @@ configuration, or pay.
 Target one supported client:
 
 ```bash
-npx @dexterai/opendexter@1.25.0 install --client cursor
+npx @dexterai/opendexter@1.25.1 install --client cursor
 ```
 
 Valid client names are `cursor`, `claude-code`, `codex`, `vscode`, `windsurf`,
@@ -89,7 +87,7 @@ machine.
 For Claude Code:
 
 ```bash
-claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.0
+claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.1
 ```
 
 JSON-based clients can use:
@@ -99,7 +97,7 @@ JSON-based clients can use:
   "mcpServers": {
     "opendexter": {
       "command": "npx",
-      "args": ["-y", "@dexterai/opendexter@1.25.0"]
+      "args": ["-y", "@dexterai/opendexter@1.25.1"]
     }
   }
 }
@@ -110,7 +108,7 @@ Codex uses TOML:
 ```toml
 [mcp_servers.opendexter]
 command = "npx"
-args = ["-y", "@dexterai/opendexter@1.25.0"]
+args = ["-y", "@dexterai/opendexter@1.25.1"]
 ```
 
 Keep one OpenDexter registration in a client. An alias does not make two
@@ -180,16 +178,16 @@ not authorize a different action.
 CLI example:
 
 ```bash
-npx @dexterai/opendexter@1.25.0 check \
+npx @dexterai/opendexter@1.25.1 check \
   "https://service.example/x402/route" \
   --method POST \
   --body '{"document_url":"https://example.com/report.pdf"}'
 
-npx @dexterai/opendexter@1.25.0 fetch \
+npx @dexterai/opendexter@1.25.1 fetch \
   --intent-id "<opaque-intent-id-from-the-connected-check>" \
   --max-amount-atomic "<user-approved-ceiling>"
 
-npx @dexterai/opendexter@1.25.0 status \
+npx @dexterai/opendexter@1.25.1 status \
   --intent-id "<same-opaque-intent-id>"
 ```
 
@@ -228,7 +226,7 @@ one-call request and is never automatically retried after possible dispatch.
 Use the connected wallet view by default:
 
 ```bash
-npx @dexterai/opendexter@1.25.0 wallet
+npx @dexterai/opendexter@1.25.1 wallet
 ```
 
 The result includes hosted wallet data and `runtimeAuthority`. A bearer, wallet
@@ -239,7 +237,7 @@ An existing legacy wallet file can be inspected only through this explicit
 non-payment recovery command:
 
 ```bash
-npx @dexterai/opendexter@1.25.0 wallet --legacy-recovery
+npx @dexterai/opendexter@1.25.1 wallet --legacy-recovery
 ```
 
 That view parses the existing JSON file, validates its public addresses, and
@@ -282,6 +280,24 @@ dextercard              Manage a separate local card account session
 `audition` can trigger provider calls and catalog changes on the server. It
 does not use a local signer or the connected user's governed x402 authority;
 obtain explicit approval before invoking it.
+
+### Audition results
+
+Use a server URL to register its routes, or a
+specific endpoint URL to request an immediate paid test. OpenDexter's verifier
+pays for these tests. Funding your connected wallet does not fund this command.
+
+`audition` shows registered, scored, pending, and incomplete routes separately.
+A pending route was registered without a paid test. An incomplete route has no score for
+this attempt; the output includes the server's reason. Incomplete results or
+failed registrations set exit code 1, including with `--json`. Pending
+registration and completed scoring exit 0, even when the score is poor.
+
+Use `--json` for the full result and `--verbose` for request times, references, and
+HTTP response metadata on stderr. If the reply is interrupted or unreadable,
+the command submits no further requests. The test may already have run. Share
+the request time and any server or Cloudflare reference with OpenDexter support
+before starting another audition.
 
 ## Building an independent x402 client or server
 
