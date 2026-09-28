@@ -42,10 +42,10 @@ create or select a second payment wallet.
 
 ### Local: start in one command
 
-The commands pin version `1.25.1`.
+The commands pin version `1.25.2`.
 
 ```bash
-npx @dexterai/opendexter@1.25.1 setup
+npx @dexterai/opendexter@1.25.2 setup
 ```
 
 `setup` detects supported AI clients, configures the clients it can edit safely,
@@ -54,7 +54,7 @@ first search. It does not create, import, or enable a payment wallet. To target
 one client:
 
 ```bash
-npx @dexterai/opendexter@1.25.1 install --client cursor
+npx @dexterai/opendexter@1.25.2 install --client cursor
 ```
 
 Use `claude-code`, `codex`, `vscode`, `windsurf`, or `gemini-cli` in place of
@@ -62,7 +62,7 @@ Use `claude-code`, `codex`, `vscode`, `windsurf`, or `gemini-cli` in place of
 connection directly:
 
 ```bash
-claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.1
+claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.2
 ```
 
 This local installer never adds the repository's hosted Claude Code plugin.
@@ -73,7 +73,7 @@ For a manual stdio MCP configuration in another client:
   "mcpServers": {
     "opendexter": {
       "command": "npx",
-      "args": ["-y", "@dexterai/opendexter@1.25.1"]
+      "args": ["-y", "@dexterai/opendexter@1.25.2"]
     }
   }
 }
@@ -153,7 +153,7 @@ namespacing has been separately proven. `--registration-name` chooses the name
 of that one registration; it does not bypass an existing hosted or local
 OpenDexter registration. The installer never silently renames or overwrites one.
 
-Run `npx @dexterai/opendexter@1.25.1 doctor` for a read-only report. Doctor
+Run `npx @dexterai/opendexter@1.25.2 doctor` for a read-only report. Doctor
 does not create a wallet, read balances, edit client configuration, or pay.
 
 ## From request to result
@@ -217,9 +217,9 @@ Run the device flow, approve with the wallet passkey, and then inspect the live
 authority projection:
 
 ```bash
-npx @dexterai/opendexter@1.25.1 connect
-npx @dexterai/opendexter@1.25.1 connect status
-npx @dexterai/opendexter@1.25.1 wallet
+npx @dexterai/opendexter@1.25.2 connect
+npx @dexterai/opendexter@1.25.2 connect status
+npx @dexterai/opendexter@1.25.2 wallet
 ```
 
 The OAuth request uses the exact `vault` scope. The returned access token can
@@ -243,7 +243,7 @@ connection and authority boundary.
 - **Build an x402 client or server:** use
   [`@dexterai/x402`](https://www.npmjs.com/package/@dexterai/x402).
 - **Prepare a compatible service for discovery:** run
-  `npx @dexterai/opendexter@1.25.1 audition https://your-service.example`.
+  `npx @dexterai/opendexter@1.25.2 audition https://your-service.example`.
   A server URL registers routes. A specific
   endpoint URL requests an immediate test using OpenDexter's verifier funds.
   Read the [audition result and recovery guidance](./packages/mcp/README.md#audition-results).

@@ -27,7 +27,7 @@ manifest. Use the **x402-server** skill first if the API still needs its paywall
 ## The one command
 
 ```bash
-npx @dexterai/opendexter@1.25.1 audition <server-url> --json
+npx @dexterai/opendexter@1.25.2 audition <server-url> --json
 ```
 
 - Pass a **server origin** to discover and register its routes without an

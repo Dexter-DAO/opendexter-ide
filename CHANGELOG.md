@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-28: OpenDexter 1.25.2
+
+- Pin the direct `@dexterai/x402` dependency to 6.0.4, which preserves raw
+  payment receipts and verifies eligible incomplete EIP-3009 receipts against
+  the exact signed authorization and token transfer.
+- Update installation examples and same-intent recovery commands to 1.25.2.
+  CLI purchases continue through the hosted governed runtime.
+
 ## 2026-09-03: hosted plugin roster update
 
 - Advanced the ChatGPT and Codex plugin to `0.6.2` and the Claude Code hosted

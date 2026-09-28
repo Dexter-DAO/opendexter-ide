@@ -681,11 +681,19 @@ test("private source verification accepts only an equivalent public receipt", ()
 
 test("release fixture is source-pinned to the exact hosted roster", async () => {
   const contract = await readJson(contractPath);
+  const modelTools = ["dexter_find_assets", ...HOSTED_TOOLS];
+  const allTools = ["dexter_find_assets", "indexter_discover", ...HOSTED_TOOLS];
+  const publicRelease = await readJson(resolve(
+    repoRoot, "packages/mcp/release/hosted-public-release.json",
+  ));
+  assert.equal(contract.source.commit, publicRelease.release.commit);
+  assert.equal(contract.source.tree, publicRelease.release.tree);
+  assert.deepEqual(contract.tools, publicRelease.publicDescriptor.tools);
   assert.equal(contract.contractId, "opendexter-hosted-full-descriptor-v2");
   assert.deepEqual(contract.source, {
     repository: "https://github.com/Dexter-DAO/dexter-mcp",
-    commit: "b54207532710fb0771d73eaa8f014fc16512d574",
-    tree: "d8aa2ed5d30bdc38d244f3e414dfaadd2e6d3aae",
+    commit: "b0489e812031a463d59d4e49ca9127889cb80723",
+    tree: "be39bc3fc9b475af27b6f650a8e2d7f4347758b8",
     descriptorPath: "release/open-tool-descriptors.json",
     descriptorMaterializerPath: "scripts/materialize-open-tool-descriptors.mjs",
     toolContractPath: "lib/open-tool-contracts.mjs",
@@ -694,11 +702,11 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(contract.sourceContracts.schemaVersion, 3);
   assert.equal(
     contract.sourceContracts.integratedApiRelease.commit,
-    "fef1be7e83e1900374f2bc2d8405967ccf4d24bc",
+    "8db711622bda434003be19755e227428a4e4ad56",
   );
   assert.equal(
     contract.sourceContracts.facilitator.commit,
-    "09158b98f8a918c501543191b19362e22d86c6bc",
+    "0a9ea4335c22224fbb48605113e8711a9f7dc90a",
   );
   assert.equal(contract.mcp.url, "https://open.dexter.cash/mcp");
   assert.equal(contract.mcp.manifestVersion, "0.5.0");
@@ -730,18 +738,18 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   );
   assert.deepEqual(
     contract.tools.map(({ name }) => name),
-    ["indexter_discover", ...HOSTED_TOOLS],
+    allTools,
   );
   assert.deepEqual(contract.anonymousToolNames, ANONYMOUS_TOOLS);
-  assert.deepEqual(contract.oauthPromotedToolNames, ["indexter_discover", ...OAUTH_PROMOTED_TOOLS]);
-  assert.deepEqual(contract.connectedToolNames, ["indexter_discover", ...HOSTED_TOOLS]);
+  assert.deepEqual(contract.oauthPromotedToolNames, allTools);
+  assert.deepEqual(contract.connectedToolNames, allTools);
   assert.deepEqual(contract.optionalOAuthToolNames, []);
   assert.deepEqual(
     [...new Set([...ANONYMOUS_TOOLS, ...OAUTH_PROMOTED_TOOLS])].sort(),
     [...HOSTED_TOOLS].sort(),
   );
   for (const tool of contract.tools) {
-    assert.deepEqual(normalizedSchemes(tool), tool.name === "indexter_discover" ? ["oauth2:vault"] : EXPECTED_SCHEMES[tool.name]);
+    assert.deepEqual(normalizedSchemes(tool), ["dexter_find_assets", "indexter_discover"].includes(tool.name) ? ["oauth2:vault"] : EXPECTED_SCHEMES[tool.name]);
     assert.equal(typeof tool.annotations.readOnlyHint, "boolean");
     assert.equal(typeof tool.annotations.destructiveHint, "boolean");
     assert.equal(typeof tool.annotations.idempotentHint, "boolean");
@@ -778,7 +786,19 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
   assert.equal(wallet.inputSchema.properties.activityCursor.type, "string");
   assert.equal(wallet.inputSchema.properties.activityLimit.type, "integer");
   assert.equal(wallet.inputSchema.additionalProperties, false);
-  assert.deepEqual(portfolio.inputSchema.properties, {});
+  assert.deepEqual(Object.keys(portfolio.inputSchema.properties).sort(), [
+    "cursor", "holdingSnapshotId", "limit", "mint", "network", "query",
+    "readVersion", "snapshotId", "tokenAccount", "view",
+  ]);
+  assert.deepEqual(portfolio.inputSchema.properties.readVersion.enum, [2, 3]);
+  assert.deepEqual(portfolio.inputSchema.properties.view.enum, [
+    "summary", "holdings", "detail", "targets",
+  ]);
+  assert.equal(portfolio.inputSchema.properties.network.const, "solana-mainnet");
+  assert.deepEqual(portfolio.inputSchema.properties.limit, {
+    type: "integer", minimum: 1, maximum: 32,
+  });
+  assert.equal(portfolio.inputSchema.additionalProperties, false);
   assert.deepEqual(portfolio.securitySchemes, [
     { type: "oauth2", scopes: ["vault"] },
   ]);
@@ -788,8 +808,8 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
     idempotentHint: true,
     openWorldHint: false,
   });
-  assert.deepEqual(portfolio._meta.ui.visibility, ["model"]);
-  assert.equal(portfolio._meta["openai/widgetAccessible"], false);
+  assert.deepEqual(portfolio._meta.ui.visibility, ["model", "app"]);
+  assert.equal(portfolio._meta["openai/widgetAccessible"], true);
   assert.deepEqual(portfolio._meta.securitySchemes, portfolio.securitySchemes);
   assert.equal(portfolio.inputSchema.type, "object");
   assert.equal(portfolio.outputSchema.type, "object");
@@ -804,7 +824,7 @@ test("release fixture is source-pinned to the exact hosted roster", async () => 
     contract.tools
       .filter(({ _meta }) => _meta.ui.visibility.includes("model"))
       .map(({ name }) => name),
-    HOSTED_TOOLS,
+    modelTools,
   );
   for (const retired of RETIRED_HOSTED_TOOLS) {
     assert.equal(
@@ -913,7 +933,7 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   const mcp = await readJson(resolve(repoRoot, "mcp.json"));
   assert.equal(workspace.packageManager, "npm@10.9.3");
   assert.equal(workspace.engines.node, ">=22");
-  assert.equal(pkg.version, "1.25.0");
+  assert.equal(pkg.version, "1.25.2");
   assert.equal(pkg.engines.node, ">=22");
   assert.equal(pkg.dependencies["@modelcontextprotocol/sdk"], "1.30.0");
   assert.equal(pkg.dependencies["@modelcontextprotocol/ext-apps"], "1.7.5");
@@ -921,7 +941,7 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   assert.equal(pkg.dependencies["@dexterai/x402-core"], "1.5.2");
   assert.equal(pkg.dependencies["@dexterai/vault"], "0.43.4");
   assert.equal(pkg.dependencies["@dexterai/mcp-instructions"], "2.4.2-rc.1");
-  assert.equal(pkg.dependencies["@dexterai/x402"], "6.0.3");
+  assert.equal(pkg.dependencies["@dexterai/x402"], "6.0.4");
   assert.equal(pkg.dependencies["@dexterai/x402-mcp-tools"], "0.9.2");
   assert.equal(pkg.publishConfig.tag, "latest");
   assert.equal(instructionsPkg.version, "2.4.2-rc.1");
@@ -942,7 +962,7 @@ test("local package candidate pins its runtime and stdio discovery identity", as
     mcpServers: {
       opendexter: {
         command: "npx",
-        args: ["-y", "@dexterai/opendexter@1.25.0"],
+        args: ["-y", "@dexterai/opendexter@1.25.2"],
       },
     },
   });

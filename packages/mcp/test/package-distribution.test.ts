@@ -223,7 +223,7 @@ describe("local package distribution", () => {
     expect(pkg.dependencies["@dexterai/mcp-instructions"]).toBe("2.4.2-rc.1");
     expect(pkg.dependencies["@dexterai/x402-mcp-tools"]).toBe("0.9.2");
     expect(pkg.dependencies["@dexterai/vault"]).toBe("0.43.4");
-    expect(pkg.dependencies["@dexterai/x402"]).toBe("6.0.3");
+    expect(pkg.dependencies["@dexterai/x402"]).toBe("6.0.4");
     expect(pkg.dependencies["@dexterai/x402-core"]).toBe("1.5.2");
     expect(pkg.dependencies["@modelcontextprotocol/sdk"]).toBe("1.30.0");
     expect(pkg.dependencies.zod).toBe("3.25.76");
