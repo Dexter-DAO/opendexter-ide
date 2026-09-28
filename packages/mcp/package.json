@@ -1,6 +1,6 @@
 {
   "name": "@dexterai/opendexter",
-  "version": "1.25.0",
+  "version": "1.25.1",
   "description": "Local proxy for OpenDexter's hosted governed x402 runtime: eight tools for OAuth-bound intents, status recovery, wallet authority, portfolio reads, and current work reports.",
   "type": "module",
   "main": "dist/index.js",

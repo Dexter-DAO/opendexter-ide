@@ -81,7 +81,8 @@ describe("public hosted release boundary", () => {
     expect(frozen.release.repository).toBe(
       "https://github.com/Dexter-DAO/dexter-mcp",
     );
-    expect(frozen.publicDescriptor.connectedToolNames).toHaveLength(15);
+    expect(frozen.publicDescriptor.connectedToolNames).toHaveLength(16);
+    expect(frozen.publicDescriptor.connectedToolNames).toContain("dexter_find_assets");
     const bytes = JSON.stringify(frozen);
     for (const forbidden of [
       "sourceContracts",
