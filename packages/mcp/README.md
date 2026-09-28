@@ -283,6 +283,24 @@ dextercard              Manage a separate local card account session
 does not use a local signer or the connected user's governed x402 authority;
 obtain explicit approval before invoking it.
 
+### Audition results
+
+Use a server URL to register its routes, or a
+specific endpoint URL to request an immediate paid test. OpenDexter's verifier
+pays for these tests. Funding your connected wallet does not fund this command.
+
+`audition` shows registered, scored, pending, and incomplete routes separately.
+A pending route was registered without a paid test. An incomplete route has no score for
+this attempt; the output includes the server's reason. Incomplete results or
+failed registrations set exit code 1, including with `--json`. Pending
+registration and completed scoring exit 0, even when the score is poor.
+
+Use `--json` for the full result and `--verbose` for request times, references, and
+HTTP response metadata on stderr. If the reply is interrupted or unreadable,
+the command submits no further requests. The test may already have run. Share
+the request time and any server or Cloudflare reference with OpenDexter support
+before starting another audition.
+
 ## Building an independent x402 client or server
 
 The package also ships developer guidance for `@dexterai/x402`. That SDK can

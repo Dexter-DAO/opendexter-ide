@@ -244,8 +244,9 @@ connection and authority boundary.
   [`@dexterai/x402`](https://www.npmjs.com/package/@dexterai/x402).
 - **Prepare a compatible service for discovery:** run
   `npx @dexterai/opendexter@1.25.0 audition https://your-service.example`.
-  Audition performs real paid test calls, so use a testable endpoint and fund
-  only the amount you intend those tests to spend.
+  A server URL registers routes. A specific
+  endpoint URL requests an immediate test using OpenDexter's verifier funds.
+  Read the [audition result and recovery guidance](./packages/mcp/README.md#audition-results).
 - **Inspect the protocol:** read the [x402 specification](https://x402.org).
 
 ## Repository map
