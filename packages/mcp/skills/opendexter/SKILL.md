@@ -5,10 +5,8 @@ description: "Use the local OpenDexter MCP proxy to search and check hosted x402
 
 # OpenDexter governed x402 runtime
 
-This skill describes the eight-tool source candidate for
-`@dexterai/opendexter`. Published CLI `1.24.1` exposes seven tools and does not
-include reporting. The additional tool awaits a reviewed package release and
-a client using that release. The MCP process runs locally, but it delegates x402
+Published `@dexterai/opendexter` CLI `1.25.2` exposes eight tools, including
+`dexter_report_work`. The MCP process runs locally, but it delegates x402
 operations to OpenDexter's hosted governed runtime. It never uses a local
 private key as a payment or identity-proof executor, whether the user is
 connected or disconnected.

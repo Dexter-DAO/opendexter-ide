@@ -88,8 +88,8 @@ The hosted connector registers fifteen authenticated tools, including
 `dexter_report_work` for the connected agent's work updates. Fourteen tools are
 model-callable; `indexter_discover` is reserved for the widget. Verify new tools
 in the current conversation's callable roster after a client refresh or new
-session. The local CLI `1.24.1` keeps its seven-tool proxy and does not include
-work reporting. See the [hosted work-report guide](plugins/opendexter/skills/opendexter/SKILL.md#report-current-work)
+session. The local CLI `1.25.2` exposes eight tools, including work reporting.
+See the [hosted work-report guide](plugins/opendexter/skills/opendexter/SKILL.md#report-current-work)
 for an example and replay recovery.
 
 Clients with remote MCP and OAuth use this URL:
@@ -184,9 +184,7 @@ safe.
 
 ## Product tool surfaces
 
-The current source candidate defines these eight local proxy tools. Published
-CLI `1.24.1` exposes the first seven; reporting awaits a reviewed package
-release and a client using that release.
+Published CLI `1.25.2` exposes these eight local proxy tools.
 
 | Tool | What it does | Consequential? |
 |---|---|---|
@@ -203,7 +201,7 @@ Use reporting for meaningful work changes. Keep private data out of summaries,
 and preserve the operation ID and identical content after an uncertain response.
 The [local reporting guide](./packages/mcp/skills/opendexter/SKILL.md#report-current-work)
 explains server-observed freshness and revision recovery. Check the current
-conversation's callable tools before using the source candidate's added tool.
+conversation's callable tools before reporting work.
 
 Every account-bound call uses the authenticated Dexter Wallet session. The
 local package never swaps to a wallet file or environment key when hosted
