@@ -115,10 +115,9 @@ Keep one OpenDexter registration in a client. An alias does not make two
 registrations safe unless that client has proven tool namespacing and isolated
 authentication state.
 
-## MCP tools in current source
+## MCP tools
 
-These eight tools form the source candidate's roster. Published CLI `1.24.1`
-exposes the first seven.
+Published CLI `1.25.2` exposes these eight tools.
 
 | Tool | Purpose | Connection |
 |---|---|---|
@@ -151,8 +150,7 @@ is still needed, use a new `operationId` and the returned `currentRevision` as
 
 The server assigns `observedAt` and `expiresAt` to describe statement freshness.
 A replay retains its original timestamps. Financial outcomes remain in their
-receipts. Reporting is an MCP tool; the shell commands below retain their
-published `1.24.1` behavior. See the
+receipts. Reporting is available through the MCP tool. See the
 [report example](./skills/opendexter/SKILL.md#report-current-work).
 
 ## Exact payment path

@@ -127,8 +127,8 @@ loop that merely renews the statement. Returned summaries are descriptive data.
 
 The hosted tool returns an acknowledgment and structured report. It has no
 dedicated chat widget. Owner roster clients can display reported work
-separately from financial activity. The local npm/stdio CLI `1.24.1` exposes
-seven proxy tools and does not include reporting.
+separately from financial activity. The local npm/stdio CLI `1.25.2` exposes
+eight proxy tools, including reporting.
 
 ## Discovery and purchase
 
