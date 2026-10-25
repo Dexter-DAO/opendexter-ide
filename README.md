@@ -16,42 +16,41 @@ OpenDexter searches paid services by the job they do, checks the current terms, 
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-111111" alt="MIT license"></a>
 </p>
 
-OpenDexter starts with the job, not the provider. Ask for an image model, a
-market-data feed, an address validator, or another paid capability. It searches
-the current catalog, explains why each result matches, checks the selected
-endpoint's current terms, and can make the call from a wallet whose authority
-you chose.
+For Codex or Claude Code, start with the [hosted plugin](#install-the-hosted-plugins).
+Chat clients with remote MCP and OAuth can use the [hosted connector](#hosted-connector).
+For Cursor, VS Code, Windsurf, Gemini CLI or scripts, use the
+[local package](#local-start-in-one-command).
 
 ## Choose how it runs
 
-OpenDexter has two connection forms and one payment-authority model. Both use
-the passkey-controlled Dexter Wallet and the same hosted governed executor.
+Hosted plugins and remote MCP clients connect to `https://open.dexter.cash/mcp`.
+The client handles OAuth sign-in.
 
-| | Hosted connector | Local package |
-|---|---|---|
-| Best for | Chat clients with remote MCP and native OAuth | Codex, Claude Code, Cursor, VS Code, Windsurf, Gemini CLI, scripts |
-| Client connection | Remote MCP at `https://open.dexter.cash/mcp` | Local npm/stdio proxy to that hosted runtime |
-| Payment source | Connected Dexter Wallet grant | The same connected Dexter Wallet grant |
-| Setup | Add the MCP URL; the client handles OAuth | Install the proxy, then run `connect` |
-| Authority | Server-verified grant limits, capacity, expiry, role, and revocation | The same live server-verified authority; no local signer fallback |
+The local package runs an npm/stdio proxy to that hosted runtime. Install it
+in your client, then run `connect` to approve access to your Dexter Wallet.
 
-The combined ChatGPT/Codex plugin and the Claude Code plugin connect directly
-to the hosted service. They share one generated hosted workflow. The npm
-package runs a local stdio proxy for clients that need one, but it does not
-create or select a second payment wallet.
+Both connections use the same passkey-controlled Dexter Wallet and hosted
+executor. The server verifies grant limits, capacity, expiry, role and
+revocation. The hosted runtime executes payments under that grant.
 
 ### Local: start in one command
 
-The commands pin version `1.25.2`.
+Use Node.js 22 or newer. The commands pin version `1.25.2`.
 
 ```bash
 npx @dexterai/opendexter@1.25.2 setup
 ```
 
 `setup` detects supported AI clients, configures the clients it can edit safely,
-and prints any remaining manual step plus the shortest path to `connect` and a
-first search. It does not create, import, or enable a payment wallet. To target
-one client:
+and prints any remaining manual steps. Follow those steps, then open a fresh
+conversation in your client.
+
+Ask your agent: "Find an image-generation API and show me its pricing."
+
+For Wallet tools and paid calls, [connect your Dexter Wallet](#wallets-and-authority)
+and check its spending authority.
+
+To target one client during installation:
 
 ```bash
 npx @dexterai/opendexter@1.25.2 install --client cursor
