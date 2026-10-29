@@ -955,7 +955,7 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   assert.equal(discoveryPkg.engines.node, ">=22");
   assert.equal(
     discoveryPkg.dependencies["@dexterai/opendexter"],
-    "1.25.0",
+    "1.25.3",
   );
   assert.equal(discoveryPkg.publishConfig.tag, "latest");
   assert.deepEqual(mcp, {
