@@ -7,6 +7,7 @@
 - Point `@dexterai/x402-discovery` 1.2.1 at `@dexterai/opendexter` 1.25.3.
 - Tool and CLI source is unchanged. Examples and same-intent recovery commands
   use 1.25.3.
+- CLI guides state that 1.25.3 exposes all eight local tools.
 
 ## 2026-09-28: OpenDexter 1.25.2
 

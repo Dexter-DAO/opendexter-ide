@@ -30,7 +30,7 @@ The local package runs an npm/stdio proxy to that hosted runtime. Install it
 in your client, then run `connect` to approve access to your Dexter Wallet.
 
 Both connections use the same passkey-controlled Dexter Wallet and hosted
-executor. The server verifies grant limits, capacity, expiry, role and
+governed executor. The server verifies grant limits, capacity, expiry, role and
 revocation. The hosted runtime executes payments under that grant.
 
 ### Local: start in one command

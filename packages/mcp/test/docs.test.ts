@@ -87,6 +87,7 @@ const setupCommand = read("../commands/setup-opendexter.md");
 const onboardingSource = read("../src/cli/onboard.ts");
 const packageManifest = JSON.parse(read("../package.json")) as {
   description: string;
+  version: string;
 };
 const cursorManifest = JSON.parse(read("../.cursor-plugin/plugin.json")) as {
   description: string;
@@ -150,7 +151,7 @@ describe("docs resources", () => {
   });
 
   it.each(AUTHORITATIVE_RUNTIME_GUIDANCE)(
-    "%s freezes the eight-tool source roster and published package distinction",
+    "%s freezes the eight-tool roster of this package version",
     (_name, text) => {
       expect(namedTools(text)).toEqual(LOCAL_TOOLS);
       expect(LOCAL_TOOLS).toEqual([
@@ -163,7 +164,10 @@ describe("docs resources", () => {
         "x402_status",
         "x402_wallet",
       ]);
-      expect(text).toContain("1.24.1");
+      expect(plainText(text)).toContain(
+        `@dexterai/opendexter@${packageManifest.version} exposes eight tools`,
+      );
+      expect(text).not.toContain("1.24.1");
     },
   );
 

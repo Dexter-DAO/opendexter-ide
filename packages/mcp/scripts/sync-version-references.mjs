@@ -20,6 +20,7 @@ const referencePaths = [
   resolve(repositoryRoot, "docs/connect-your-wallet.md"),
   resolve(repositoryRoot, "docs/connect-your-wallet.html"),
   resolve(packageRoot, "README.md"),
+  resolve(packageRoot, "docs/ARCHITECTURE.md"),
   resolve(packageRoot, "cursor-mcp.json"),
   ...["agents", "assets/docs", "commands", "rules", "skills"].flatMap(
     function filesIn(relative) {

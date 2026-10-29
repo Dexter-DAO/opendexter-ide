@@ -117,7 +117,7 @@ authentication state.
 
 ## MCP tools
 
-CLI source `1.25.3` exposes these eight tools.
+`@dexterai/opendexter@1.25.3` exposes eight tools.
 
 | Tool | Purpose | Connection |
 |---|---|---|

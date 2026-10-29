@@ -5,8 +5,8 @@ alwaysApply: true
 
 x402-coding:
 
-- Current OpenDexter source registers eight tools before connection. Published
-  `1.24.1` exposes seven; `dexter_report_work` is the added source tool.
+- `@dexterai/opendexter@1.25.3` exposes eight tools before connection,
+  including `dexter_report_work`.
 - Keep the two execution models separate:
   - OpenDexter is a local proxy to a hosted governed runtime. It uses a stored
     OAuth bearer for account-bound tools and never uses a local signer or

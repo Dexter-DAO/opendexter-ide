@@ -40,13 +40,13 @@ separate authority evidence, not a requested OAuth scope. Status must report the
 limits, remaining capacity, expiry, scopes, active role, and revocation evidence
 before payment authority is treated as active.
 
-3. Verify `tools/list`. Published `1.24.1` exposes seven tools:
+3. Verify `tools/list`. `@dexterai/opendexter@1.25.3` exposes eight tools,
+even before connection:
 
 `x402_search`, `x402_check`, `x402_fetch`, `x402_status`, `x402_access`,
-`x402_wallet`, and `dexter_portfolio`.
+`x402_wallet`, `dexter_portfolio`, and `dexter_report_work`.
 
-Current source registers these seven plus `dexter_report_work`, even before
-connection. When using current source, confirm that the client lists all eight.
+Confirm that the client lists all eight.
 Use reporting for meaningful work updates with the stored OAuth bearer bound
 to the same agent; it needs no spending grant or funding. Keep private data,
 credentials and control characters out of summaries. Server-assigned
