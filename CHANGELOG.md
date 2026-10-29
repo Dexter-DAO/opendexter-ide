@@ -8,6 +8,8 @@
 - Tool and CLI source is unchanged. Examples and same-intent recovery commands
   use 1.25.3.
 - CLI guides state that 1.25.3 exposes all eight local tools.
+- Shipped SDK guides install `@dexterai/x402` 6.0.6 with `@dexterai/vault`
+  0.44.1.
 
 ## 2026-09-28: OpenDexter 1.25.2
 
