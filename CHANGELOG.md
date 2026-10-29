@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-29: OpenDexter 1.25.3, x402-mcp-tools 0.9.3, x402-discovery 1.2.1
+
+- Pin `@dexterai/vault` 0.44.1 and `@dexterai/x402` 6.0.6 exactly in the CLI
+  and the shared tools package. The workspace lock resolves one Vault copy.
+- Point `@dexterai/x402-discovery` 1.2.1 at `@dexterai/opendexter` 1.25.3.
+- Tool and CLI source is unchanged. Examples and same-intent recovery commands
+  use 1.25.3.
+
 ## 2026-09-28: OpenDexter 1.25.2
 
 - Pin the direct `@dexterai/x402` dependency to 6.0.4, which preserves raw

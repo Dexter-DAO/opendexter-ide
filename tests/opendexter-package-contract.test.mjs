@@ -939,7 +939,7 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   assert.equal(pkg.dependencies["@modelcontextprotocol/ext-apps"], "1.7.5");
   assert.equal(pkg.dependencies.zod, "3.25.76");
   assert.equal(pkg.dependencies["@dexterai/x402-core"], "1.5.2");
-  assert.equal(pkg.dependencies["@dexterai/vault"], "0.44.0");
+  assert.equal(pkg.dependencies["@dexterai/vault"], "0.44.1");
   assert.equal(pkg.dependencies["@dexterai/mcp-instructions"], "2.4.2-rc.1");
   assert.equal(pkg.dependencies["@dexterai/x402"], "6.0.6");
   assert.equal(pkg.dependencies["@dexterai/x402-mcp-tools"], "0.9.3");
@@ -947,7 +947,7 @@ test("local package candidate pins its runtime and stdio discovery identity", as
   assert.equal(instructionsPkg.version, "2.4.2-rc.1");
   assert.equal(toolsPkg.version, "0.9.3");
   assert.equal(toolsPkg.engines.node, ">=22");
-  assert.equal(toolsPkg.dependencies["@dexterai/vault"], "0.44.0");
+  assert.equal(toolsPkg.dependencies["@dexterai/vault"], "0.44.1");
   assert.equal(toolsPkg.dependencies["@dexterai/x402"], "6.0.6");
   assert.equal(toolsPkg.dependencies["@dexterai/x402-core"], "1.5.2");
   assert.equal(toolsPkg.publishConfig.tag, undefined);

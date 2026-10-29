@@ -187,7 +187,7 @@ describe("local package distribution", () => {
       require: "./dist/index.cjs",
     });
     expect(manifest.dependencies["@dexterai/x402-core"]).toBe("1.5.2");
-    expect(manifest.dependencies["@dexterai/vault"]).toBe("0.44.0");
+    expect(manifest.dependencies["@dexterai/vault"]).toBe("0.44.1");
     expect(manifest.dependencies["@dexterai/x402"]).toBe("6.0.6");
     expect(manifest.engines.node).toBe(">=22");
     expect(manifest.scripts.build).toContain("--format esm,cjs");
@@ -222,7 +222,7 @@ describe("local package distribution", () => {
     expect(existsSync(join(packageRoot, manifest.logo))).toBe(true);
     expect(pkg.dependencies["@dexterai/mcp-instructions"]).toBe("2.4.2-rc.1");
     expect(pkg.dependencies["@dexterai/x402-mcp-tools"]).toBe("0.9.3");
-    expect(pkg.dependencies["@dexterai/vault"]).toBe("0.44.0");
+    expect(pkg.dependencies["@dexterai/vault"]).toBe("0.44.1");
     expect(pkg.dependencies["@dexterai/x402"]).toBe("6.0.6");
     expect(pkg.dependencies["@dexterai/x402-core"]).toBe("1.5.2");
     expect(pkg.dependencies["@modelcontextprotocol/sdk"]).toBe("1.30.0");

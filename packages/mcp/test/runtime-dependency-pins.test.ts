@@ -11,7 +11,7 @@ const expectedRuntime = {
   "@clack/prompts": "1.7.0",
   "@dexterai/dextercard": "0.5.0",
   "@dexterai/mcp-instructions": "2.4.2-rc.1",
-  "@dexterai/vault": "0.44.0",
+  "@dexterai/vault": "0.44.1",
   "@dexterai/x402": "6.0.6",
   "@dexterai/x402-core": "1.5.2",
   "@dexterai/x402-mcp-tools": "0.9.3",
