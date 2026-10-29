@@ -15,8 +15,8 @@ SDK into OpenDexter's governed account runtime.
 - `@dexterai/x402` client, server, React, and wallet-adapter patterns for an
   intentionally independent application executor.
 - `@dexterai/opendexter` as a local proxy to the hosted governed runtime with
-  eight tools in current source and an OAuth-bearer authority boundary.
-  Published `1.24.1` exposes seven tools.
+  an OAuth-bearer authority boundary. `@dexterai/opendexter@1.25.3` exposes
+  eight tools.
 - Marketplace discovery, seller onboarding, current terms, and payment safety.
 
 ## OpenDexter workflow
@@ -34,7 +34,7 @@ SDK into OpenDexter's governed account runtime.
    hosted wallet and exact authority evidence, and `dexter_portfolio` for the
    connected governed asset inventory.
 
-Current source also registers `dexter_report_work`, including before connection.
+OpenDexter also registers `dexter_report_work`, including before connection.
 Use it for meaningful work updates with the stored OAuth bearer bound to the
 same agent. Reporting needs no spending grant or funding. After rejection or
 possible dispatch, the proxy does not refresh authentication and resend the

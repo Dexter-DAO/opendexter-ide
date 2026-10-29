@@ -1,7 +1,7 @@
 # OpenDexter local architecture
 
-`@dexterai/opendexter` runs a local CLI and stdio MCP proxy. The current source
-candidate registers eight tools:
+`@dexterai/opendexter` runs a local CLI and stdio MCP proxy.
+`@dexterai/opendexter@1.25.3` exposes eight tools:
 
 - `x402_search`
 - `x402_check`
@@ -11,9 +11,6 @@ candidate registers eight tools:
 - `x402_wallet`
 - `dexter_portfolio`
 - `dexter_report_work`
-
-Published CLI `1.24.1` exposes the first seven. Reporting in the local proxy
-awaits a reviewed package release and a client using that release.
 
 ## Hosted authority
 

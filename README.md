@@ -30,15 +30,15 @@ The local package runs an npm/stdio proxy to that hosted runtime. Install it
 in your client, then run `connect` to approve access to your Dexter Wallet.
 
 Both connections use the same passkey-controlled Dexter Wallet and hosted
-executor. The server verifies grant limits, capacity, expiry, role and
+governed executor. The server verifies grant limits, capacity, expiry, role and
 revocation. The hosted runtime executes payments under that grant.
 
 ### Local: start in one command
 
-Use Node.js 22 or newer. The commands pin version `1.25.2`.
+Use Node.js 22 or newer. The commands pin version `1.25.3`.
 
 ```bash
-npx @dexterai/opendexter@1.25.2 setup
+npx @dexterai/opendexter@1.25.3 setup
 ```
 
 `setup` detects supported AI clients, configures the clients it can edit safely,
@@ -53,7 +53,7 @@ and check its spending authority.
 To target one client during installation:
 
 ```bash
-npx @dexterai/opendexter@1.25.2 install --client cursor
+npx @dexterai/opendexter@1.25.3 install --client cursor
 ```
 
 Use `claude-code`, `codex`, `vscode`, `windsurf`, or `gemini-cli` in place of
@@ -61,7 +61,7 @@ Use `claude-code`, `codex`, `vscode`, `windsurf`, or `gemini-cli` in place of
 connection directly:
 
 ```bash
-claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.2
+claude mcp add --scope user opendexter -- npx -y @dexterai/opendexter@1.25.3
 ```
 
 This local installer never adds the repository's hosted Claude Code plugin.
@@ -72,7 +72,7 @@ For a manual stdio MCP configuration in another client:
   "mcpServers": {
     "opendexter": {
       "command": "npx",
-      "args": ["-y", "@dexterai/opendexter@1.25.2"]
+      "args": ["-y", "@dexterai/opendexter@1.25.3"]
     }
   }
 }
@@ -87,7 +87,7 @@ The hosted connector registers fifteen authenticated tools, including
 `dexter_report_work` for the connected agent's work updates. Fourteen tools are
 model-callable; `indexter_discover` is reserved for the widget. Verify new tools
 in the current conversation's callable roster after a client refresh or new
-session. The local CLI `1.25.2` exposes eight tools, including work reporting.
+session. The local CLI `1.25.3` exposes eight tools, including work reporting.
 See the [hosted work-report guide](plugins/opendexter/skills/opendexter/SKILL.md#report-current-work)
 for an example and replay recovery.
 
@@ -152,7 +152,7 @@ namespacing has been separately proven. `--registration-name` chooses the name
 of that one registration; it does not bypass an existing hosted or local
 OpenDexter registration. The installer never silently renames or overwrites one.
 
-Run `npx @dexterai/opendexter@1.25.2 doctor` for a read-only report. Doctor
+Run `npx @dexterai/opendexter@1.25.3 doctor` for a read-only report. Doctor
 does not create a wallet, read balances, edit client configuration, or pay.
 
 ## From request to result
@@ -183,7 +183,7 @@ safe.
 
 ## Product tool surfaces
 
-Published CLI `1.25.2` exposes these eight local proxy tools.
+CLI source `1.25.3` exposes these eight local proxy tools.
 
 | Tool | What it does | Consequential? |
 |---|---|---|
@@ -214,9 +214,9 @@ Run the device flow, approve with the wallet passkey, and then inspect the live
 authority projection:
 
 ```bash
-npx @dexterai/opendexter@1.25.2 connect
-npx @dexterai/opendexter@1.25.2 connect status
-npx @dexterai/opendexter@1.25.2 wallet
+npx @dexterai/opendexter@1.25.3 connect
+npx @dexterai/opendexter@1.25.3 connect status
+npx @dexterai/opendexter@1.25.3 wallet
 ```
 
 The OAuth request uses the exact `vault` scope. The returned access token can
@@ -240,7 +240,7 @@ connection and authority boundary.
 - **Build an x402 client or server:** use
   [`@dexterai/x402`](https://www.npmjs.com/package/@dexterai/x402).
 - **Prepare a compatible service for discovery:** run
-  `npx @dexterai/opendexter@1.25.2 audition https://your-service.example`.
+  `npx @dexterai/opendexter@1.25.3 audition https://your-service.example`.
   A server URL registers routes. A specific
   endpoint URL requests an immediate test using OpenDexter's verifier funds.
   Read the [audition result and recovery guidance](./packages/mcp/README.md#audition-results).

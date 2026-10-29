@@ -5,8 +5,8 @@ alwaysApply: true
 
 x402-coding:
 
-- Current OpenDexter source registers eight tools before connection. Published
-  `1.24.1` exposes seven; `dexter_report_work` is the added source tool.
+- `@dexterai/opendexter@1.25.3` exposes eight tools before connection,
+  including `dexter_report_work`.
 - Keep the two execution models separate:
   - OpenDexter is a local proxy to a hosted governed runtime. It uses a stored
     OAuth bearer for account-bound tools and never uses a local signer or
@@ -44,8 +44,8 @@ x402-coding:
   - `import { payAndFetch } from '@dexterai/x402/client'`
   - `import { x402Middleware } from '@dexterai/x402/server'`
   - `import { useX402Payment } from '@dexterai/x402/react'`
-- Install the tested V6 pair together: `@dexterai/x402@6.0.0-rc.4` and
-  `@dexterai/vault@0.43.3-rc.1`, on Node 22 or newer.
+- Install the tested V6 pair together: `@dexterai/x402@6.0.6` and
+  `@dexterai/vault@0.44.1`, on Node 22 or newer.
 - Narrow the one-shot SDK's `PayResult` on `ok`, then `paid`. A
   `payment_unconfirmed` result may already have moved money and must not be
   automatically retried. Do not apply SDK recovery guidance to an OpenDexter

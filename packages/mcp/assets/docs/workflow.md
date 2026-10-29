@@ -1,8 +1,8 @@
 # OpenDexter governed x402 workflow
 
 The local `@dexterai/opendexter` MCP is a proxy to OpenDexter's hosted governed
-runtime. Current source registers eight tools whether connected or disconnected;
-published `1.24.1` exposes seven. The proxy never derives or enables a local
+runtime. `@dexterai/opendexter@1.25.3` exposes eight tools whether connected or
+disconnected. The proxy never derives or enables a local
 private key for payment or identity proof. Search and check can use the anonymous hosted
 surface. Access is a separate anonymous fresh one-call legacy wallet-proof
 operation, not OAuth/governed authority, and has no cross-call continuity.
@@ -30,7 +30,7 @@ payment-alias, card, or local-executor MCP tools.
 
 ## Work reporting
 
-In current source, use `dexter_report_work` for meaningful work updates. It
+Use `dexter_report_work` for meaningful work updates. It
 requires the stored OAuth bearer bound to the same agent, without a spending
 grant or funding. Keep private data, credentials and control characters out of
 summaries. The server's `observedAt` and `expiresAt` describe statement
@@ -41,7 +41,6 @@ For a revision conflict, inspect `currentReport` and `currentRevision`; if an
 update is still needed, use a new `operationId` and the returned
 `currentRevision` as `expectedRevision`. After rejection or possible dispatch,
 the proxy does not refresh authentication and resend the report automatically.
-Published `1.24.1` omits this tool.
 
 ## Safe sequence
 
